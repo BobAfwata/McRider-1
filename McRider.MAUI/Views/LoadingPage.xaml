@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="McRider.MAUI.Views.LoadingPage"
+    
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="150" />
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
+
+        <StackLayout Grid.Row="1"  BackgroundColor="{StaticResource Tertiary}" Margin="25,0" Padding="80">
+
+            <Label Text="Lorem ipsum dolor sit amet, consectetuer" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{StaticResource Primary}" 
+                   Margin="100, 40" FontFamily="MontserratBold"
+                   FontSize="48"  FontAttributes="Bold" />
+
+            <Image Source="founding_year_inverted.png" WidthRequest="480" Margin="40" />
+
+            <Button Text="Let's Play" 
+                    BackgroundColor="{StaticResource Primary}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary}"
+                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50"
+                    />
+
+        </StackLayout>
+    </Grid>
+</ContentPage>

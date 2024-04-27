@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="McRider.MAUI.Views.Dialogs.DialogWrapper"
+             CanBeDismissedByTappingOutsideOfPopup="False"   
+             Color="Transparent">
+
+    <Border Padding="5"  x:Name="wrapperBorder" 
+            VerticalOptions="CenterAndExpand"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="5"/>
+        </Border.StrokeShape>
+        <Grid x:Name="wrapperGrid" 
+              VerticalOptions="CenterAndExpand" 
+              Margin="0" Padding="10,5"
+              MinimumWidthRequest="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackLayout Grid.Row="0" Padding="5" x:Name="headerStack">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="32"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label 
+                        Text="{Binding Title}" FontAttributes="Bold"
+                        VerticalOptions="CenterAndExpand" HorizontalOptions="StartAndExpand" />
+
+                    <ImageButton 
+                        Grid.Column="1" Source="cross.png" 
+                        HorizontalOptions="End" VerticalOptions="Center" Padding="8" Margin="0"
+                        HeightRequest="32" WidthRequest="32" Clicked="CloseImageButton_Clicked"/>
+                </Grid>
+            </StackLayout>
+
+            <ScrollView x:Name="bodyScroll" Grid.Row="1" MaximumHeightRequest="450" VerticalOptions="StartAndExpand">
+                <StackLayout x:Name="bodyStack" Spacing="10" Padding="15" VerticalOptions="StartAndExpand">
+                    <!-- View will come here!  -->
+                </StackLayout>
+            </ScrollView>
+
+            <StackLayout Grid.Row="2" x:Name="footerStack" Padding="5,10,5,5" IsVisible="{Binding ShowActionButtons}">
+                <Border BackgroundColor="LightGray"/>                
+                <StackLayout Padding="15" Orientation="Horizontal" HorizontalOptions="EndAndExpand" Spacing="8">                    
+                    <Button
+                        WidthRequest="180"
+                        Style="{StaticResource OkButtonStyle}" IsEnabled="{Binding IsValid}"
+                        Text="{Binding SuccessButtonText}" Clicked="SuccessButton_Clicked"/>
+                    
+                    <Button 
+                        WidthRequest="100"
+                        Style="{StaticResource CancelButtonStyle}"
+                        IsVisible="{Binding CancelButtonText, Converter={StaticResource IsNotNullOrEmpty}}"
+                        Text="{Binding CancelButtonText}" Clicked="CloseImageButton_Clicked"/>                    
+                </StackLayout>
+            </StackLayout>
+        </Grid>
+    </Border>
+
+</toolkit:Popup>

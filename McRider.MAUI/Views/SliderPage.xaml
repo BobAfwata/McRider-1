@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="McRider.MAUI.Views.SliderPage"
+    
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="150" />
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
+
+        <Grid Grid.Row="1"  BackgroundColor="{StaticResource Tertiary}" Margin="25,0" Padding="80">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="300"/>
+            </Grid.RowDefinitions>
+            <CarouselView Grid.RowSpan="2" 
+                  x:Name="carouselView" ItemsSource="{Binding Items}"
+                  IndicatorView="indicatorView">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="250" />
+                            </Grid.RowDefinitions>
+                            <Image Grid.Row="0" Source="{Binding Image}" Aspect="AspectFit" />
+                        </Grid>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+
+            <StackLayout Grid.Row="1" VerticalOptions="End">
+                <Button Text="Let's Play" Command="{Binding LetsPlayCommand}"
+                    BackgroundColor="{StaticResource Primary}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary}"
+                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" Margin="10,10,10,100"/>
+
+                <IndicatorView x:Name="indicatorView"
+                   IndicatorColor="{StaticResource PrimaryDark}"
+                   SelectedIndicatorColor="{StaticResource Primary}"
+                   HorizontalOptions="Center" />
+            </StackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>
