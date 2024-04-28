@@ -37,9 +37,13 @@ public static class MauiProgram
                 {
                     window.ExtendsContentIntoTitleBar = false;
                     var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+                    // Move the window to the portrait screen. If successful, remove the title bar and border
+                    if (App.ServiceProvider.GetService<IScreenSelector>()?.MoveCurrentToProtraitScreen(handle) != true)
+                        return;
+
                     var id = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(handle);
                     var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(id);
-                    App.ServiceProvider.GetService<IScreenSelector>()?.MoveCurrentToProtraitScreen(handle);
 
                     switch (appWindow.Presenter)
                     {

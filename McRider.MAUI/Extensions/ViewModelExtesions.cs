@@ -13,7 +13,7 @@ public static class ViewViewModelExtensions
         return await App.Current.MainPage.ShowPopupAsync(popup);
     }
 
-    public static IServiceCollection AddView<V>(this IServiceCollection services, string route = null, bool singleton = false)
+    public static IServiceCollection AddView<V>(this IServiceCollection services, string route = null, bool singleton = true)
         where V : class
     {
         if (singleton)
@@ -21,10 +21,18 @@ public static class ViewViewModelExtensions
         else
             services.AddTransient<V>();
 
-        if (string.IsNullOrEmpty(route))
-            Routing.RegisterRoute(typeof(V).Name, typeof(V));
-        else
-            Routing.RegisterRoute(route, typeof(V));
+        route = string.IsNullOrEmpty(route) ? typeof(V).Name : route;
+        try
+        {
+            var existingRoute = Routing.GetOrCreateContent(route);
+
+            if (existingRoute == null)
+                Routing.RegisterRoute(route, typeof(V));
+        }
+        catch(MissingMethodException)
+        {
+            //Ignore this error
+        }
 
         return services;
     }

@@ -34,8 +34,7 @@ namespace McRider.Windows
             if (System.Windows.Forms.SystemInformation.TerminalServerSession)
                 return;
             System.Reflection.PropertyInfo aProp = typeof(System.Windows.Forms.Control).GetProperty("DoubleBuffered",
-            System.Reflection.BindingFlags.NonPublic |
-            System.Reflection.BindingFlags.Instance);
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             aProp.SetValue(c, true, null);
         }
 
@@ -240,8 +239,6 @@ namespace McRider.Windows
             {
                 try
                 {
-
-
                     string message = Port.ReadLine();
                     // MessageBox.Show(message);
                     JObject json_object = JObject.Parse(message.ToString());
@@ -265,7 +262,6 @@ namespace McRider.Windows
                     }
                     else
                     {
-
                         int bike_a = Convert.ToInt32(json_object["bikeA"]);
                         int bike_b = Convert.ToInt32(json_object["bikeB"]);
 

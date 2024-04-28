@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="McRider.MAUI.Views.RegistrationPage"    
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled">
+    
+    <Grid BackgroundColor="{StaticResource White}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="150" />
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
+
+        <StackLayout Grid.Row="1" BackgroundColor="{StaticResource Primary}" Margin="25,0" Padding="80">
+
+            <Label Text="{Binding Title}" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{StaticResource Tertiary}" 
+                   Margin="100, 40" FontFamily="MontserratBold"
+                   FontSize="48"  FontAttributes="Bold" />
+
+            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                <Entry Text="{Binding FullName}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your full names" />                
+            </Frame>
+
+            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                <Entry Text="{Binding Email}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your email address" />
+            </Frame>
+
+            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                <Entry Text="{Binding Phone}" TextColor="Black"  Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your phone number" />
+            </Frame>
+
+            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                <Entry Text="{Binding Nickname}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your nickname" />
+            </Frame>
+            
+            <StackLayout Orientation="Horizontal" Spacing="40" Margin="0,80" HorizontalOptions="Center">
+                <ImageButton Source="male.png" HeightRequest="450"/>
+                <ImageButton Source="female.png" HeightRequest="450"/>
+            </StackLayout>
+
+            <Button Text="Next" Command="{Binding NextCommand}"  Margin="40"
+                    BackgroundColor="{StaticResource Tertiary}" HorizontalOptions="Center" TextColor="{StaticResource Primary}"
+                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
+
+        </StackLayout>
+    </Grid>
+</ContentPage>

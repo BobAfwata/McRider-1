@@ -2,8 +2,7 @@
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="McRider.MAUI.Views.LoadingPage"
-    
+    x:Class="McRider.MAUI.Views.LoadingPage"    
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled">
     <Grid>
@@ -29,11 +28,7 @@
 
             <Image Source="founding_year_inverted.png" WidthRequest="480" Margin="40" />
 
-            <Button Text="Let's Play" 
-                    BackgroundColor="{StaticResource Primary}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary}"
-                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50"
-                    />
-
+            <ActivityIndicator IsRunning="True" Color="{StaticResource Primary}" Margin="40"  HeightRequest="80" WidthRequest="80" />
         </StackLayout>
     </Grid>
 </ContentPage>

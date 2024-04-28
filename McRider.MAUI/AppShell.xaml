@@ -8,20 +8,33 @@
     Shell.FlyoutBehavior="Disabled"
     Title="McRider.MAUI">
 
-
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate views:SliderPage}"
-        Route="SliderPage" />
-    
-    <ShellContent
-        Title="Home"
         ContentTemplate="{DataTemplate views:LoadingPage}"
         Route="LoadingPage" />
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        ContentTemplate="{DataTemplate views:SliderPage}"
+        Route="SliderPage" />
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:LandingPage}"
+        Route="LandingPage" />
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:GamesPage}"
+        Route="GamesPage" />
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:RegistrationPage}"
+        Route="RegistrationPage" />
+    
+    <ShellContent
+        ContentTemplate="{DataTemplate views:GamePlayPage}"
+        Route="GamePlayPage" />
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:StartGamePage}"
+        Route="StartGamePage" />
+    
 
 </Shell>

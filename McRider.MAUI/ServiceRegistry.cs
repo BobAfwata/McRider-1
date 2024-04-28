@@ -1,4 +1,6 @@
-﻿using McRider.MAUI.Extensions;
+﻿using McRider.Common.Services;
+using McRider.MAUI.Extensions;
+using McRider.MAUI.Services;
 
 namespace McRider.MAUI
 {
@@ -6,17 +8,27 @@ namespace McRider.MAUI
     {
         public override IServiceCollection AddServices(IServiceCollection services)
         {
+            // Register Services
+            services.AddSingleton<ServiceWorker>();
+            services.AddSingletonIfMissing<IForegroundService, ForegroundService>();
+            services.AddSingletonIfMissing<IBackgroundService, ForegroundService>();
+
+            // Register Views and ViewModels
             AddViews(services);         // Add Views
             AddViewModels(services);    // Add ViewModel
 
             return services;
         }
-
+        
         private static IServiceCollection AddViews(IServiceCollection services)
         {
             services.AddView<LoadingPage>();
-            services.AddView<LandingPage>();
             services.AddView<SliderPage>();
+            services.AddView<LandingPage>();
+            services.AddView<GamesPage>();
+            services.AddView<RegistrationPage>();
+            services.AddView<StartGamePage>();
+            services.AddView<GamePlayPage>();
 
             return services;
         }
@@ -24,8 +36,12 @@ namespace McRider.MAUI
         private static IServiceCollection AddViewModels(IServiceCollection services)
         {
             services.AddViewModel<LoadingPageViewModel>();
-            services.AddViewModel<LandingPageViewModel>();
             services.AddViewModel<SliderPageViewModel>();
+            services.AddViewModel<LandingPageViewModel>();
+            services.AddViewModel<GamesPageViewModel>();
+            services.AddViewModel<RegistrationPageViewModel>();
+            services.AddViewModel<StartGamePageViewModel>();
+            services.AddViewModel<GamePlayPageViewModel>();
 
             return services;
         }

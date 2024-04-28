@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="McRider.MAUI.Views.GamesPage"
+    
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="150" />
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
+
+        <StackLayout Grid.Row="1"  BackgroundColor="{StaticResource Primary}" Margin="25,0" Padding="80">
+
+            <Label Text="Lorem ipsum dolor sit amet, consectetuer" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{StaticResource Tertiary}" 
+                   Margin="100, 40" FontFamily="MontserratBold"
+                   FontSize="48"  FontAttributes="Bold" />
+
+            <CollectionView Margin="40"
+                Grid.Row="2" Grid.ColumnSpan="3" SelectionMode="Single"
+                ItemsSource="{Binding Items}"
+                SelectedItem="{Binding SelectedItem}"
+                SelectionChangedCommand="{Binding ItemClickedCommand}"
+                SelectionChangedCommandParameter="{Binding SelectedItem}">       
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout 
+                        Orientation="Vertical" Span="{Binding ColumnCount}" 
+                        HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="300" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Image Grid.Row="0" Source="{Binding Image}" BackgroundColor="{StaticResource White}" Aspect="AspectFit" />
+                            <Label Grid.Row="1" Text="{Binding Name}" FontSize="28" FontFamily="MontserratBold"
+                                   Padding="5" HorizontalTextAlignment="Center"
+                                   BackgroundColor="{StaticResource Tertiary}" TextColor="{StaticResource Primary}"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Image Source="founding_year_yellow.png" WidthRequest="240" Margin="40" />
+            
+        </StackLayout>
+    </Grid>
+</ContentPage>

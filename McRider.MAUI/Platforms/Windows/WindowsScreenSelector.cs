@@ -6,22 +6,27 @@ namespace McRider.MAUI.Platforms.Windows;
 
 public class WindowsScreenSelector: IScreenSelector
 {
-    public void MoveCurrentToLandscapeScreen(IntPtr? windowHandle = null)
+    public bool MoveCurrentToLandscapeScreen(IntPtr? windowHandle = null)
     {
         windowHandle ??= GetForegroundWindow();
         var landscapeScreen = Screen.AllScreens.FirstOrDefault(screen => screen.Bounds.Width > screen.Bounds.Height);
 
         if (landscapeScreen != null)
             MoveWindowToScreen(windowHandle.Value, landscapeScreen);
+
+        return landscapeScreen != null;
     }
 
-    public void MoveCurrentToProtraitScreen(IntPtr? windowHandle = null)
+    public bool MoveCurrentToProtraitScreen(IntPtr? windowHandle = null)
     {
         windowHandle ??= GetForegroundWindow();
         var portraitScreen = Screen.AllScreens.FirstOrDefault(screen => screen.Bounds.Width < screen.Bounds.Height);
 
         if (portraitScreen != null)
-            MoveWindowToScreen(windowHandle.Value, portraitScreen);        
+            MoveWindowToScreen(windowHandle.Value, portraitScreen);
+
+        return portraitScreen != null;
+
     }
 
     private void MoveWindowToScreen(IntPtr windowHandle, Screen screen)

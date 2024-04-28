@@ -8,5 +8,6 @@ namespace McRider.MAUI.ViewModels
 {
     public partial class LoadingPageViewModel : BaseViewModel
     {
+
     }
 }

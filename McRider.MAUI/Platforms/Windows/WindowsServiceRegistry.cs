@@ -11,6 +11,7 @@ namespace McRider.MAUI.Platforms.Android
         {
             services.AddSingleton<ITextMeter, WindowsTextMeter>();
             services.AddSingleton<IScreenSelector, WindowsScreenSelector>();
+            services.AddSingleton<ArdrinoCommunicator, WindowsArdrinoSerialPortCommunicator>();
 
             return services;
         }

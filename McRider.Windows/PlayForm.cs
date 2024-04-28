@@ -131,8 +131,6 @@ namespace McRider.Windows
         {
             timer2.Stop();
             try
-
-
             {
 
                 //read to data from arduino
@@ -200,10 +198,6 @@ namespace McRider.Windows
                 //total_time.Text = "T:"+AString+"h" + AString + "min";
                 //player_one_time.Text ="T:"+AString+"h" + AString + "min";
                 //player_two_time.Text ="T:"+AString+"h" + AString + "min";
-
-
-
-
 
                 //for (i = 0; i <= 200; i++)
                 //{

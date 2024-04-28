@@ -90,12 +90,14 @@ public class ServiceWorker
 
                                 tasks[action.GetHashCode()]?.ContinueWith(task =>
                                 {
-                                    if (task.Result == true)
+                                    if (task.Result != true)
                                     {
                                         completedActions.Add(action);
                                         Interlocked.Increment(ref count);
-                                        tasks.Remove(action.GetHashCode(), out _);
                                     }
+
+                                    if (task.Status != TaskStatus.Running)
+                                        tasks.Remove(action.GetHashCode(), out _);
                                 }).ConfigureAwait(false);
                             }
                             catch (Exception ex)
@@ -109,10 +111,10 @@ public class ServiceWorker
                         }
                     });
 
-                if (!tasks.IsEmpty)
-                    await Task.WhenAll(tasks.Values);
+                if (tasks.IsEmpty)
+                    await Task.Delay(1000); // No work sleep interval
                 else
-                    await Task.Delay(500);
+                    await Task.WhenAll(tasks.Values); // Wait for all tasks available
             }
         }
         catch (OperationCanceledException)

@@ -8,5 +8,10 @@ namespace McRider.MAUI.ViewModels
 {
     public partial class LandingPageViewModel : BaseViewModel
     {
+        [RelayCommand]
+        async Task TakeChallenge()
+        {
+            await Shell.Current.GoToAsync($"{nameof(GamesPage)}");
+        }
     }
 }

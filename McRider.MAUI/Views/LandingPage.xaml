@@ -29,11 +29,9 @@
 
             <Image Source="founding_year_transparent.png" WidthRequest="480" Margin="40" />
 
-            <Button Text="Take the challenge" 
+            <Button Text="Take the challenge" Command="{Binding TakeChallengeCommand}"
                     BackgroundColor="{StaticResource Tertiary}" HorizontalOptions="Center" TextColor="{StaticResource Primary}"
-                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50"
-                    />
-
+                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
         </StackLayout>
     </Grid>
 </ContentPage>

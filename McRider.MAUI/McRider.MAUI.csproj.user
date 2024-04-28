@@ -6,6 +6,21 @@
     <ActiveDebugProfile>Windows Machine</ActiveDebugProfile>
   </PropertyGroup>
   <ItemGroup>
+    <MauiXaml Update="Views\Dialogs\MessageDialogView.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="Views\GamePlayPage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="Views\StartGamePage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="Views\RegistrationPage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="Views\GamesPage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
     <MauiXaml Update="Views\SliderPage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
@@ -21,9 +36,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Update="AppShell.xaml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="MainPage.xaml">
       <SubType>Designer</SubType>
     </None>
     <None Update="Platforms\Windows\App.xaml">

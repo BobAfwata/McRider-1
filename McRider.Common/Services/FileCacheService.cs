@@ -6,13 +6,14 @@ namespace McRider.Common.Services;
 public class FileCacheService
 {
     private readonly string _cacheDirectory;
+    public TimeSpan? DefaultCacheDuration { get; set; }
 
     public FileCacheService()
     {
-        var currentAssemblyName = string.Join(".", (Assembly.GetExecutingAssembly()?.GetName()?.Name ?? "files.").Split(',').SkipLast(1));
+        var currentAssemblyName = string.Join(".", (Assembly.GetExecutingAssembly()?.GetName()?.Name ?? "files.").Split('.').SkipLast(1));
         _cacheDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            currentAssemblyName, "Cache"
+            currentAssemblyName
         );
 
         if (!Directory.Exists(_cacheDirectory))
@@ -24,7 +25,11 @@ public class FileCacheService
         string filePath = Path.Combine(_cacheDirectory, key + ".json");
         if (File.Exists(filePath))
         {
-            var cacheExpiry = File.GetLastWriteTime(filePath).Add(cacheDuration ?? TimeSpan.FromMinutes(60)); // Set cache expiry to 30 minutes by default
+            cacheDuration ??= DefaultCacheDuration;
+            if (cacheDuration == null)
+                return File.ReadAllText(filePath);
+
+            var cacheExpiry = File.GetLastWriteTime(filePath).Add(cacheDuration.Value);
             if (DateTime.UtcNow > cacheExpiry)
                 return null;
 
@@ -64,7 +69,7 @@ public class FileCacheService
         {
             T freshData = await readFunc();
 
-            Set(key, JsonConvert.SerializeObject(freshData));
+            Set(key, JsonConvert.SerializeObject(freshData, Formatting.Indented));
 
             return freshData;
         }

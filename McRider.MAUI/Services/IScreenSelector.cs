@@ -8,6 +8,6 @@ namespace McRider.MAUI.Services;
 
 public interface IScreenSelector
 {
-    void MoveCurrentToLandscapeScreen(IntPtr? windowHandle = null);
-    void MoveCurrentToProtraitScreen(IntPtr? windowHandle = null);
+    bool MoveCurrentToLandscapeScreen(IntPtr? windowHandle = null);
+    bool MoveCurrentToProtraitScreen(IntPtr? windowHandle = null);
 }
