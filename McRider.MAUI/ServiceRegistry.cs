@@ -28,7 +28,7 @@ namespace McRider.MAUI
             services.AddView<GamesPage>();
             services.AddView<RegistrationPage>();
             services.AddView<StartGamePage>();
-            services.AddView<GamePlayPage>();
+            services.AddView<MatchupPage>();
 
             return services;
         }
@@ -41,7 +41,7 @@ namespace McRider.MAUI
             services.AddViewModel<GamesPageViewModel>();
             services.AddViewModel<RegistrationPageViewModel>();
             services.AddViewModel<StartGamePageViewModel>();
-            services.AddViewModel<GamePlayPageViewModel>();
+            services.AddViewModel<MatchupPageViewModel>();
 
             return services;
         }

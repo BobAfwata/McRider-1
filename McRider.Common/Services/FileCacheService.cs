@@ -45,6 +45,12 @@ public class FileCacheService
         File.WriteAllText(filePath, data);
     }
 
+    public async Task SetAsync<T>(string key, T data)
+    {
+        string filePath = Path.Combine(_cacheDirectory, key + ".json");
+        await File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(data, Formatting.Indented));
+    }
+
     public T Get<T>(string key, Func<T> readFunc, TimeSpan? cacheDuration = null)
     {
         string cachedData = Get(key, cacheDuration);
@@ -69,7 +75,7 @@ public class FileCacheService
         {
             T freshData = await readFunc();
 
-            Set(key, JsonConvert.SerializeObject(freshData, Formatting.Indented));
+            await SetAsync(key, freshData);
 
             return freshData;
         }

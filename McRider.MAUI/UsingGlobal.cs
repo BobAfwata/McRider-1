@@ -2,11 +2,18 @@
 global using CommunityToolkit.Mvvm.Input;
 global using CommunityToolkit.Mvvm.Messaging;
 
+global using McRider.Domain.Services;
+global using McRider.Domain.Models;
+
 global using McRider.Common.Extensions;
-global using McRider.MAUI.ViewModels;
-global using McRider.MAUI.ViewModels.Dialogs;
+global using McRider.Common.Services;
+
+global using McRider.MAUI.Extensions;
+global using McRider.MAUI.Services;
 global using McRider.MAUI.Views;
 global using McRider.MAUI.Views.Dialogs;
+global using McRider.MAUI.ViewModels;
+global using McRider.MAUI.ViewModels.Dialogs;
 
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

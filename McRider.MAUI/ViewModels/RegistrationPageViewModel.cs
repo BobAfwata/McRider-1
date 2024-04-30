@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace McRider.MAUI.ViewModels;
 
 public partial class RegistrationPageViewModel : BaseViewModel
 {
+    GameItem _game;
+
     [ObservableProperty]
-    string _fullName;
+    string _fullName = "";
 
     [ObservableProperty]
     string _email;
@@ -21,9 +18,80 @@ public partial class RegistrationPageViewModel : BaseViewModel
     string _nickname;
 
     [ObservableProperty]
+    string _gender;
+
+    [ObservableProperty]
     ObservableCollection<Player> _players = [];
 
-    GameItem _game;
+    public bool CanSkip => Players.Count >= 3;
+    public bool IsMale => _gender?.FirstOrDefault() == 'M';
+    public bool IsFemale => _gender?.FirstOrDefault() == 'F';
+
+    public bool IsValidFullName => !string.IsNullOrWhiteSpace(FullName);
+    public bool IsValidEmail => !string.IsNullOrWhiteSpace(Email) && Email?.IsEmail() == true;
+    public bool IsValidPhone => string.IsNullOrWhiteSpace(Phone) || Regex.IsMatch(Phone, @"07\d{");
+    public bool IsValidNickname => !string.IsNullOrWhiteSpace(Nickname);
+    public bool IsValidGender => IsMale || IsFemale;
+
+    public bool IsValidated { get; set; }
+    public bool IsNotValidated => !IsValidated;
+    public bool IsValid => IsValidFullName && IsValidEmail && IsValidNickname && IsValidGender;
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName?.StartsWith("Is") != true)
+        {
+            if (e.PropertyName != nameof(CanSkip))
+                OnPropertyChanged(nameof(CanSkip));
+
+            OnPropertyChanged(nameof(IsValidFullName));
+            OnPropertyChanged(nameof(IsValidEmail));
+            OnPropertyChanged(nameof(IsValidNickname));
+            OnPropertyChanged(nameof(IsValidGender));
+            OnPropertyChanged(nameof(IsValid));
+            OnPropertyChanged(nameof(IsValidated));
+            OnPropertyChanged(nameof(IsNotValidated));
+        }
+
+        base.OnPropertyChanged(e);
+    }
+
+    private bool IsValidPlayer()
+    {
+        IsValidated = true;
+
+        return IsValid;
+    }
+
+    partial void OnGenderChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsMale));
+        OnPropertyChanged(nameof(IsFemale));
+    }
+
+    [RelayCommand]
+    private void GenderClicked(object arg)
+    {
+        if (arg is string gender)
+            Gender = gender;
+    }
+
+    [RelayCommand]
+    private async Task StartGame()
+    {
+        var startGamePage = App.ServiceProvider.GetService<StartGamePage>();
+        await Shell.Current.Navigation.PushAsync(startGamePage);
+
+        if (startGamePage?.BindingContext is StartGamePageViewModel vm)
+        {
+            var tournament = await vm.AwaitMatchupsFor(Players.ToArray(), _game);
+            await tournament.Save();
+
+            // TODO: Show the game results
+            //var gameResultsPage = App.ServiceProvider.GetService<GameResultsPage>();
+            //await Shell.Current.Navigation.PushAsync(gameResultsPage);
+        }
+    }
 
     [RelayCommand]
     private async Task Next()
@@ -39,21 +107,23 @@ public partial class RegistrationPageViewModel : BaseViewModel
             Name = FullName,
             Email = Email,
             PhoneNumber = Phone,
-            Nickname = Nickname
+            Nickname = Nickname,
+            Gender = Gender
         };
 
         Players.Add(player);
         _tcs?.SetResult(player);
 
-        // Close after all players are registered
+        // Start Game after all players are registered
         if (Players.Count >= _game?.TeamsCount * _game?.PlayersPerTeam)
-            await StartGamePage.GetGamePlays(Players.ToArray(), _game);
+            await StartGame();
+        else
+        {
+            // Animate to the left
+            //await Content.TranslateTo(-Content.Width, 0, 1000, Easing.SinInOut);
+        }
     }
 
-    private bool IsValidPlayer()
-    {
-        return !string.IsNullOrWhiteSpace(FullName) && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Nickname);
-    }
 
     TaskCompletionSource<Player> _tcs;
     public async Task<List<Player>> AwaitPlayersFor(GameItem game)
@@ -64,9 +134,6 @@ public partial class RegistrationPageViewModel : BaseViewModel
         game.TeamsCount = Math.Max(1, game.TeamsCount);
         game.PlayersPerTeam = Math.Max(1, game.PlayersPerTeam);
 
-        //await Shell.Current.Navigation.PushAsync(new RegistrationPage(this));
-        await Shell.Current.GoToAsync($"{nameof(RegistrationPage)}");
-
         for (var i = 0; i < game.TeamsCount; i++)
         {
             for (var j = 0; j < game.PlayersPerTeam; j++)
@@ -76,7 +143,7 @@ public partial class RegistrationPageViewModel : BaseViewModel
 
                 _tcs = new TaskCompletionSource<Player>();
                 var player = await _tcs.Task;
-                
+
                 player.Team = game.TeamsCount > 1 ? $"Team {i + 1}" : "Single Player";
 
                 if (player != null) players.Add(player);
@@ -92,57 +159,8 @@ public partial class RegistrationPageViewModel : BaseViewModel
         FullName = $"Player {index}";
         Email = "";
         Phone = "";
+        Gender = "";
         Nickname = $"P{index}";
     }
 }
 
-public class Player
-{
-    private double _distance;
-
-    public string? Id { get; set; } = Guid.NewGuid().ToString();
-
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Nickname { get; set; }
-    public string Team { get; set; }
-    public bool IsActive { get; set; } = true;
-
-    public DateTime? StartTime { get; set; }
-    public DateTime? LastActivity { get; set; }
-
-    public TimeSpan? Time
-    {
-        get
-        {
-            if (StartTime.HasValue == false) return null;
-            return LastActivity - StartTime;
-        }
-    }
-    public double Distance
-    {
-        get => _distance;
-        set
-        {
-            var delta = Math.Abs(_distance - value);
-            if (delta <= 0.001) return;
-
-            if (StartTime.HasValue == false)
-                StartTime = DateTime.UtcNow;
-
-            LastActivity = DateTime.UtcNow;
-            _distance = value;
-        }
-    }
-
-    public TimeSpan? BestTime { get; set; }
-    public bool IsWinner { get; internal set; }
-
-    public void Reset()
-    {
-        _distance = 0;
-        StartTime = null;
-        LastActivity = null;
-    }
-}

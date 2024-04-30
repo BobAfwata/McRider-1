@@ -1,13 +1,12 @@
-
-using Microsoft.Extensions.DependencyInjection;
+using McRider.Common.Services;
 
 namespace McRider.MAUI.Views;
 
-public partial class RegistrationPage : ContentPage
+public partial class MatchupPage : ContentPage
 {
-    static ILogger _logger = App.ServiceProvider.GetService<ILogger<RegistrationPage>>();
+    static ILogger _logger = App.ServiceProvider.GetService<ILogger<MatchupPage>>();
 
-    public RegistrationPage(RegistrationPageViewModel vm)
+    public MatchupPage(MatchupPageViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;
@@ -17,6 +16,7 @@ public partial class RegistrationPage : ContentPage
     {
         if (BindingContext is BaseViewModel vm)
             _ = vm.Initialize();
+
         base.OnAppearing();
     }
 }

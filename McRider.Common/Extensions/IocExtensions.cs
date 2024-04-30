@@ -75,6 +75,7 @@ public class CommonServiceRegistry : BaseServiceRegistry
     {
         services.AddScoped<FileCacheService>();
         services.AddScoped<RetryExecutionService>();
+        services.AddScoped(typeof(RepositoryService<>), typeof(RepositoryService<>));
 
         return services;
     }

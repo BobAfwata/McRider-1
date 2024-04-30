@@ -1,6 +1,4 @@
-﻿using McRider.Common.Services;
-
-namespace McRider.MAUI.Services;
+﻿namespace McRider.MAUI.Services;
 
 public abstract class ArdrinoCommunicator
 {
@@ -10,7 +8,7 @@ public abstract class ArdrinoCommunicator
     protected ILogger _logger;
 
     protected FileCacheService _cacheService;
-    protected GamePlay _gamePlay;
+    protected Matchup _matchup;
     protected Configs _configs;
     protected bool _isRunning = true;
 
@@ -22,9 +20,10 @@ public abstract class ArdrinoCommunicator
         _ = Initialize();
     }
 
-    public virtual async Task Initialize()
+    public virtual async Task<bool> Initialize()
     {
         _configs = await _cacheService.GetAsync<Configs>("configs.json", async () => new Configs());
+        return true;
     }
 
     public abstract string ReadData();
@@ -37,14 +36,14 @@ public abstract class ArdrinoCommunicator
             if (_isRunning != true)
                 return false;
 
-            if (!IsActive(_gamePlay.Player1) && !IsActive(_gamePlay.Player2))
+            if (!IsActive(_matchup.Player1) && !IsActive(_matchup.Player2))
                 return _isRunning = false;
 
             return true;
         }
     }
 
-    public Action<object, GamePlay> OnGamePlayFinished { get; set; }
+    public Action<object, Matchup> OnMatchupFinished { get; set; }
     public Action<object, Player> OnPlayerWon { get; set; }
     public Action<object, Player> OnPlayerDisconnected { get; set; }
     public Action<object, Player> OnPlayerStopped { get; set; }
@@ -52,11 +51,10 @@ public abstract class ArdrinoCommunicator
 
     public virtual Task Stop() => Task.FromResult(_isRunning = false);
 
-    public async Task Start(GamePlay gamePlay)
+    public virtual async Task Start(Matchup matchup)
     {
-        _gamePlay = gamePlay ?? throw new ArgumentNullException(nameof(gamePlay));
-        _gamePlay.Player1.Reset();
-        _gamePlay.Player2.Reset();
+        _matchup = matchup ?? throw new ArgumentNullException(nameof(matchup));
+        _matchup.Reset();
 
         _isRunning = true;
 #if DEBUG
@@ -69,7 +67,7 @@ public abstract class ArdrinoCommunicator
 
     private bool IsActive(Player player)
     {
-        var lastActivity = player.LastActivity;
+        var lastActivity = player?.GetEntry(_matchup)?.LastActivity;
         if (lastActivity.HasValue)
         {
             var delay = (DateTime.UtcNow - lastActivity.Value).Milliseconds;
@@ -85,33 +83,34 @@ public abstract class ArdrinoCommunicator
         }
 
         // End the game when target Distance/Time reached by one of the players
-        var progress = _gamePlay.PercentageProgress;
+        var progress = _matchup.GetPercentageProgress();
         if (progress >= 100)
         {
-            var winner = _gamePlay.Winner;
+            var winner = _matchup.GetWinner();
             if (winner != null)
-                OnPlayerWon?.Invoke(this, winner);
+                OnPlayerWon?.Invoke(this, winner); // Notify the winner
 
-            if (_gamePlay.Game.AllowLosserToFinish == true)
-                return false;
+            if (_matchup.Game.AllowLosserToFinish == true)
+                return false; // Allow the loser to finish
             else
-                return _isRunning = false;
+                return _isRunning = false; // End the game
         }
 
         return true;
     }
 
-    private void UpdatePlayerDistance(Player player, double distance)
+    private void UpdatePlayerDistance(MatchupEntry entry, double distance)
     {
-        if (player.IsActive != true)
+        var playerDelta = Math.Abs((entry?.Distance ?? 0) - distance);
+
+        if (entry?.Player == null)
             return;
 
-        var playerDelta = Math.Abs(player.Distance - distance);
+        if (entry?.Player != null && entry.Distance <= 0 && playerDelta > 0)
+            OnPlayerStart?.Invoke(this, entry?.Player);
 
-        if (player.Distance <= 0 && playerDelta > 0)
-            OnPlayerStart?.Invoke(this, _gamePlay.Player1);
-
-        player.Distance = distance;
+        if (entry != null)
+            entry.Distance = distance;
     }
 
     private void DoFakeReadData()
@@ -121,14 +120,15 @@ public abstract class ArdrinoCommunicator
         while (IsRunning)
         {
             Thread.Sleep(200);
-            var player1Delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
-            var player2Delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
 
-            UpdatePlayerDistance(_gamePlay.Player1, _gamePlay.Player1.Distance + player1Delta);
-            UpdatePlayerDistance(_gamePlay.Player2, _gamePlay.Player2.Distance + player2Delta);
+            foreach (var entry in _matchup.Entries)
+            {
+                var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
+                UpdatePlayerDistance(entry, entry.Distance + delta);
+            }
         }
 
-        OnGamePlayFinished?.Invoke(this, _gamePlay);
+        OnMatchupFinished?.Invoke(this, _matchup);
     }
 
     public void DoReadData()
@@ -179,8 +179,11 @@ public abstract class ArdrinoCommunicator
                     }
                 }
 
-                UpdatePlayerDistance(_gamePlay.Player1, distance1);
-                UpdatePlayerDistance(_gamePlay.Player2, distance2);
+
+                if (_matchup.Entries.Count > 0)
+                    UpdatePlayerDistance(_matchup.Entries[0], distance1);
+                if (_matchup.Entries.Count > 1)
+                    UpdatePlayerDistance(_matchup.Entries[1], distance2);
             }
             catch
             {
@@ -188,11 +191,4 @@ public abstract class ArdrinoCommunicator
             }
         }
     }
-}
-
-public class Configs
-{
-    public string PortName { get; set; } = "COM7";
-    public int BaudRate { get; set; } = 9600;
-    public int ReadTimeout { get; set; } = 5000;
 }

@@ -69,7 +69,7 @@ namespace McRider.MAUI
             await Task.Delay(1000);
 
             // Redirect to SliderPage
-            await Shell.Current.GoToAsync($"{nameof(SliderPage)}");
+            await Shell.Current.GoToAsync($"///{nameof(SliderPage)}");
         }
         #endregion
 

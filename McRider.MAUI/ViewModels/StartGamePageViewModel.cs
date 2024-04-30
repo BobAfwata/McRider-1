@@ -1,137 +1,106 @@
-﻿namespace McRider.MAUI.ViewModels;
+﻿using McRider.Common.Helpers;
+using McRider.Common.Services;
+
+namespace McRider.MAUI.ViewModels;
 
 public partial class StartGamePageViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    GamePlay _gamePlay;
-
-    [ObservableProperty]
-    bool _twoPlayerMode;
-
-    partial void OnGamePlayChanged(GamePlay? oldValue, GamePlay newValue)
+    RepositoryService<Tournament> _repository;
+    public StartGamePageViewModel(RepositoryService<Tournament> repository)
     {
-        TwoPlayerMode = newValue?.Player2?.IsActive == true;
+        _repository = repository;
     }
+
+    [ObservableProperty]
+    Matchup _matchup;
+
+    public string Player1GenderImage => Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
+    public string Player2GenderImage => Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
 
     [RelayCommand]
     private async Task StartGame()
     {
-        if (IsValid(GamePlay) != true)
+        if (IsValid(Matchup) != true)
             return;
 
         _tcs.SetResult();
     }
 
-    private bool IsValid(GamePlay gamePlay)
+    partial void OnMatchupChanged(Matchup value)
     {
-        return gamePlay != null && gamePlay.Player1 != null && gamePlay.Player2 != null;
+        OnPropertyChanged(nameof(Player1GenderImage));
+        OnPropertyChanged(nameof(Player2GenderImage));
+    }
+
+    private bool IsValid(Matchup matchup)
+    {
+        return matchup != null && matchup.Player1 != null && matchup.Player2 != null;
     }
 
     TaskCompletionSource _tcs;
-    public async Task<List<GamePlay>> AwaitGamePlaysFor(Player[] players, GameItem game)
+    public async Task<Tournament> AwaitMatchupsFor(Player[] players, GameItem game)
     {
         var teamsArray = players.GroupBy(p => p.Team).ToArray();
-        var gamePlays = new List<GamePlay>();
+        var id = string.Join(",", players.OrderBy(p => p.Id).Select(p => p.Id)).ToMd5();
 
-        if (players.Length <= 0)
-            throw new InvalidOperationException("At least one player is required to start a game.");
-        else if (players.Length == 1)
-            gamePlays.Add(new GamePlay { Game = game, Player1 = players.FirstOrDefault(), Player2 = new Player() { IsActive = false } });
-        else
-            // Schedule game plays so that each player plays once with a player of another team
-            for (int i = 0; i < teamsArray.Length; i++)
-            {
-                for (int j = i + 1; j < teamsArray.Length; j++)  // Ensure pairing between different teams
-                {
-                    var team1Players = teamsArray[i].ToArray();
-                    var team2Players = teamsArray[j].ToArray();
+        var tournament = await _repository.GetAsync(id);
+        if (tournament == null || tournament.GetWinner() != null)
+            tournament = new Tournament() { Id = id, Players = players.ToList(), Game = game };
 
-                    foreach (var player1 in team1Players)
-                    {
-                        foreach (var player2 in team2Players)
-                        {
-                            gamePlays.Add(new GamePlay
-                            {
-                                Game = game,
-                                Player1 = player1,
-                                Player2 = player2
-                            });
-                        }
-                    }
-                }
-            }
+        if (tournament.Rounds.Any() != true)
+            tournament.Rounds.Add([]);
+
+        var matchups = (tournament.Rounds ??= [[]]).FirstOrDefault();
+
+        // Check if the tournament has started
+        if (tournament.Rounds.Sum(r => r.Count) <= 0)
+        {
+            if (players.Length <= 0)
+                throw new InvalidOperationException("At least one player is required to start a game.");
+            else if (teamsArray.Count() > 1)
+                // Create teamup rounds
+                tournament.CreateTeamupRounds(teamsArray);
+            else // Create tournament rounds
+                tournament.CreateTournamentRounds();
+
+            // Save the tournament
+            await tournament.Save();
+        }
+
+        var count = 0;
+        var matchupCount = tournament.Rounds.Sum(r => r.Count);
 
         // Play each game
-        foreach (var play in gamePlays)
+        foreach (var round in tournament.Rounds)
         {
-            GamePlay = play;
-            _tcs = new TaskCompletionSource();
-            await _tcs.Task;
-            await GamePlayPage.StartGamePlay(GamePlay);
+            foreach (var matchup in round)
+            {
+                // Skip finished games
+                if (matchup.GetWinner() != null)
+                    continue;
+
+                Matchup = matchup;
+                _tcs = new TaskCompletionSource();
+                await _tcs.Task;
+
+                // Create a new instance of Game Play Page
+                var matchupPage = App.ServiceProvider.GetService<MatchupPage>();
+
+                // Open Game Play Page
+                await Shell.Current.Navigation.PushAsync(matchupPage);
+                if (matchupPage?.BindingContext is MatchupPageViewModel vm)
+                {
+                    // Start the game and wait for it to end
+                    await vm.StartMatchup(matchup);
+                    await tournament.Save();
+                }
+
+                // Start next game
+                if (++count < matchupCount)
+                    await Shell.Current.GoToAsync($"//{nameof(MatchupPage)}");
+            }
         }
 
-        return gamePlays;
-    }
-}
-
-public class GamePlay
-{
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-
-    public GameItem Game { get; set; }
-
-    public Player Player1 { get; set; }
-    public Player Player2 { get; set; }
-
-    public Player? Winner
-    {
-        get
-        {
-            if (PercentageProgress < 100) 
-                return null;
-
-            if (Player1.Distance > Player2.Distance)
-                return Player1;
-            else if (Player1.Distance < Player2.Distance)
-                return Player2;
-            else if (Player1.Time < Player2.Time)
-                return Player1;
-            else if (Player1.Time > Player2.Time)
-                return Player2;
-
-            return null;
-        }
-    }
-
-    public double Player1Progress => GetPercentageProgress(Player1, Game, false);
-    public double Player2Progress => GetPercentageProgress(Player2, Game, false);
-
-    public double PercentageTimeProgress => Math.Max(
-        GetPercentageProgress(Player1, Game, null),
-        GetPercentageProgress(Player2, Game, null)
-    );
-
-    public double PercentageProgress => Math.Max(
-        GetPercentageProgress(Player1, Game),
-        GetPercentageProgress(Player2, Game)
-    );
-
-    public static double GetPercentageProgress(Player player, GameItem game, bool? bestOfDistanceVsTime = true)
-    {
-        if (player == null || player.Distance <= 0) return 0;
-        if (game == null) return 0;
-
-        var distanceProgress = game?.TargetDistance <= 0 ? 0 : player.Distance / game?.TargetDistance;
-        var timeProgress = game?.TargetTime?.TotalMicroseconds <= 0 ? 0 : player.Time?.TotalMicroseconds / game?.TargetTime?.TotalMicroseconds;
-
-        App.Logger?.LogInformation($"{player.Nickname} Distance progress: {distanceProgress:0.00}, Time progress: {timeProgress:0.00}");
-
-        if (bestOfDistanceVsTime == true)
-            return Math.Round(Math.Min(100.0, Math.Max(distanceProgress ?? 0, timeProgress ?? 0) * 100), 2);
-        
-        if (bestOfDistanceVsTime == false)
-            return Math.Round(Math.Min(100.0, (distanceProgress ?? 0) * 100), 2);
-
-        return Math.Round(Math.Min(100.0, (timeProgress ?? 0) * 100), 2);
+        return tournament;
     }
 }

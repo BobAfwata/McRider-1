@@ -29,8 +29,8 @@
         Route="RegistrationPage" />
     
     <ShellContent
-        ContentTemplate="{DataTemplate views:GamePlayPage}"
-        Route="GamePlayPage" />
+        ContentTemplate="{DataTemplate views:MatchupPage}"
+        Route="MatchupPage" />
 
     <ShellContent
         ContentTemplate="{DataTemplate views:StartGamePage}"

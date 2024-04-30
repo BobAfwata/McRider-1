@@ -36,7 +36,14 @@ public partial class GamesPageViewModel : BaseViewModel
     {
         if (args is GameItem game)
         {
-            await RegistrationPage.GetPlayers(game);
+            var registrationPage = App.ServiceProvider.GetService<RegistrationPage>();
+
+            await Shell.Current.Navigation.PushAsync(registrationPage);
+            if (registrationPage?.BindingContext is RegistrationPageViewModel vm)
+            {
+                var players = await vm.AwaitPlayersFor(game);
+                await players.SaveAll();
+            }
         }
     }
 
@@ -54,13 +61,13 @@ public partial class GamesPageViewModel : BaseViewModel
                 Image = "cycling_single_player.png",
             },
             new GameItem {
-                Name = "100M Dash",
-                PlayersPerTeam = 1,
-                TeamsCount = 2,
-                Description = "Description 1",
-                TargetDistance = 100,
-                TargetTime = TimeSpan.FromMinutes(2),
-                Image = "cycling_race_fast.png",
+                Name = "Tournamet",
+                PlayersPerTeam = 16,
+                TeamsCount = 1,
+                Description = "Description 2",
+                TargetDistance = 1000,
+                TargetTime = TimeSpan.FromMinutes(5),
+                Image = "trophy.png",
             },
             new GameItem { 
                 Name = "P1 vs P2",
@@ -82,16 +89,4 @@ public partial class GamesPageViewModel : BaseViewModel
             },
         ];
     }
-}
-
-public class GameItem
-{
-    public string Image { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public int TeamsCount { get; set; }
-    public int PlayersPerTeam { get; set; }
-    public double? TargetDistance { get; set; }
-    public TimeSpan? TargetTime { get; set; }
-    public bool AllowLosserToFinish { get; set; } = false;
 }

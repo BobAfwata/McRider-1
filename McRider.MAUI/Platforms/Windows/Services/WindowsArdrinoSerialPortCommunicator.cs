@@ -13,15 +13,41 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
         _logger = logger;
     }
      
-    public override async Task Initialize()
+    public override async Task<bool> Initialize()
     {
         await base.Initialize();
-
         _serialPort = new SerialPort();
+
+        try
+        { 
+            _serialPort.Open();
+            return true;
+        }
+        catch (System.IO.IOException ex)
+        {
+            _logger.LogError(ex, "Error opening serial port!");
+#if DEBUG
+            return true;
+#endif
+            return false;
+        }
+    }
+
+    public override Task Start(Matchup matchup)
+    {
         _serialPort.PortName = _configs?.PortName ?? "COM3";
         _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
         _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
-        _serialPort.Open();
+
+        
+
+        return base.Start(matchup);
+    }
+
+    public override Task Stop()
+    {
+        _serialPort.Close();
+        return base.Stop();
     }
 
     public override string ReadData()

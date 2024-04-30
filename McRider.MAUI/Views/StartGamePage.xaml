@@ -29,16 +29,16 @@
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
                 
-                <ImageButton Grid.Column="0" Grid.RowSpan="2" Source="male.png" HeightRequest="450"/>
-                <ImageButton Grid.Column="1" Grid.RowSpan="2" Source="female.png" HeightRequest="450" IsVisible="{Binding GamePlay.Player2.IsActive}"/>
+                <ImageButton Grid.Column="0" Grid.RowSpan="2" Source="{Binding Player1GenderImage}" HeightRequest="450"/>
+                <ImageButton Grid.Column="1" Grid.RowSpan="2" Source="{Binding Player2GenderImage}" HeightRequest="450" IsVisible="{Binding Matchup.Player2.IsActive}"/>
 
-                <Label Grid.Column="0" Grid.Row="2" Text="{Binding GamePlay.Player1.Nickname}" 
+                <Label Grid.Column="0" Grid.Row="2" Text="{Binding Matchup.Player1.Nickname}" 
                        FontFamily="MontserratBold" 
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
                        TextColor="{StaticResource Primary}" BackgroundColor="{StaticResource Tertiary}"/>
 
-                <Label Grid.Column="1" Grid.Row="2" Text="{Binding GamePlay.Player2.Nickname}"
-                       FontFamily="MontserratBold" IsVisible="{Binding GamePlay.Player2.IsActive}"
+                <Label Grid.Column="1" Grid.Row="2" Text="{Binding Matchup.Player2.Nickname}"
+                       FontFamily="MontserratBold" IsVisible="{Binding Matchup.Player2.IsActive}"
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
                        TextColor="{StaticResource Primary}" BackgroundColor="{StaticResource Tertiary}"/>
             </Grid>

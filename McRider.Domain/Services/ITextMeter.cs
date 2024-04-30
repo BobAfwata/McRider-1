@@ -1,4 +1,4 @@
-﻿namespace McRider.MAUI.Services;
+﻿namespace McRider.Domain.Services;
 
 public interface ITextMeter
 {

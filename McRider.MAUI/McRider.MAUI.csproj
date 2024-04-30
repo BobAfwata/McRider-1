@@ -67,6 +67,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\McRider.Common\McRider.Common.csproj" />
+		<ProjectReference Include="..\McRider.Domain\McRider.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -80,5 +81,11 @@
 
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\MatchupPage.xaml.cs">
+	    <DependentUpon>MatchupPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 </Project>
