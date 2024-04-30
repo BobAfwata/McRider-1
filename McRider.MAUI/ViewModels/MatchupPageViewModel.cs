@@ -1,8 +1,11 @@
 ﻿
+using McRider.Domain.Models;
+
 namespace McRider.MAUI.ViewModels;
 
 public partial class MatchupPageViewModel : BaseViewModel
 {
+    RepositoryService<Tournament> _repository;
     private ArdrinoCommunicator _communicator;
 
     [ObservableProperty]
@@ -11,7 +14,9 @@ public partial class MatchupPageViewModel : BaseViewModel
     [ObservableProperty]
     int _countDown;
 
-    public bool ShowCountDown => _countDown > 0;
+    [ObservableProperty]
+    bool _showCountDown;
+
     partial void OnCountDownChanging(int oldValue, int newValue)
     {
         OnPropertyChanged(nameof(ShowCountDown));
@@ -19,12 +24,14 @@ public partial class MatchupPageViewModel : BaseViewModel
             _ = StartGame();
     }
 
-    public MatchupPageViewModel(ArdrinoCommunicator communicator)
+    public MatchupPageViewModel(ArdrinoCommunicator communicator, RepositoryService<Tournament> repository)
     {
         Title = "Game Play";
         _communicator = communicator;
+        _repository = repository;
     }
 
+    public bool IsComplete => IsPlayer1Winner || IsPlayer2Winner;
     public bool IsPlayer1Winner => Matchup?.GetWinner()?.Id == Matchup?.Player1?.Id && Matchup?.Player1?.Id != null;
     public bool IsPlayer2Winner => Matchup?.GetWinner()?.Id == Matchup?.Player2?.Id && Matchup?.Player2?.Id != null;
     public double PercentageTimeProgress => Matchup?.GetPercentageTimeProgress() ?? 0;
@@ -33,19 +40,24 @@ public partial class MatchupPageViewModel : BaseViewModel
     public double Player1BottleProgress => (Matchup?.GetPlayersProgress().ElementAtOrDefault(0) ?? 0) * 580.0 / 100.0;
     public double Player2BottleProgress => (Matchup?.GetPlayersProgress().ElementAtOrDefault(1) ?? 0) * 580.0 / 100.0;
 
+    public MatchupEntry WinningEntry => Matchup?.GetWinner()?.GetEntry(Matchup);
+    public MatchupEntry Player1Entry => Matchup?.Player1?.GetEntry(Matchup);
+    public MatchupEntry Player2Entry => Matchup?.Player2?.GetEntry(Matchup);
+
     private async Task StartCountDown(int countDown = 3)
     {
         CountDown = countDown;
+        ShowCountDown = countDown > 0;
         if (countDown <= 0)
             await StartGame();
         else
         {
-            App.StartTimer(TimeSpan.FromSeconds(1), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
             {
                 var countDown = CountDown - 1;
 
                 if (countDown < 0)
-                    _ = StartGame().ContinueWith(t => CountDown = countDown);
+                    _ = StartGame();
                 else
                     CountDown = countDown;
 
@@ -68,8 +80,16 @@ public partial class MatchupPageViewModel : BaseViewModel
         await _communicator.Stop();
     }
 
-    TaskCompletionSource<Matchup> _tcs;
+    [RelayCommand]
+    private async Task Next()
+    {
+        var tournament = (await _repository.Find(t => t.Rounds.Any(r => r.Any(m => m.Id == Matchup.Id)))).FirstOrDefault();
+        var nextMatch = tournament?.Rounds.SelectMany(r => r).FirstOrDefault(m => m.GetWinner() == null);
+        if (nextMatch != null)
+            await StartMatchup(nextMatch);
+    }
 
+    TaskCompletionSource<Matchup> _tcs;
     public async Task<Matchup> StartMatchup(Matchup matchup)
     {
         Matchup = matchup;
@@ -84,6 +104,10 @@ public partial class MatchupPageViewModel : BaseViewModel
         // Check every second for game updates untill we have a winner
         App.StartTimer(TimeSpan.FromSeconds(1), () =>
         {
+            OnPropertyChanged(nameof(WinningEntry));
+            OnPropertyChanged(nameof(Player1Entry));
+            OnPropertyChanged(nameof(Player2Entry));
+            OnPropertyChanged(nameof(IsComplete));
             OnPropertyChanged(nameof(IsPlayer1Winner));
             OnPropertyChanged(nameof(IsPlayer2Winner));
             OnPropertyChanged(nameof(PercentageTimeProgress));
@@ -108,6 +132,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerStart += async (sender, player) =>
         {
+            ShowCountDown = false; //Hide count down
             var entry = player.GetEntry(Matchup);
             if (entry != null)
                 entry.StartTime ??= DateTime.UtcNow;

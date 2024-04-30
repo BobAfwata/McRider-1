@@ -22,7 +22,7 @@ public class FileCacheService
 
     public string Get(string key, TimeSpan? cacheDuration = null)
     {
-        string filePath = Path.Combine(_cacheDirectory, key + ".json");
+        string filePath = GetCacheFilePath(key);
         if (File.Exists(filePath))
         {
             cacheDuration ??= DefaultCacheDuration;
@@ -41,13 +41,13 @@ public class FileCacheService
 
     public void Set(string key, string data)
     {
-        string filePath = Path.Combine(_cacheDirectory, key + ".json");
+        string filePath = GetCacheFilePath(key);
         File.WriteAllText(filePath, data);
     }
 
     public async Task SetAsync<T>(string key, T data)
     {
-        string filePath = Path.Combine(_cacheDirectory, key + ".json");
+        string filePath = GetCacheFilePath(key);
         await File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(data, Formatting.Indented));
     }
 
@@ -85,8 +85,13 @@ public class FileCacheService
 
     public void Remove(string key)
     {
-        string filePath = Path.Combine(_cacheDirectory, key);
+        string filePath = GetCacheFilePath(key);
         if (File.Exists(filePath))
             File.Delete(filePath);
+    }
+
+    private string GetCacheFilePath(string key)
+    {
+        return Path.Combine(_cacheDirectory, key + ".json").Replace(".json.json", ".json").Replace("ss.json", "s.json");
     }
 }

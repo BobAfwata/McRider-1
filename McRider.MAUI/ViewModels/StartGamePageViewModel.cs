@@ -75,12 +75,17 @@ public partial class StartGamePageViewModel : BaseViewModel
         {
             foreach (var matchup in round)
             {
+                // Start next game
+                //if (++count < matchupCount && count > 1)
+                //    await Shell.Current.GoToAsync($"//{nameof(MatchupPage)}?matchid={matchup.Id}");
+
                 // Skip finished games
                 if (matchup.GetWinner() != null)
                     continue;
 
                 Matchup = matchup;
-                _tcs = new TaskCompletionSource();
+                if (_tcs == null || _tcs?.Task?.Status == TaskStatus.RanToCompletion)
+                    _tcs = new TaskCompletionSource();
                 await _tcs.Task;
 
                 // Create a new instance of Game Play Page
@@ -94,10 +99,6 @@ public partial class StartGamePageViewModel : BaseViewModel
                     await vm.StartMatchup(matchup);
                     await tournament.Save();
                 }
-
-                // Start next game
-                if (++count < matchupCount)
-                    await Shell.Current.GoToAsync($"//{nameof(MatchupPage)}");
             }
         }
 

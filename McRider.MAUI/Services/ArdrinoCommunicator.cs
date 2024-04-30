@@ -101,13 +101,17 @@ public abstract class ArdrinoCommunicator
 
     private void UpdatePlayerDistance(MatchupEntry entry, double distance)
     {
-        var playerDelta = Math.Abs((entry?.Distance ?? 0) - distance);
+        var delta = Math.Abs((entry?.Distance ?? 0) - distance);
 
         if (entry?.Player == null)
             return;
 
-        if (entry?.Player != null && entry.Distance <= 0 && playerDelta > 0)
-            OnPlayerStart?.Invoke(this, entry?.Player);
+        if (entry.Distance <= 0 && delta > 0)
+        {
+            entry.StartTime ??= DateTime.UtcNow;
+            if (entry?.Player != null)
+                OnPlayerStart?.Invoke(this, entry?.Player);
+        }
 
         if (entry != null)
             entry.Distance = distance;
@@ -115,7 +119,7 @@ public abstract class ArdrinoCommunicator
 
     private void DoFakeReadData()
     {
-        double minValue = 5, maxValue = 20;
+        double minValue = 1, maxValue = 5;
 
         while (IsRunning)
         {
