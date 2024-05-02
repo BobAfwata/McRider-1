@@ -1,10 +1,12 @@
 ﻿using McRider.Common.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace McRider.Common.Services;
 
 public class RepositoryService<T>
 {
     FileCacheService _fileCacheService;
+    MemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
 
     public RepositoryService(FileCacheService fileCacheService)
     {
@@ -13,9 +15,12 @@ public class RepositoryService<T>
 
     public string FileName => $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
 
-    public async Task<T[]> GetAllAsync()
+    public async Task<List<T>> GetAllAsync()
     {
-        return await _fileCacheService.GetAsync<T[]>(FileName, () => Task.FromResult(Array.Empty<T>()));
+        if (_memoryCache.TryGetValue(FileName, out var cachedData) && cachedData is List<T> cachedTData)
+            return cachedTData;
+
+        return await _fileCacheService.GetAsync<List<T>>(FileName, () => Task.FromResult(new List<T>()));
     }
 
     public async Task<T?> GetAsync(string id)
@@ -52,26 +57,26 @@ public class RepositoryService<T>
     public async Task<T> SaveAsync(T item)
     {
         var all = await GetAllAsync();
-        var list = all.ToList();
-        var id = item.GetFirstValue("Id", "_id");
+        var id = item?.GetFirstValue("Id", "_id");
 
         if (string.IsNullOrEmpty(id?.ToString()))
             throw new ArgumentException("Id is required to save an item.");
 
-        var indexOf = list.FindIndex(x => x?.GetFirstValue("Id", "_id") == id);
+        var indexOf = all.FindIndex(x => x?.GetFirstValue("Id", "_id") == id);
         if (indexOf >= 0)
-            list[indexOf] = item;
+            all[indexOf] = item;
         else
-            list.Add(item);
+            all.Add(item);
 
-        await _fileCacheService.SetAsync(FileName, list);
+        _memoryCache.Set(FileName, all, TimeSpan.FromMinutes(60));
+        await _fileCacheService.SetAsync(FileName, all);
 
         return item;
     }
 
     public async Task<IEnumerable<T>> SaveAllAsync(IEnumerable<T> list)
     {
-        var alllist = (await GetAllAsync())?.ToList() ?? [];
+        var all = (await GetAllAsync()) ?? [];
 
         foreach (var item in list)
         {
@@ -80,16 +85,31 @@ public class RepositoryService<T>
             if (string.IsNullOrEmpty(id?.ToString()))
                 throw new ArgumentException("Id is required to save an item.");
 
-            var indexOf = alllist.FindIndex(x => x?.GetFirstValue("Id", "_id") == id);
+            var indexOf = all.FindIndex(x => x?.GetFirstValue("Id", "_id") == id);
             if (indexOf >= 0)
-                alllist[indexOf] = item;
+                all[indexOf] = item;
             else
-                alllist.Add(item);
+                all.Add(item);
         }
 
-        await _fileCacheService.SetAsync(FileName, alllist);
+        _memoryCache.Set(FileName, list, TimeSpan.FromMinutes(60));
+        await _fileCacheService.SetAsync(FileName, all);
 
-        return alllist;
+        return all;
+    }
+
+    public async Task<int> Delete(Func<T, bool> predicate)
+    {
+        var all = await GetAllAsync();
+        var count = 0;
+
+        foreach (var item in all.Where(x => predicate(x)).ToArray())
+            if (all.Remove(item)) count++;
+
+        _memoryCache.Set(FileName, all, TimeSpan.FromMinutes(60));
+        await _fileCacheService.SetAsync(FileName, all);
+
+        return count;
     }
 }
 

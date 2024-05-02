@@ -13,5 +13,7 @@ public class Player
 
     [JsonIgnore]
     public bool IsActive { get; set; } = true;
-    
+
+    public override string ToString() => Nickname;
+
 }

@@ -34,7 +34,6 @@
 
     <ShellContent
         ContentTemplate="{DataTemplate views:StartGamePage}"
-        Route="StartGamePage" />
-    
+        Route="StartGamePage" />    
 
 </Shell>

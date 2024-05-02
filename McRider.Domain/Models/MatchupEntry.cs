@@ -3,21 +3,37 @@
 public class MatchupEntry : IComparable<MatchupEntry>
 {
     private double _distance;
-    private Matchup? parentMatchup;
+    private Player? _player;
+
+    public MatchupEntry(Matchup parentMatchup, Matchup currentMatchup)
+    {
+        ParentMatchup = parentMatchup;
+        CurrentMatchup = currentMatchup;
+    }
 
     public string? Id { get; set; } = "matchupEntry-" + Guid.NewGuid().ToString();
-    public Matchup? ParentMatchup
-    {
-        get => parentMatchup;
-        set
-        {
-            parentMatchup = value;
-            Player ??= parentMatchup?.Winner;
-        }
-    }
-    public Player? Player { get; set; }
 
-    [JsonIgnore]
+    public Matchup? CurrentMatchup { get; set; } // The matchup that this entry came from
+    public Matchup? ParentMatchup { get; set; } // The matchup that this entry came from 
+
+    public Player? Player
+    {
+        get
+        {
+            if (_player is null && CurrentMatchup is not null)
+            {
+                if (CurrentMatchup.Bracket == Bracket.GrandFinals || ParentMatchup?.Bracket == CurrentMatchup.Bracket)
+                    _player = ParentMatchup.Winner;
+                else if (ParentMatchup?.Bracket == Bracket.Winners && CurrentMatchup.Bracket == Bracket.Losers)
+                    _player = ParentMatchup.Loser;
+                else
+                    _player = null;
+            }
+
+            return _player;
+        }
+        set => _player = value;
+    }
 
     public DateTime? StartTime { get; set; }
     public DateTime? LastActivity { get; set; }
@@ -49,9 +65,16 @@ public class MatchupEntry : IComparable<MatchupEntry>
         }
     }
 
-    public bool IsWinner { get; set; }
+    public bool? IsWinner => CurrentMatchup?.IsComplete == true &&   CurrentMatchup?.Winner?.Id == Id;
 
-    public override string ToString() => $"{Player?.Nickname} ({Distance}km - {Time?.ToString("mm:ss")})";
+    public override string ToString()
+    {
+        var output = $"{Player?.Nickname}";
+        if (Distance > 0)
+            output = $"({Distance}m - {Time?.ToString("mm:ss")})";
+
+        return output;
+    }
 
     public void Reset()
     {
@@ -62,24 +85,18 @@ public class MatchupEntry : IComparable<MatchupEntry>
 
     public int CompareTo(MatchupEntry? other)
     {
-        if (other is null)
-            return 1; // Player 1 wins by default
-        else if (Distance > other?.Distance)
-            return 1; // Player 1 wins by distance covered
-        else if (Distance < other?.Distance)
-            return -1; // Player 2 wins by distance covered
+        if (this is null && other is null)
+            return 0; // It's a tie at null :)
+        else if (other is null || Distance > other?.Distance)
+            return -1; // Player 1 wins by distance covered
+        else if (this is null || Distance < other?.Distance)
+            return 1; // Player 2 wins by distance covered
         else if (Time < other?.Time)
-            return 1; // Player 1 wins by time taken
+            return -1; // Player 1 wins by time taken
         else if (Time > other?.Time)
-            return -1;
+            return 1;
 
         return 0; // It's a tie
     }
-
-    public static bool operator ==(MatchupEntry? left, MatchupEntry? right) => left?.CompareTo(right) == 0;
-    public static bool operator !=(MatchupEntry? left, MatchupEntry? right) => left?.CompareTo(right) != 0;
-    public static bool operator <(MatchupEntry? left, MatchupEntry? right) => left?.CompareTo(right) < 0;
-    public static bool operator >(MatchupEntry? left, MatchupEntry? right) => left?.CompareTo(right) > 0;
-
 }
 

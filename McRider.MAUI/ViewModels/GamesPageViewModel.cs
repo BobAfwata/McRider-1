@@ -53,6 +53,7 @@ public partial class GamesPageViewModel : BaseViewModel
         [
             new GameItem {
                 Name = "Single Game",
+                GameType = GameType.SingleRace,
                 PlayersPerTeam = 1,
                 TeamsCount = 1,
                 Description = "Description 1",
@@ -62,6 +63,7 @@ public partial class GamesPageViewModel : BaseViewModel
             },
             new GameItem {
                 Name = "Tournamet",
+                GameType = GameType.Tournament,
                 PlayersPerTeam = 16,
                 TeamsCount = 1,
                 Description = "Description 2",
@@ -71,6 +73,7 @@ public partial class GamesPageViewModel : BaseViewModel
             },
             new GameItem { 
                 Name = "P1 vs P2",
+                GameType = GameType.SingleRace,
                 PlayersPerTeam = 1,
                 TeamsCount = 2, 
                 Description = "Description 2",
@@ -80,6 +83,7 @@ public partial class GamesPageViewModel : BaseViewModel
             },
             new GameItem {
                 Name = "Team up",
+                GameType = GameType.Team,
                 PlayersPerTeam = 2,
                 TeamsCount = 2,
                 Description = "Description 3",

@@ -1,5 +1,4 @@
-﻿using McRider.Common.Helpers;
-using McRider.Common.Services;
+﻿using McRider.Common.Services;
 
 namespace McRider.MAUI.ViewModels;
 
@@ -38,16 +37,24 @@ public partial class StartGamePageViewModel : BaseViewModel
     }
 
     TaskCompletionSource _tcs;
+
     public async Task<Tournament> AwaitMatchupsFor(Player[] players, GameItem game)
     {
-        var teamsArray = players.GroupBy(p => p.Team).ToArray();
-        var id = string.Join(",", players.OrderBy(p => p.Id).Select(p => p.Id)).ToMd5();
+        var id = "tournament-" + string.Join(",", players.OrderBy(p => p.Nickname).Select(p => p.Id)).ToMd5();
 
         var tournament = await _repository.GetAsync(id);
-        if (tournament == null || tournament.GetWinner() != null)
+        if (tournament == null || tournament.Winner != null)
             tournament = new Tournament() { Id = id, Players = players.ToList(), Game = game };
 
-        if (tournament.Rounds.Any() != true)
+        return await AwaitMatchupsFor(tournament, game);
+    }
+
+    public async Task<Tournament> AwaitMatchupsFor(Tournament tournament, GameItem game)
+    {
+        var players = tournament.Players.ToArray();
+
+        var teamsArray = players.GroupBy(p => p.Team).ToArray();
+        if (tournament.Rounds.Count == 0)
             tournament.Rounds.Add([]);
 
         var matchups = (tournament.Rounds ??= [[]]).FirstOrDefault();
@@ -57,7 +64,7 @@ public partial class StartGamePageViewModel : BaseViewModel
         {
             if (players.Length <= 0)
                 throw new InvalidOperationException("At least one player is required to start a game.");
-            else if (teamsArray.Count() > 1)
+            else if (game.TeamsCount > 1 || players.Length == 1)
                 // Create teamup rounds
                 tournament.CreateTeamupRounds(teamsArray);
             else // Create tournament rounds
@@ -75,12 +82,8 @@ public partial class StartGamePageViewModel : BaseViewModel
         {
             foreach (var matchup in round)
             {
-                // Start next game
-                //if (++count < matchupCount && count > 1)
-                //    await Shell.Current.GoToAsync($"//{nameof(MatchupPage)}?matchid={matchup.Id}");
-
                 // Skip finished games
-                if (matchup.GetWinner() != null)
+                if (matchup.IsComplete == true)
                     continue;
 
                 Matchup = matchup;
@@ -88,12 +91,11 @@ public partial class StartGamePageViewModel : BaseViewModel
                     _tcs = new TaskCompletionSource();
                 await _tcs.Task;
 
-                // Create a new instance of Game Play Page
-                var matchupPage = App.ServiceProvider.GetService<MatchupPage>();
+                // Navigate to Game Play Page
+                await Shell.Current.GoToAsync($"///{nameof(MatchupPage)}");
+                var vm = App.ServiceProvider.GetService<MatchupPageViewModel>();
 
-                // Open Game Play Page
-                await Shell.Current.Navigation.PushAsync(matchupPage);
-                if (matchupPage?.BindingContext is MatchupPageViewModel vm)
+                if (vm != null)
                 {
                     // Start the game and wait for it to end
                     await vm.StartMatchup(matchup);

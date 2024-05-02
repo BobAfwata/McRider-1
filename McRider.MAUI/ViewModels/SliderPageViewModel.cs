@@ -27,7 +27,7 @@ namespace McRider.MAUI.ViewModels
         [RelayCommand]
         private async Task LetsPlay()
         {
-            await Shell.Current.GoToAsync($"{nameof(LandingPage)}"); ;
+            await Shell.Current.GoToAsync($"///{nameof(LandingPage)}"); ;
         }
 
         private async Task<SliderItem[]> GetItemsAsync()

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using McRider.Domain;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 namespace McRider.Common.Services;
@@ -29,7 +30,7 @@ public class ServiceWorker
     /// <summary>
     /// Gets or sets the list of asynchronous actions to execute.
     /// </summary>
-    public List<Func<IProgress<double>, Task<bool>>> Actions { get; protected set; } = new List<Func<IProgress<double>, Task<bool>>>();
+    public ConcurrentList<Func<IProgress<double>, Task<bool>>> Actions { get; protected set; } = [];
 
     /// <summary>
     /// Removes an action from the list of actions.

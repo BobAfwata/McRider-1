@@ -86,9 +86,14 @@ public abstract class ArdrinoCommunicator
         var progress = _matchup.GetPercentageProgress();
         if (progress >= 100)
         {
-            var winner = _matchup.GetWinner();
+            // Reset Counter
+            _matchup.IsComplete = true;
+            var winner = _matchup.Winner;
             if (winner != null)
+            {
+                winner.IsActive = true;
                 OnPlayerWon?.Invoke(this, winner); // Notify the winner
+            }
 
             if (_matchup.Game.AllowLosserToFinish == true)
                 return false; // Allow the loser to finish
@@ -113,7 +118,7 @@ public abstract class ArdrinoCommunicator
                 OnPlayerStart?.Invoke(this, entry?.Player);
         }
 
-        if (entry != null)
+        if (entry is not null)
             entry.Distance = distance;
     }
 
@@ -123,7 +128,7 @@ public abstract class ArdrinoCommunicator
 
         while (IsRunning)
         {
-            Thread.Sleep(200);
+            Thread.Sleep(100);
 
             foreach (var entry in _matchup.Entries)
             {

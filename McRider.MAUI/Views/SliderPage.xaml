@@ -21,6 +21,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="300"/>
             </Grid.RowDefinitions>
+            
             <CarouselView Grid.RowSpan="2" 
                   x:Name="carouselView" ItemsSource="{Binding Items}"
                   IndicatorView="indicatorView">

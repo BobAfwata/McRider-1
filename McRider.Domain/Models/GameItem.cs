@@ -12,10 +12,17 @@ public class GameItem
     public string Image { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
-    public bool TeamUp { get; set; }
+    public GameType GameType { get; set; }
     public int TeamsCount { get; set; }
     public int PlayersPerTeam { get; set; }
     public double? TargetDistance { get; set; }
     public TimeSpan? TargetTime { get; set; }
     public bool AllowLosserToFinish { get; set; } = false;
+}
+
+public enum GameType
+{
+    Tournament,
+    Team,
+    SingleRace
 }

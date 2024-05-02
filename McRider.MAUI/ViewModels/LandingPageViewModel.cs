@@ -29,19 +29,15 @@ namespace McRider.MAUI.ViewModels
         [RelayCommand]
         async Task ResumeTournament()
         {
-            var startGamePage = App.ServiceProvider.GetService<StartGamePage>();
-            await Shell.Current.Navigation.PushAsync(startGamePage);
+            await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
+            var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
 
-            if (startGamePage?.BindingContext is StartGamePageViewModel vm)
+            if (vm is not null)
             {
-                var players = _tournament.Players.ToArray();
-                var tournament = await vm.AwaitMatchupsFor(players, _tournament.Game);
+                var tournament = await vm.AwaitMatchupsFor(_tournament, _tournament.Game);
                 await tournament.Save();
-
-                // TODO: Show the game results
-                //var gameResultsPage = App.ServiceProvider.GetService<GameResultsPage>();
-                //await Shell.Current.Navigation.PushAsync(gameResultsPage);
             }
+
             await Shell.Current.GoToAsync($"///{nameof(GamesPage)}");
         }
 
