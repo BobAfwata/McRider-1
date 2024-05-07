@@ -2,32 +2,32 @@
 
 public static class TournamentExtensions
 {
-    public static int GetWins(this Player player, Tournament tournament) 
+    public static int GetWins(this Player player, Tournament tournament)
         => GetEntries(player, tournament).Count(e => e.CurrentMatchup?.IsByeMatchup == false && e.CurrentMatchup?.HasPlayers == true && e.IsWinner == true);
 
-    public static int GetLooses(this Player player, Tournament tournament) 
+    public static int GetLooses(this Player player, Tournament tournament)
         => GetEntries(player, tournament).Count(e => e.CurrentMatchup?.IsByeMatchup == false && e.CurrentMatchup?.HasPlayers == true && e.IsWinner == false);
 
     public static int GetScore(this Player player, Tournament tournament)
         => GetWins(player, tournament);// - GetLooses(player, tournament);
-        
+
     public static Player? GetWinner(this Tournament tournament)
     {
         var finals = tournament.Matchups.Where(m => m.IsFinals()).ToArray();
-        var set1finals = finals.FirstOrDefault();
+        var set1 = finals.FirstOrDefault();
+        var winnerSet1 = set1?.Winner;
 
-        var winnerSet1 = set1finals?.Winner;
-        var loserSet1 = set1finals?.Loser;
-
+        // Quick exit is set1 has no winner
         if (winnerSet1 is null) return null;
-        if (loserSet1 is null || winnerSet1?.Id == loserSet1?.Id)
+
+        // Check winner, if they came from winners Brackets then they win tounament
+        var winnerSet1Entry = winnerSet1?.GetEntry(set1);
+        if (winnerSet1Entry.ParentMatchup?.Bracket == Bracket.Winners)
             return winnerSet1;
 
-        if (loserSet1?.GetLooses(tournament) > winnerSet1?.GetLooses(tournament))
-            return winnerSet1;
-
-        return finals.LastOrDefault()?.Winner;
-
+        var set2 = finals.LastOrDefault(m => m != set1);
+        // Tounament winner is the winner of the last finals set
+        return set2?.Winner;
     }
 
     public static MatchupEntry? GetEntry(this Player player, Matchup matchup)
@@ -64,12 +64,14 @@ public static class TournamentExtensions
         {
             m.Game = tournament.Game;
 
-            if (m.IsComplete == true && m.Entries.Any(e => e.Distance == 0))
-                m.IsComplete = true;
+            if (m.IsPlayed == true && m.Entries.Any(e => e.Distance == 0))
+                m.IsPlayed = true;
 
             foreach (var e in allEntries)
-                if (e?.ParentMatchup?.Id == m?.Id)
-                    e.ParentMatchup = m;            
+            {
+                if (e?.ParentMatchup?.Id == m?.Id && e.ParentMatchup?.Equals(m) != true)
+                    e.ParentMatchup = m;
+            }
         }
 
         return tournament;
@@ -80,17 +82,19 @@ public static class TournamentExtensions
         tournament.FixMatchupRef(currentMatchup);
 
         // Flatten all matches in all rounds of the tournament
-        var readyMatches = tournament?.Matchups.ToArray();
+        var readyMatches = tournament.Matchups.ToArray();
 
         // Manatory filters
         var manatoryFilters = new Func<Matchup, bool>[]
         {
             // Ignore if the match is already complete
-            m => m.IsComplete != false ,
+            m => m.IsPlayed != true ,
             // Select matchs where players are assigned
             m => m.HasPlayers == true,
             // Ignore Byes
             m => m.IsByeMatchup == false,
+            // Ignore if the match is in the Grand Finals and the set 1 finals is not complete
+            m => m.IsFinalsSet2() == false || tournament.RequiresSet2Finals(),
         };
 
         // Filter conditions to exclude certain matches
@@ -105,7 +109,7 @@ public static class TournamentExtensions
         // Apply Manatory filters
         foreach (var filter in manatoryFilters)
             readyMatches = readyMatches.Where(filter).ToArray();
-        
+
         // Apply optional filters
         foreach (var filter in optionalFilters)
         {
@@ -132,6 +136,23 @@ public static class TournamentExtensions
     public static bool IsFinals(this Matchup matchup)
     {
         return matchup?.Bracket == Bracket.GrandFinals;
+    }
+
+    public static bool RequiresSet2Finals(this Tournament tournament)
+    {
+        var finals = tournament.Matchups.Where(m => m.IsFinals()).ToArray();
+        var set1 = finals.FirstOrDefault();
+        var winnerSet1 = set1?.Winner;
+
+        // Quick exit is set1 has no winner
+        if (winnerSet1 is null) return true;
+
+        // Check winner, if they came from winners Brackets then they win tounament
+        var winnerSet1Entry = winnerSet1?.GetEntry(set1);
+        if (winnerSet1Entry.ParentMatchup?.Bracket == Bracket.Winners)
+            return false;
+
+        return true;
     }
 
     public static double GetPercentageProgress(this MatchupEntry entry, GameItem game, bool? bestOfDistanceVsTime = true)

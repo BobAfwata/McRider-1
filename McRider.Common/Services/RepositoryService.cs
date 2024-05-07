@@ -7,13 +7,15 @@ public class RepositoryService<T>
 {
     FileCacheService _fileCacheService;
     MemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
+    string _fileName;
 
-    public RepositoryService(FileCacheService fileCacheService)
+    public RepositoryService(FileCacheService fileCacheService, string? fileName = null)
     {
         _fileCacheService = fileCacheService;
+        _fileName = fileName;
     }
 
-    public string FileName => $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
+    public string FileName => _fileName ?? $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
 
     public async Task<List<T>> GetAllAsync()
     {
@@ -26,10 +28,10 @@ public class RepositoryService<T>
     public async Task<T?> GetAsync(string id)
     {
         var all = await GetAllAsync();
-        return all.FirstOrDefault(x => x.GetFirstValue("Id", "_id") == id);
+        return all.FirstOrDefault(x => id?.Equals(x?.GetFirstValue("Id", "_id")) == true);
     }
 
-    public async Task<T[]> Find(Func<T, bool> predicate = null, int page = 1, int pageSize = 10, params string[] sortBy)
+    public async Task<T[]> Find(Func<T, bool>? predicate = null, int page = 1, int pageSize = 10, params string[] sortBy)
     {
         predicate ??= new Func<T, bool>((a) => true);
 

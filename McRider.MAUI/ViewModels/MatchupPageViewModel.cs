@@ -196,7 +196,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
             }
             // Return true to continue the timer, false to stop it
-            return Matchup?.IsComplete != true;
+            return Matchup?.IsPlayed != true;
         });
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>

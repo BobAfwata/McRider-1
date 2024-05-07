@@ -12,7 +12,7 @@ public abstract class ArdrinoCommunicator
     protected Configs _configs;
     protected bool _isRunning = true;
 
-    public ArdrinoCommunicator(FileCacheService cacheService, ILogger<ArdrinoCommunicator> logger = null)
+    public ArdrinoCommunicator(FileCacheService cacheService, ILogger<ArdrinoCommunicator>? logger = null)
     {
         _cacheService = cacheService;
         _logger = logger;
@@ -87,7 +87,7 @@ public abstract class ArdrinoCommunicator
         if (progress >= 100)
         {
             // Reset Counter
-            _matchup.IsComplete = true;
+            _matchup.IsPlayed = true;
             var winner = _matchup.Winner;
             if (winner != null)
             {

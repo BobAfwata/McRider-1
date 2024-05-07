@@ -8,13 +8,7 @@ public class Tournament
     public ConcurrentList<ConcurrentList<Matchup>> Rounds { get; set; } = [];
 
     [JsonIgnore]
-    public IEnumerable<Matchup> Matchups
-    {
-        get
-        {
-            return Rounds.SelectMany(r => r);            
-        }
-    }
+    public IEnumerable<Matchup> Matchups => Rounds.SelectMany(r => r);
 
     [JsonIgnore]
     public List<List<Matchup>> WinnersBracket
@@ -24,7 +18,7 @@ public class Tournament
     public List<List<Matchup>> LosersBracket
         => Rounds.Select(r => r.Where(m => m.Bracket == Bracket.Losers).ToList()).Where(r => r.Any()).ToList();
 
-    public bool IsStarted => Rounds.Sum(r => r.Count) > 0;
-    public bool IsComplete => Rounds.LastOrDefault()?.LastOrDefault()?.Winner is not null;
-    public bool IsPending => Players.Any() && !IsComplete;
+    public bool IsStarted => Matchups.Where(m => m.HasPlayers).Any(m => m.IsPlayed);
+    public bool IsPlayed => Matchups.Where(m => m.HasPlayers).All(m => m.IsPlayed);
+    public bool IsPending => Players.Any() && !IsPlayed;
 }

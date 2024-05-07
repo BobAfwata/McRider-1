@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace McRider.Domain.Models;
 
@@ -7,67 +8,51 @@ public class MatchupEntry : IComparable<MatchupEntry>
     private double _distance;
     private Player? _player;
 
-    public MatchupEntry(Matchup currentMatchup, Matchup parentMatchup = null)
+    public MatchupEntry(Matchup currentMatchup, Matchup? parentMatchup = null)
     {
         CurrentMatchup = currentMatchup;
         ParentMatchup = parentMatchup;
     }
 
     public string? Id { get; set; } = "matchupEntry-" + Guid.NewGuid().ToString();
-    public bool? IsWinner => CurrentMatchup?.IsComplete == true && CurrentMatchup?.Winner?.Id == Player?.Id;
+    public bool? IsWinner => CurrentMatchup?.IsPlayed == true && CurrentMatchup?.Winner?.Id == Player?.Id;
 
     public Matchup? CurrentMatchup { get; set; } // The matchup that this entry came from
     public Matchup? ParentMatchup { get; set; } // The matchup that this entry came from 
 
-    public Player? Player
-    {
-        get
-        {
-            if (_player == null && CurrentMatchup != null && ParentMatchup?.IsByeMatchup != true)
-            {
-                // Check if we're in the Grand Finals
-                if (CurrentMatchup.Bracket == Bracket.GrandFinals)
-                {
-                    // Grand finals must have a ParentMatchup
-                    if (ParentMatchup == null)
-                        throw new InvalidOperationException("Grand finals must have a parent matchup");
+    public Player? Player { 
+        get {
+            // If not played and not a bye, return null
+            if (ParentMatchup?.IsPlayed == false && ParentMatchup?.IsByeMatchup == false)
+                return _player = null;
 
-                    // Check if ParentMatchup has no players
-                    if (ParentMatchup.Players.Count() <= 0)
-                    {
-                        // If there are no players in ParentMatchup, there's no valid player to return
-                        _player = null;
-                    }
-                    else if (ParentMatchup.Entries.FirstOrDefault(e => e.IsWinner == true)?.ParentMatchup?.Bracket == Bracket.Winners)
-                    {
-                        // Check if set1 finals winner was in the Winners bracket
-                        _player = null;
-                    }
-                    else
-                    {
-                        // If the above conditions are not met, assign the player to the winner of ParentMatchup
-                        _player = ParentMatchup.Winner;
-                    }
-                }
-                else if (ParentMatchup?.Bracket == Bracket.Winners && CurrentMatchup.Bracket == Bracket.Losers)
-                {
-                    // Player dropped from winners to losers bracket
-                    _player = ParentMatchup?.Loser;
-                }
-                else if (ParentMatchup?.Bracket == CurrentMatchup.Bracket)
-                {
-                    // In the same bracket
-                    _player = ParentMatchup?.Winner;
-                }
-                else
-                {
-                    // Any other case
-                    _player = null;
-                }
+            // If player is already set, return it
+            if (_player is not null)
+                return _player;
+
+            // Same Players in Set 2 GrandFinals as Set 1
+            if (CurrentMatchup?.Bracket == Bracket.GrandFinals && ParentMatchup?.Bracket == Bracket.GrandFinals)
+            {
+                var winEntry = ParentMatchup.Entries.FirstOrDefault(e => e.IsWinner == true);
+                if (winEntry?.ParentMatchup?.Bracket == Bracket.Winners)
+                    return null;
+
+                var index = ParentMatchup.Entries.Select(x => x.Player).ToList().IndexOf(this.Player);
+                return _player = ParentMatchup.GetPlayerAt(index);
             }
 
-            return _player;
-        }
+            if (CurrentMatchup?.Bracket == Bracket.Winners || CurrentMatchup?.Bracket == Bracket.GrandFinals)
+                return _player = ParentMatchup?.Winner;
+
+            // All loser bracket matchup must have a parentMatchup
+            ParentMatchup = ParentMatchup ?? throw new InvalidOperationException("Parent Matchup is required for loser bracket.");
+
+
+            if (ParentMatchup.Bracket == Bracket.Winners)
+                return _player = ParentMatchup.Loser;
+            else
+                return _player = ParentMatchup?.Winner;
+        } 
         set => _player = value;
     }
 
@@ -92,7 +77,7 @@ public class MatchupEntry : IComparable<MatchupEntry>
             if (delta <= 0.001) return; // Ignore small changes
 
             // If the matchup is not complete, then we need to update the last activity time
-            if (CurrentMatchup?.IsComplete != true)
+            if (CurrentMatchup?.IsPlayed != true)
             {
                 LastActivity = DateTime.UtcNow;
 
@@ -105,6 +90,35 @@ public class MatchupEntry : IComparable<MatchupEntry>
         }
     }
 
+    public bool ExpectsPlayerEntry
+    {
+        get
+        {
+            // If the player is already set, then we don't expect more players
+            if (_player != null)
+                return false;
+
+            // If the matchup exists and is complete, then we don't expect more players
+            if (CurrentMatchup != null)
+            {
+                if (CurrentMatchup.IsPlayed)
+                    return false;
+
+                // If the matchup is in Round 1 of the Winners bracket, then we don't expect more players
+                if (CurrentMatchup.Round == 1 && CurrentMatchup.Bracket == Bracket.Winners)
+                    return false;
+            }
+
+            // Check recursively if any parent matchups expect players
+            if (ParentMatchup?.ParentMatchups?.Any(p => p.Entries.Any(e => e.ExpectsPlayerEntry)) == true)
+                return true;
+
+            // Default to false if no conditions indicate that players are expected
+            return false;
+        }
+    }
+
+    public bool IsDroppedBrackets() => ParentMatchup != null && ParentMatchup?.Bracket != CurrentMatchup?.Bracket;
 
     public override string ToString()
     {

@@ -18,7 +18,7 @@ public class Matchup
 
     public ConcurrentList<Matchup> ParentMatchups => Entries.Select(e => e.ParentMatchup).Where(x => x is not null).ToList();
 
-    public bool IsComplete { get; set; } = false;
+    public bool IsPlayed { get; set; } = false;
 
     public bool IsByeMatchup => Entries.Count == 1;
 
@@ -28,7 +28,7 @@ public class Matchup
     {
         get
         {
-            if (IsComplete == false) return false;
+            if (IsPlayed == false) return false;
             if (Entries.Count < 1) return false;
             if (Entries.Count == 1) return true;
 
@@ -41,8 +41,12 @@ public class Matchup
 
     public IEnumerable<Player> Players => Entries.Select((e, i) => GetPlayerAt(i)).Where(x => x is not null).ToList();
 
+    public int PlayerCount => Players?.Count() ?? 0;
+
     public Player? Player1 => GetPlayerAt(0);
     public Player? Player2 => GetPlayerAt(1);
+
+    public bool ExpectesPlayerEntry => Entries.Count(e => e.ExpectsPlayerEntry) > 0;
 
     public Player? Winner
     {
@@ -50,7 +54,11 @@ public class Matchup
         {
             if (IsByeMatchup == true)
                 return Entries.FirstOrDefault()?.Player;
-            if (IsComplete == false)
+
+            if (PlayerCount == 1 && ExpectesPlayerEntry != true)
+                return Entries.FirstOrDefault()?.Player;
+
+            if (IsPlayed == false)
                 return null;
 
             var ordered = Entries.Where(e => e.Player is not null).OrderBy(e => e);
@@ -70,7 +78,11 @@ public class Matchup
         {
             if (IsByeMatchup == true)
                 return null;
-            if (IsComplete == false)
+
+            if (PlayerCount == 1 && ExpectesPlayerEntry != true)
+                return null;
+
+            if (IsPlayed == false)
                 return null;
 
             var ordered = Entries.Where(e => e.Player is not null).OrderBy(e => e);
@@ -84,39 +96,18 @@ public class Matchup
         }
     }
 
-    private Player? GetPlayerAt(int index)
+    public Player? GetPlayerAt(int index)
     {
-        var entry = Entries?.ElementAtOrDefault(index);
         if (Entries?.Count <= 1 && Round > 1)
             return null;
 
-        if (entry is null)
-            return null; // No Entry probably a bye
+        var entry = Entries?.ElementAtOrDefault(index);
 
-        if (entry.Player is not null)
-            return entry.Player;
+        // No Entry probably a bye
+        if (entry is null) 
+            return null; 
 
-        var parentMatchup = entry.ParentMatchup;
-
-        // Same Players in Set 2 GrandFinals as Set 1
-        if (Bracket == Bracket.GrandFinals && parentMatchup?.Bracket == Bracket.GrandFinals)
-        {
-            if (parentMatchup.Entries.FirstOrDefault(e => e.IsWinner == true)?.ParentMatchup?.Bracket == Bracket.Winners)
-                return null;
-
-            return entry.Player = parentMatchup.GetPlayerAt(index);
-        }
-
-        if (Bracket == Bracket.Winners || Bracket == Bracket.GrandFinals)
-            return entry.Player = parentMatchup?.Winner;
-
-        // All loser bracket matchup must have a parentMatchup
-        parentMatchup = parentMatchup ?? throw new InvalidOperationException("Parent Matchup is required for loser bracket.");
-        
-        if (parentMatchup.Bracket == Bracket.Winners)
-            return entry.Player = parentMatchup.Loser;
-        else
-            return entry.Player = parentMatchup?.Winner;
+        return entry.Player;
     }
 
     public string PlayerVsPlayerText => $"{Player1?.Nickname} vs {Player2?.Nickname}";
@@ -132,6 +123,8 @@ public class Matchup
         foreach (var entry in Entries)
             entry?.Reset();
     }
+
+    
 }
 
 

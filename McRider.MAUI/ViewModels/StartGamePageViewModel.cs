@@ -84,8 +84,11 @@ public partial class StartGamePageViewModel : BaseViewModel
         while (matchup is not null)
         {
             // Skip finished games
-            if (matchup.IsComplete == true)
+            if (matchup.IsPlayed == true)
+            {
+                matchup = tournament.GetNextMatchup(matchup);
                 continue;
+            }
 
             Matchup = matchup;
             if (_tcs == null || _tcs?.Task?.Status == TaskStatus.RanToCompletion)

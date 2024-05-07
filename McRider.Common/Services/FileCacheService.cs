@@ -13,7 +13,7 @@ public class FileCacheService
 
     public TimeSpan? DefaultCacheDuration { get; set; }
 
-    public FileCacheService(ILogger<FileCacheService> logger = null)
+    public FileCacheService(ILogger<FileCacheService>? logger = null)
     {
         _logger = logger;
         var currentAssemblyName = string.Join(".", (Assembly.GetExecutingAssembly()?.GetName()?.Name ?? "files.").Split('.').SkipLast(1));

@@ -8,38 +8,43 @@ namespace McRiver.MAUI.Test;
 
 public class TournamentLogicTests
 {
-    RepositoryService<Tournament> _repository;
+    RepositoryService<Tournament> _tournamentRepo;
+    RepositoryService<GameItem> _gameRepo;
 
     [SetUp]
     public void Setup()
     {
-        _repository = new RepositoryService<Tournament>(new FileCacheService());
+        _tournamentRepo = new RepositoryService<Tournament>(new FileCacheService());
+        _gameRepo = new RepositoryService<GameItem>(new FileCacheService(), "game-items.json");
     }
 
     [Test]
     public void Test1()
     {
-        var players = MakeRandomPlayers(3).ToList();
+        var players = MakeRandomPlayers(16).ToList();
         var tournament = new Tournament()
         {
-            Game = new GameItem() { Name = "Game 1" },
+            Game = GetTounamentGame(),
             Players = players
         };
 
-        tournament.CreateTournamentRounds();
+        tournament.CreateTournamentRounds(false);
 
-        if (1 == 0)
-            for (var i = 0; i < 1; i++)
+        if (1 == 1)
+        {
+            int i = 0;
+            //tournament.Players = MakeRandomPlayers(16).ToList();
+            //tournament?.CreateTournamentRounds();
+            var nextMatchup = tournament?.GetNextMatchup();
+            while (nextMatchup != null)
             {
-                if (tournament?.Rounds.Count > i)
-                {
-                    SetRandomScores(tournament.Rounds.ElementAt(i));
-                    var winner = tournament.GetWinner();
-                    if (winner != null) break;
-                }
+                SetRandomScores(nextMatchup);
+                //tournament?.CreateTournamentImage()?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament{i}.png");
+                nextMatchup = tournament?.GetNextMatchup(nextMatchup);
             }
+        }
 
-        var image = tournament.CreateTournamentImage();
+        var image = tournament.CreateTournamentImage(false);
 
         image.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament1.png");
         tournament.Save().Wait();
@@ -48,9 +53,9 @@ public class TournamentLogicTests
     [Test]
     public void Test2()
     {
-        var tournaments = _repository.Find(t => t.IsPending && t.IsStarted).Result;
+        var tournaments = _tournamentRepo.Find(t => t.IsPending && t.IsStarted).Result;
         if (tournaments?.Any() != true)
-            tournaments = _repository.Find().Result;
+            tournaments = _tournamentRepo.Find().Result;
 
         var tournament = tournaments?.LastOrDefault().Save().Result;
         var images = new List<Bitmap>();
@@ -60,16 +65,17 @@ public class TournamentLogicTests
 
         images.Add(tournament?.CreateTournamentImage());
 
-        //?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament.png");
-
-        for (var i = 0; i <= rounds; i++)
+        if (1 == 1)
         {
-            if (tournament?.Rounds.Count > i)
+            int i = 0;
+            //tournament.Players = MakeRandomPlayers(16).ToList();
+            //tournament?.CreateTournamentRounds();
+            var nextMatchup = tournament?.GetNextMatchup();
+            while (i++ < 5 && nextMatchup != null)
             {
-                SetRandomScores(tournament.Rounds.ElementAt(i));
+                SetRandomScores(nextMatchup);
                 images.Add(tournament?.CreateTournamentImage());
-                var winner = tournament.GetWinner();
-                if (winner != null) break;
+                nextMatchup = tournament?.GetNextMatchup(nextMatchup);
             }
         }
 
@@ -81,39 +87,29 @@ public class TournamentLogicTests
     [Test]
     public void Test3()
     {
-        var tournaments = _repository.Find(t => t.IsPending && t.IsStarted).Result;
+        var tournaments = _tournamentRepo.Find(t => t.IsPending && t.IsStarted).Result;
         if (tournaments?.Any() != true)
-            tournaments = _repository.Find().Result;
+            tournaments = _tournamentRepo.Find().Result;
 
         var tournament = tournaments?.FirstOrDefault().Save().Result;
+        var r2m1 = tournament.Rounds[6][0];
+        var players = r2m1.Players;
 
-        //var m = tournament.Rounds[1][2];
-        //var player = m.Player1;
-
-        if (1 == 2)
+        if (1 == 1)
         {
             int i = 0;
             //tournament.Players = MakeRandomPlayers(16).ToList();
             //tournament?.CreateTournamentRounds();
             var nextMatchup = tournament?.GetNextMatchup();
-            while( i < 5 && nextMatchup != null)
+            while (nextMatchup != null)
             {
                 SetRandomScores(nextMatchup);
-                tournament?.CreateTournamentImage()?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament{++i}.png");
+                //tournament?.CreateTournamentImage()?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament{i}.png");
                 nextMatchup = tournament?.GetNextMatchup(nextMatchup);
             }
         }
 
-        var s1 = tournament?.Matchups.LastOrDefault(x => x.IsFinalsSet1());
-        var s1players = s1.Players.ToArray();
-
-        var s2 = tournament?.Matchups.LastOrDefault(x => x.IsFinalsSet2());
-        var s2players = s2.Players.ToArray();
-
-        if (s2players.DistinctBy(p => p?.Id).Count() == 1)
-            s2.Entries.ForEach(e => e.Player = null);
-
-        var image = tournament?.CreateTournamentImage(false);
+        var image = tournament?.CreateTournamentImage();
 
         image?.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament.png");
 
@@ -122,7 +118,7 @@ public class TournamentLogicTests
 
     private void SetRandomScores(Matchup matchup)
     {
-        matchup.IsComplete = true;
+        matchup.IsPlayed = true;
 
         if (matchup.IsByeMatchup == true)
             return;
@@ -142,6 +138,21 @@ public class TournamentLogicTests
     {
         foreach (var matchup in matchups)
             SetRandomScores(matchup);
+    }
+
+    private GameItem GetTounamentGame()
+    {
+        return _gameRepo.GetAllAsync().Result.FirstOrDefault(x => x.Name == "Tournamet") ?? new GameItem
+        {
+            Name = "Tournamet",
+            GameType = GameType.Tournament,
+            PlayersPerTeam = 16,
+            TeamsCount = 1,
+            Description = "Description 2",
+            TargetDistance = 1000,
+            TargetTime = TimeSpan.FromMinutes(5),
+            Image = "trophy.png",
+        };
     }
 
     private IEnumerable<Player> MakeRandomPlayers(int count)
