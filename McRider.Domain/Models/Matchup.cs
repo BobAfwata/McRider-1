@@ -17,12 +17,12 @@ public class Matchup
     public ConcurrentList<MatchupEntry> Entries { get; set; } = [];
 
     public ConcurrentList<Matchup> ParentMatchups => Entries.Select(e => e.ParentMatchup).Where(x => x is not null).ToList();
-    
+
     public bool IsComplete { get; set; } = false;
 
-    public bool HasOpponent => HasNoOpponent != true;
+    public bool IsByeMatchup => Entries.Count == 1;
 
-    public bool HasNoOpponent => Entries.Count <= 1 || Bracket == Bracket.Losers && ParentMatchups.All(p => p.HasNoOpponent);
+    public bool HasPlayers => Entries.Count(e => e.Player is not null) > 1;
 
     public bool HasWinner
     {
@@ -39,6 +39,8 @@ public class Matchup
         }
     }
 
+    public IEnumerable<Player> Players => Entries.Select((e, i) => GetPlayerAt(i)).Where(x => x is not null).ToList();
+
     public Player? Player1 => GetPlayerAt(0);
     public Player? Player2 => GetPlayerAt(1);
 
@@ -46,9 +48,10 @@ public class Matchup
     {
         get
         {
-            if (IsComplete == false) return null;
-            if (HasOpponent == false && Round == 1)
+            if (IsByeMatchup == true)
                 return Entries.FirstOrDefault()?.Player;
+            if (IsComplete == false)
+                return null;
 
             var ordered = Entries.Where(e => e.Player is not null).OrderBy(e => e);
             var first = ordered.FirstOrDefault();
@@ -65,8 +68,10 @@ public class Matchup
     {
         get
         {
-            if (IsComplete == false) return null;
-            if (HasNoOpponent == true) return null;
+            if (IsByeMatchup == true)
+                return null;
+            if (IsComplete == false)
+                return null;
 
             var ordered = Entries.Where(e => e.Player is not null).OrderBy(e => e);
             var last = ordered.LastOrDefault();
@@ -92,12 +97,22 @@ public class Matchup
             return entry.Player;
 
         var parentMatchup = entry.ParentMatchup;
-        if (Bracket == Bracket.Winners)
+
+        // Same Players in Set 2 GrandFinals as Set 1
+        if (Bracket == Bracket.GrandFinals && parentMatchup?.Bracket == Bracket.GrandFinals)
+        {
+            if (parentMatchup.Entries.FirstOrDefault(e => e.IsWinner == true)?.ParentMatchup?.Bracket == Bracket.Winners)
+                return null;
+
+            return entry.Player = parentMatchup.GetPlayerAt(index);
+        }
+
+        if (Bracket == Bracket.Winners || Bracket == Bracket.GrandFinals)
             return entry.Player = parentMatchup?.Winner;
 
         // All loser bracket matchup must have a parentMatchup
         parentMatchup = parentMatchup ?? throw new InvalidOperationException("Parent Matchup is required for loser bracket.");
-
+        
         if (parentMatchup.Bracket == Bracket.Winners)
             return entry.Player = parentMatchup.Loser;
         else
@@ -109,7 +124,7 @@ public class Matchup
     public override string ToString()
     {
         var label = Bracket == Bracket.Winners ? "W" : Bracket == Bracket.Losers ? "L" : "GF";
-        return $"{label}{Round}M{Index}";  
+        return $"{label}{Round}M{Index}";
     }
 
     public void Reset()

@@ -28,7 +28,7 @@ public static class TournamentDELogicExtensios
         {
             foreach (Matchup matchup in previousRound)
             {
-                currentMatchup.Entries.Add(new MatchupEntry(matchup, currentMatchup));
+                currentMatchup.Entries.Add(new MatchupEntry(currentMatchup, matchup));
 
                 if (currentMatchup.Entries.Count > 1)
                 {
@@ -57,7 +57,7 @@ public static class TournamentDELogicExtensios
         {
             foreach (Matchup matchup in previousRound)
             {
-                currentMatchup.Entries.Add(new MatchupEntry(matchup, currentMatchup));
+                currentMatchup.Entries.Add(new MatchupEntry(currentMatchup, matchup));
 
                 if (currentMatchup.Entries.Count > 1)
                 {
@@ -77,21 +77,29 @@ public static class TournamentDELogicExtensios
         var semiFinals = new[] { tournament.WinnersBracket.LastOrDefault(), tournament.LosersBracket.LastOrDefault() }
             .SelectMany(x => x?.Where(x => x != null) ?? []).ToArray();
 
-        var wbw = tournament.WinnersBracket.LastOrDefault()?.LastOrDefault();
-        var lbw = tournament.LosersBracket.LastOrDefault()?.LastOrDefault();
-
-        if (lbw == null) return;
+        if (semiFinals.Length <= 1) return;
 
         // Add the final matchup
         var finalMatchup = new Matchup() { Round = round + 1, Game = tournament.Game, Bracket = Bracket.GrandFinals };
 
         foreach (var matchup in semiFinals)
-            finalMatchup.Entries.Add(new MatchupEntry(matchup, lbw));
+            finalMatchup.Entries.Add(new MatchupEntry(finalMatchup, matchup));
 
         if (tournament.Rounds.Count <= round)
             tournament.Rounds.Add([finalMatchup]);
         else
             tournament.Rounds.ElementAt(round - 1).Add(finalMatchup);
+
+        // Create the finals set 2
+        var finalMatchup2 = new Matchup() { Round = round + 2, Game = tournament.Game, Bracket = Bracket.GrandFinals };
+
+        foreach (var e in finalMatchup.Entries)
+            finalMatchup2.Entries.Add(new MatchupEntry(finalMatchup2, finalMatchup));
+
+        if (tournament.Rounds.Count <= round + 1)
+            tournament.Rounds.Add([finalMatchup2]);
+        else
+            tournament.Rounds.ElementAt(round).Add(finalMatchup2);
 
     }
     
@@ -102,7 +110,7 @@ public static class TournamentDELogicExtensios
 
         foreach (Player player in players)
         {
-            matchup.Entries.Add(new MatchupEntry(matchup, null) { Player = player });
+            matchup.Entries.Add(new MatchupEntry(matchup) { Player = player });
 
             if (byes > 0 || matchup.Entries.Count > 1)
             {
@@ -115,6 +123,7 @@ public static class TournamentDELogicExtensios
         }
 
         var list = output.ToList();
+        list.Reverse();
 
         tournament.Rounds.Add(list);
 

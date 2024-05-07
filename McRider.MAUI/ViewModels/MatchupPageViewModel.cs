@@ -66,6 +66,28 @@ public partial class MatchupPageViewModel : BaseViewModel
     public MatchupEntry Player1Entry => Matchup?.Player1?.GetEntry(Matchup);
     public MatchupEntry Player2Entry => Matchup?.Player2?.GetEntry(Matchup);
 
+    partial void OnShowResultsChanged(bool value)
+    {
+        if (value == true)
+            OnPropertyChanged(nameof(TournamentImageSource));
+    }
+
+    partial void OnMatchupChanged(Matchup value)
+    {
+        OnPropertyChanged(nameof(NextMatch));
+        OnPropertyChanged(nameof(IsComplete));
+        OnPropertyChanged(nameof(WinningEntry));
+        OnPropertyChanged(nameof(Player1Entry));
+        OnPropertyChanged(nameof(Player2Entry));
+        OnPropertyChanged(nameof(IsPlayer1Winner));
+        OnPropertyChanged(nameof(IsPlayer2Winner));
+        OnPropertyChanged(nameof(PercentageTimeProgress));
+        OnPropertyChanged(nameof(Player1Progress));
+        OnPropertyChanged(nameof(Player2Progress));
+        OnPropertyChanged(nameof(Player1BottleProgress));
+        OnPropertyChanged(nameof(Player2BottleProgress));
+    }
+
     private async Task StartCountDown(int countDown = 3)
     {
         CountDown = countDown;
@@ -131,52 +153,48 @@ public partial class MatchupPageViewModel : BaseViewModel
         ShowResults = false;
         if (NextMatch != null)
         {
-            //await Shell.Current.Navigation.PopAsync();
-            await StartNextGame();
+            _ = StartNextGame();
         }
         else
         {
+            _tcs.TrySetResult(Matchup);
+            
+            var page = await Shell.Current.Navigation.PopAsync();
+            while(page != null) page = await Shell.Current.Navigation.PopAsync();
 
+            await Shell.Current.GoToAsync($"//{nameof(LandingPage)}");
         }
-    }
-
-    partial void OnMatchupChanged(Matchup value)
-    {
-        OnPropertyChanged(nameof(NextMatch));
-        OnPropertyChanged(nameof(TournamentImageSource));
-        OnPropertyChanged(nameof(IsComplete));
-        OnPropertyChanged(nameof(WinningEntry));
-        OnPropertyChanged(nameof(Player1Entry));
-        OnPropertyChanged(nameof(Player2Entry));
-        OnPropertyChanged(nameof(IsPlayer1Winner));
-        OnPropertyChanged(nameof(IsPlayer2Winner));
-        OnPropertyChanged(nameof(PercentageTimeProgress));
-        OnPropertyChanged(nameof(Player1Progress));
-        OnPropertyChanged(nameof(Player2Progress));
-        OnPropertyChanged(nameof(Player1BottleProgress));
-        OnPropertyChanged(nameof(Player2BottleProgress));
     }
 
     TaskCompletionSource<Matchup> _tcs;
     public async Task<Matchup> StartMatchup(Matchup matchup, int countDown = 3)
     {
         Tournament = Tournament ?? (await _repository.Find(t => t.Rounds.Any(r => r.Any(m => m.Id == matchup.Id)))).FirstOrDefault();
-        Matchup = Tournament.FixParentMatchupRef()?.Rounds.SelectMany(r => r).FirstOrDefault(m => m?.Id == matchup?.Id);
+        Matchup = Tournament.FixParentMatchupRef()?.Matchups.FirstOrDefault(m => m?.Id == matchup?.Id);
 
         _tcs = new TaskCompletionSource<Matchup>();
-
+        IsBusy = true;
         if ((await _communicator.Initialize() != true))
         {
+            IsBusy = false;
             _tcs.SetException(new InvalidOperationException("Failed to initialize the game play! Check configs"));
             return await _tcs.Task;
         }
 
-        // Check every second for game updates untill we have a winner
-        Device.StartTimer(TimeSpan.FromSeconds(1), () =>
-        {
-            // Update the game play
-            OnMatchupChanged(Matchup);
+        IsBusy = false;
 
+        // Check every second for game updates untill we have a winner
+        Device.StartTimer(TimeSpan.FromMicroseconds(500), () =>
+        {
+            try
+            {
+                // Update the game play
+                OnMatchupChanged(Matchup);
+            }
+            catch (Exception e)
+            {
+
+            }
             // Return true to continue the timer, false to stop it
             return Matchup?.IsComplete != true;
         });
@@ -196,7 +214,7 @@ public partial class MatchupPageViewModel : BaseViewModel
             var entry = player.GetEntry(Matchup);
             if (entry is not null)
             {
-                //Hide count down
+                // Hide count down text
                 Device.StartTimer(TimeSpan.FromSeconds(3), () => ShowCountDown = false);
                 entry.StartTime ??= DateTime.UtcNow;
             }
@@ -226,7 +244,7 @@ public partial class MatchupPageViewModel : BaseViewModel
             ShowResults = true;
 
             // Return the game play
-            _tcs.TrySetResult(matchup);
+            //_tcs.TrySetResult(matchup);
         };
 
         await StartCountDown(countDown);

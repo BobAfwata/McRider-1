@@ -26,9 +26,10 @@
         <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
         <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
 
-        <StackLayout Grid.Row="1" BackgroundColor="{StaticResource Primary}" Margin="25,0" Padding="80">
+        <ScrollView Grid.Row="1" BackgroundColor="{StaticResource Primary}" Margin="25,0" >
+            <StackLayout Padding="80">
 
-            <Label Text="{Binding Title}" 
+                <Label Text="{Binding Title}" 
                    HorizontalOptions="Center" 
                    VerticalOptions="Center"
                    VerticalTextAlignment="Center"
@@ -37,88 +38,94 @@
                    Margin="100, 40" FontFamily="MontserratBold"
                    FontSize="48"  FontAttributes="Bold" />
 
-            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
-                <Frame.Triggers>
-                    <DataTrigger TargetType="Frame" Binding="{Binding IsValidFullName}" Value="{Binding IsNotValidated}">
-                        <Setter Property="BackgroundColor" Value="LightPink" />
-                    </DataTrigger>
-                </Frame.Triggers>
-                <Entry Text="{Binding FullName}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your full names"/>
-            </Frame>
-
-            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
-                <Frame.Triggers>
-                    <DataTrigger TargetType="Frame" Binding="{Binding IsValidEmail}" Value="False">
-                        <Setter Property="BackgroundColor" Value="LightPink" />
-                    </DataTrigger>
-                </Frame.Triggers>
-                <Entry Text="{Binding Email}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your email address" />
-            </Frame>
-
-            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
-                <Frame.Triggers>
-                    <DataTrigger TargetType="Frame" Binding="{Binding IsValidPhone}" Value="False">
-                        <Setter Property="BackgroundColor" Value="LightPink" />
-                    </DataTrigger>
-                </Frame.Triggers>
-                <Entry Text="{Binding Phone}" TextColor="Black"  Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your phone number" />
-            </Frame>
-
-            <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
-                <Frame.Triggers>
-                    <DataTrigger TargetType="Frame" Binding="{Binding IsValidNickname}" Value="False">
-                        <Setter Property="BackgroundColor" Value="LightPink" />
-                    </DataTrigger>
-                </Frame.Triggers>
-                <Entry Text="{Binding Nickname}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your nickname" />
-            </Frame>
-
-            <Grid ColumnSpacing="40" Margin="0,80" HorizontalOptions="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-
-                <Frame Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="Transparent">
+                <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
                     <Frame.Triggers>
-                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidGender}" Value="False">
-                            <Setter Property="BorderColor" Value="Red" />
+                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidFullName}" Value="{Binding IsNotValidated}">
                             <Setter Property="BackgroundColor" Value="LightPink" />
-                            <Setter Property="IsVisible" Value="True" />
                         </DataTrigger>
                     </Frame.Triggers>
+                    <Entry Text="{Binding FullName}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your full names"/>
                 </Frame>
 
-                <ImageButton Grid.Column="0" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="M" Source="male.png" HeightRequest="450"/>
-                <Image Grid.Column="0" Source="check.png" Margin="0,40" HeightRequest="100" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsMale}"/>
+                <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                    <Frame.Triggers>
+                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidEmail}" Value="False">
+                            <Setter Property="BackgroundColor" Value="LightPink" />
+                        </DataTrigger>
+                    </Frame.Triggers>
+                    <Entry Text="{Binding Email}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your email address" />
+                </Frame>
 
-                <ImageButton Grid.Column="1" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="F" Source="female.png" HeightRequest="450"/>
-                <Image Grid.Column="1" Source="check.png" Margin="0,40" HeightRequest="100" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsFemale}"/>                
-            </Grid>
+                <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                    <Frame.Triggers>
+                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidPhone}" Value="False">
+                            <Setter Property="BackgroundColor" Value="LightPink" />
+                        </DataTrigger>
+                    </Frame.Triggers>
+                    <Entry Text="{Binding Phone}" TextColor="Black"  Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your phone number" />
+                </Frame>
 
-            <Button Text="Next"  Margin="40" 
+                <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
+                    <Frame.Triggers>
+                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidNickname}" Value="False">
+                            <Setter Property="BackgroundColor" Value="LightPink" />
+                        </DataTrigger>
+                    </Frame.Triggers>
+                    <Entry Text="{Binding Nickname}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your nickname" />
+                </Frame>
+
+                <Grid ColumnSpacing="40" Margin="0,80" HorizontalOptions="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Frame Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="Transparent">
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding IsValidGender}" Value="False">
+                                <Setter Property="BorderColor" Value="Red" />
+                                <Setter Property="BackgroundColor" Value="LightPink" />
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+                    </Frame>
+
+                    <ImageButton Grid.Column="0" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="M" Source="male.png"/>
+                    <Image Grid.Column="0" Source="check.png" Margin="0,40" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsMale}"/>
+
+                    <ImageButton Grid.Column="1" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="F" Source="female.png"/>
+                    <Image Grid.Column="1" Source="check.png" Margin="0,40" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsFemale}"/>
+                </Grid>
+
+                <Button Text="Next" Margin="40" 
                     Command="{Binding NextCommand}"
                     BackgroundColor="{StaticResource Tertiary}"  
                     TextColor="{StaticResource Primary}"
                     HorizontalOptions="Center"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50">
-                <Button.Triggers>
-                    <DataTrigger TargetType="Button" Binding="{Binding IsValid}" Value="False">
-                        <Setter Property="BackgroundColor" Value="Gray" />
-                    </DataTrigger>
-                </Button.Triggers>
-            </Button>
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsValid}" Value="False">
+                            <Setter Property="BackgroundColor" Value="Gray" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
 
 
-            <Button Text="Skip"  Margin="40" 
+                <Button Text="Skip" Margin="40" 
                     Command="{Binding StartGameCommand}"
                     BackgroundColor="{StaticResource Tertiary}"  
                     TextColor="{StaticResource Primary}"
                     IsVisible="{Binding CanSkip}"
                     HorizontalOptions="Center"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50">
-            </Button>
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsValid}" Value="True">
+                            <Setter Property="Text" Value="Start" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
 
-        </StackLayout>
+            </StackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

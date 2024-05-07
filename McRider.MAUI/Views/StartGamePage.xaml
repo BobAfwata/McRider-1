@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="McRider.MAUI.Views.StartGamePage"    
     Shell.NavBarIsVisible="False"
-    Shell.FlyoutBehavior="Disabled">
+    Shell.FlyoutBehavior="Disabled" IsBusy="{Binding IsBusy}">
     <Grid BackgroundColor="{StaticResource White}">
         <Grid.RowDefinitions>
             <RowDefinition Height="120" />
@@ -15,38 +15,40 @@
         <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
         <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
 
-        <StackLayout Grid.Row="1" BackgroundColor="{StaticResource Primary}" Margin="25,0" Padding="80">
+        <ScrollView Grid.Row="1" BackgroundColor="{StaticResource Primary}" Margin="25,0" >
+            <StackLayout Padding="80">
 
-            <Image Source="watch_start_black.png" HeightRequest="450"/>
+                <Image Source="watch_start_black.png" HeightRequest="450"/>
 
-            <Grid ColumnSpacing="40" Margin="0,80" HorizontalOptions="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="60"/>
-                </Grid.RowDefinitions>
-                
-                <ImageButton Grid.Column="0" Grid.RowSpan="2" Source="{Binding Player1GenderImage}" HeightRequest="450"/>
-                <ImageButton Grid.Column="1" Grid.RowSpan="2" Source="{Binding Player2GenderImage}" HeightRequest="450" IsVisible="{Binding Matchup.Player2.IsActive}"/>
+                <Grid ColumnSpacing="40" Margin="0,80" HorizontalOptions="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
 
-                <Label Grid.Column="0" Grid.Row="2" Text="{Binding Matchup.Player1.Nickname}" 
-                       FontFamily="MontserratBold" 
+                    <ImageButton Grid.Column="0" Grid.RowSpan="2" Source="{Binding Player1GenderImage}" HeightRequest="450"/>
+                    <ImageButton Grid.Column="1" Grid.RowSpan="2" Source="{Binding Player2GenderImage}" HeightRequest="450" IsVisible="{Binding Matchup.Player2.IsActive}"/>
+
+                    <Label Grid.Column="0" Grid.Row="2" Text="{Binding Matchup.Player1.Nickname}" 
+                       FontFamily="MontserratBold"  
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
                        TextColor="{StaticResource Primary}" BackgroundColor="{StaticResource Tertiary}"/>
 
-                <Label Grid.Column="1" Grid.Row="2" Text="{Binding Matchup.Player2.Nickname}"
+                    <Label Grid.Column="1" Grid.Row="2" Text="{Binding Matchup.Player2.Nickname}"
                        FontFamily="MontserratBold" IsVisible="{Binding Matchup.Player2.IsActive}"
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
                        TextColor="{StaticResource Primary}" BackgroundColor="{StaticResource Tertiary}"/>
-            </Grid>
+                </Grid>
 
-            <Button Text="Start Game" Command="{Binding StartGameCommand}"  Margin="40"
+                <Button Text="Start Game" Command="{Binding StartGameCommand}"  Margin="40"
                     BackgroundColor="{StaticResource Tertiary}" HorizontalOptions="Center" TextColor="{StaticResource Primary}"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
 
-        </StackLayout>
+            </StackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

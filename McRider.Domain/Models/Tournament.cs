@@ -1,16 +1,20 @@
-﻿using System.Collections.Concurrent;
-
-namespace McRider.Domain.Models;
+﻿namespace McRider.Domain.Models;
 
 public class Tournament
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = "tournament-" + Guid.NewGuid().ToString();
     public GameItem Game { get; set; }
     public ConcurrentList<Player> Players { get; set; } = [];
     public ConcurrentList<ConcurrentList<Matchup>> Rounds { get; set; } = [];
 
     [JsonIgnore]
-    public Player? Winner => Rounds.LastOrDefault()?.LastOrDefault()?.Winner;
+    public IEnumerable<Matchup> Matchups
+    {
+        get
+        {
+            return Rounds.SelectMany(r => r);            
+        }
+    }
 
     [JsonIgnore]
     public List<List<Matchup>> WinnersBracket

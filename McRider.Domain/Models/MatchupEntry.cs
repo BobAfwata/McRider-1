@@ -1,17 +1,20 @@
-﻿namespace McRider.Domain.Models;
+﻿using System;
+
+namespace McRider.Domain.Models;
 
 public class MatchupEntry : IComparable<MatchupEntry>
 {
     private double _distance;
     private Player? _player;
 
-    public MatchupEntry(Matchup parentMatchup, Matchup currentMatchup)
+    public MatchupEntry(Matchup currentMatchup, Matchup parentMatchup = null)
     {
-        ParentMatchup = parentMatchup;
         CurrentMatchup = currentMatchup;
+        ParentMatchup = parentMatchup;
     }
 
     public string? Id { get; set; } = "matchupEntry-" + Guid.NewGuid().ToString();
+    public bool? IsWinner => CurrentMatchup?.IsComplete == true && CurrentMatchup?.Winner?.Id == Player?.Id;
 
     public Matchup? CurrentMatchup { get; set; } // The matchup that this entry came from
     public Matchup? ParentMatchup { get; set; } // The matchup that this entry came from 
@@ -20,14 +23,47 @@ public class MatchupEntry : IComparable<MatchupEntry>
     {
         get
         {
-            if (_player is null && CurrentMatchup is not null)
+            if (_player == null && CurrentMatchup != null && ParentMatchup?.IsByeMatchup != true)
             {
-                if (CurrentMatchup.Bracket == Bracket.GrandFinals || ParentMatchup?.Bracket == CurrentMatchup.Bracket)
-                    _player = ParentMatchup.Winner;
+                // Check if we're in the Grand Finals
+                if (CurrentMatchup.Bracket == Bracket.GrandFinals)
+                {
+                    // Grand finals must have a ParentMatchup
+                    if (ParentMatchup == null)
+                        throw new InvalidOperationException("Grand finals must have a parent matchup");
+
+                    // Check if ParentMatchup has no players
+                    if (ParentMatchup.Players.Count() <= 0)
+                    {
+                        // If there are no players in ParentMatchup, there's no valid player to return
+                        _player = null;
+                    }
+                    else if (ParentMatchup.Entries.FirstOrDefault(e => e.IsWinner == true)?.ParentMatchup?.Bracket == Bracket.Winners)
+                    {
+                        // Check if set1 finals winner was in the Winners bracket
+                        _player = null;
+                    }
+                    else
+                    {
+                        // If the above conditions are not met, assign the player to the winner of ParentMatchup
+                        _player = ParentMatchup.Winner;
+                    }
+                }
                 else if (ParentMatchup?.Bracket == Bracket.Winners && CurrentMatchup.Bracket == Bracket.Losers)
-                    _player = ParentMatchup.Loser;
+                {
+                    // Player dropped from winners to losers bracket
+                    _player = ParentMatchup?.Loser;
+                }
+                else if (ParentMatchup?.Bracket == CurrentMatchup.Bracket)
+                {
+                    // In the same bracket
+                    _player = ParentMatchup?.Winner;
+                }
                 else
+                {
+                    // Any other case
                     _player = null;
+                }
             }
 
             return _player;
@@ -38,7 +74,6 @@ public class MatchupEntry : IComparable<MatchupEntry>
     public DateTime? StartTime { get; set; }
     public DateTime? LastActivity { get; set; }
 
-    [JsonIgnore]
     public TimeSpan? Time
     {
         get
@@ -48,24 +83,28 @@ public class MatchupEntry : IComparable<MatchupEntry>
         }
     }
 
-    [JsonIgnore]
     public double Distance
     {
         get => _distance;
         set
         {
             var delta = Math.Abs(_distance - value);
-            if (delta <= 0.001) return;
+            if (delta <= 0.001) return; // Ignore small changes
 
-            if (StartTime.HasValue == false)
-                StartTime = DateTime.UtcNow;
+            // If the matchup is not complete, then we need to update the last activity time
+            if (CurrentMatchup?.IsComplete != true)
+            {
+                LastActivity = DateTime.UtcNow;
 
-            LastActivity = DateTime.UtcNow;
+                // If the start time is not set, then set it to the current time
+                if (StartTime.HasValue == false)
+                    StartTime = LastActivity;
+            }
+
             _distance = value;
         }
     }
 
-    public bool? IsWinner => CurrentMatchup?.IsComplete == true &&   CurrentMatchup?.Winner?.Id == Id;
 
     public override string ToString()
     {

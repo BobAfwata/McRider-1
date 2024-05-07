@@ -79,6 +79,20 @@ public partial class RegistrationPageViewModel : BaseViewModel
     [RelayCommand]
     private async Task StartGame()
     {
+        if (IsValidPlayer())
+        {
+            var player = new Player
+            {
+                Name = FullName,
+                Email = Email,
+                PhoneNumber = Phone,
+                Nickname = Nickname,
+                Gender = Gender
+            };
+
+            Players.Add(player);
+        }
+
         await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
         var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
 

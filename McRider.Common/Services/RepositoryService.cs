@@ -29,7 +29,7 @@ public class RepositoryService<T>
         return all.FirstOrDefault(x => x.GetFirstValue("Id", "_id") == id);
     }
 
-    public async Task<T[]> Find(Func<T, bool> predicate, int page = 1, int pageSize = 10, params string[] sortBy)
+    public async Task<T[]> Find(Func<T, bool> predicate = null, int page = 1, int pageSize = 10, params string[] sortBy)
     {
         predicate ??= new Func<T, bool>((a) => true);
 
@@ -62,7 +62,7 @@ public class RepositoryService<T>
         if (string.IsNullOrEmpty(id?.ToString()))
             throw new ArgumentException("Id is required to save an item.");
 
-        var indexOf = all.FindIndex(x => x?.GetFirstValue("Id", "_id") == id);
+        var indexOf = all.FindIndex(x => id?.Equals(x?.GetFirstValue("Id", "_id")) == true);
         if (indexOf >= 0)
             all[indexOf] = item;
         else
@@ -85,7 +85,7 @@ public class RepositoryService<T>
             if (string.IsNullOrEmpty(id?.ToString()))
                 throw new ArgumentException("Id is required to save an item.");
 
-            var indexOf = all.FindIndex(x => x?.GetFirstValue("Id", "_id") == id);
+            var indexOf = all.FindIndex(x => id?.Equals(x?.GetFirstValue("Id", "_id")) == true);
             if (indexOf >= 0)
                 all[indexOf] = item;
             else
@@ -117,12 +117,14 @@ public static class RepositoryExtensions
 {
     public async static Task<T> Save<T>(this T obj)
     {
+        if (obj == null) return obj;
         var repository = new RepositoryService<T>(new FileCacheService());
         return await repository.SaveAsync(obj);
     }
 
     public async static Task<IEnumerable<T>> SaveAll<T>(this IEnumerable<T> list)
     {
+        if (list == null) return list;
         var repository = new RepositoryService<T>(new FileCacheService());
         return await repository.SaveAllAsync(list);
     }

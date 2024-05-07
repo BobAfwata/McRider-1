@@ -1,4 +1,5 @@
 ﻿using McRider.Common.Services;
+using McRider.Domain.Models;
 
 namespace McRider.MAUI.ViewModels;
 
@@ -22,7 +23,8 @@ public partial class StartGamePageViewModel : BaseViewModel
         if (IsValid(Matchup) != true)
             return;
 
-        _tcs.SetResult();
+        IsBusy = true;
+        _tcs.TrySetResult();
     }
 
     partial void OnMatchupChanged(Matchup value)
@@ -43,7 +45,7 @@ public partial class StartGamePageViewModel : BaseViewModel
         var id = "tournament-" + string.Join(",", players.OrderBy(p => p.Nickname).Select(p => p.Id)).ToMd5();
 
         var tournament = await _repository.GetAsync(id);
-        if (tournament == null || tournament.Winner != null)
+        if (tournament == null || tournament.GetWinner() != null)
             tournament = new Tournament() { Id = id, Players = players.ToList(), Game = game };
 
         return await AwaitMatchupsFor(tournament, game);
@@ -78,30 +80,31 @@ public partial class StartGamePageViewModel : BaseViewModel
         var matchupCount = tournament.Rounds.Sum(r => r.Count);
 
         // Play each game
-        foreach (var round in tournament.Rounds)
+        var matchup = tournament.GetNextMatchup();
+        while (matchup is not null)
         {
-            foreach (var matchup in round)
+            // Skip finished games
+            if (matchup.IsComplete == true)
+                continue;
+
+            Matchup = matchup;
+            if (_tcs == null || _tcs?.Task?.Status == TaskStatus.RanToCompletion)
+                _tcs = new TaskCompletionSource();
+            await _tcs.Task;
+
+            // Navigate to Game Play Page
+            await Shell.Current.GoToAsync($"///{nameof(MatchupPage)}");
+            var vm = App.ServiceProvider.GetService<MatchupPageViewModel>();
+
+            if (vm != null)
             {
-                // Skip finished games
-                if (matchup.IsComplete == true)
-                    continue;
-
-                Matchup = matchup;
-                if (_tcs == null || _tcs?.Task?.Status == TaskStatus.RanToCompletion)
-                    _tcs = new TaskCompletionSource();
-                await _tcs.Task;
-
-                // Navigate to Game Play Page
-                await Shell.Current.GoToAsync($"///{nameof(MatchupPage)}");
-                var vm = App.ServiceProvider.GetService<MatchupPageViewModel>();
-
-                if (vm != null)
-                {
-                    // Start the game and wait for it to end
-                    await vm.StartMatchup(matchup);
-                    await tournament.Save();
-                }
+                // Start the game and wait for it to end
+                await vm.StartMatchup(matchup);
+                await tournament.Save();
+                IsBusy = false;
             }
+
+            matchup = tournament.GetNextMatchup(matchup);
         }
 
         return tournament;
