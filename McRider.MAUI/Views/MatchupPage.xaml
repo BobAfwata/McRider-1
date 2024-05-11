@@ -5,7 +5,7 @@
     x:Class="McRider.MAUI.Views.MatchupPage"  
     xmlns:controls="clr-namespace:McRider.MAUI.Controls"
     Shell.NavBarIsVisible="False"
-    Shell.FlyoutBehavior="Disabled">
+    Shell.FlyoutBehavior="Disabled" IsBusy="{Binding IsBusy}">
     <Grid BackgroundColor="{StaticResource White}">
         <Grid.RowDefinitions>
             <RowDefinition Height="120" />
@@ -36,6 +36,9 @@
                         <Label.Triggers>
                             <DataTrigger TargetType="Label"  Binding="{Binding CountDown}" Value="0">
                                 <Setter Property="Text" Value="GO!!"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label"  Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="Text" Value="Loading.."/>
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>

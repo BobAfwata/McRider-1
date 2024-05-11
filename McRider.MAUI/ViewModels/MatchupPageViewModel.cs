@@ -174,6 +174,8 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _tcs = new TaskCompletionSource<Matchup>();
         IsBusy = true;
+        //return Matchup;
+
         if ((await _communicator.Initialize() != true))
         {
             IsBusy = false;

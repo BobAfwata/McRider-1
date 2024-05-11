@@ -58,13 +58,13 @@ public abstract class ArdrinoCommunicator
         _matchup.Reset();
 
         _isRunning = true;
-        await Task.Run(() => DoReadDataAsync());
+        await DoReadDataAsync();
 
-//#if DEBUG
-//        await Task.Run(() => DoFakeReadData());
-//#else
-//        await Task.Run(() => DoReadData());
-//#endif
+        //#if DEBUG
+        //        await Task.Run(() => DoFakeReadData());
+        //#else
+        //        await Task.Run(() => DoReadDataAsync());
+        //#endif
     }
 
     private bool IsActive(Player player)

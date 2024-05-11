@@ -16,7 +16,7 @@ public abstract partial class BaseDialogViewModel : BaseViewModel
         _successAction = successAction;
         _dismissAction = dismissAction;
 
-        Title = "Rhythm Unpluged Dialog";
+        Title = "McRider Dialog";
         Revalidate = new Action(() => OnPropertyChanged(nameof(IsValid))).Debounce(90);
     }
 
@@ -39,7 +39,7 @@ public abstract partial class BaseDialogViewModel : BaseViewModel
     public string _successButtonText = "Ok";
 
     [RelayCommand]
-    public virtual void OnSuccess() { _successAction?.Invoke(this); }
+    public virtual void OnSuccess() => _successAction?.Invoke(this); 
 
     [RelayCommand]
     public virtual void OnDismiss() => _dismissAction?.Invoke(this);
