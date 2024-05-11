@@ -5,8 +5,6 @@ VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "McRider.MAUI", "McRider.MAUI\McRider.MAUI.csproj", "{46404A46-4922-4966-82E1-2C9EAAA02C08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McRider.Windows", "McRider.Windows\McRider.Windows.csproj", "{90D114B1-0520-4659-922C-0E49B27F3D1D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "McRider.Common", "McRider.Common\McRider.Common.csproj", "{4A9FA187-1ED0-404A-906B-59D2F9E49E1D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F4C02A69-F45D-4B05-BC1C-78931C50E28C}"
@@ -14,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McRider.Domain", "McRider.Domain\McRider.Domain.csproj", "{B2F61E70-5308-419F-AD53-829AA4FC41F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "McRider.Domain", "McRider.Domain\McRider.Domain.csproj", "{B2F61E70-5308-419F-AD53-829AA4FC41F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McRiver.MAUI.Test", "McRiver.MAUI.Test\McRiver.MAUI.Test.csproj", "{41612E82-0B70-43B7-839F-3EBB67D4DC30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "McRiver.MAUI.Test", "McRiver.MAUI.Test\McRiver.MAUI.Test.csproj", "{41612E82-0B70-43B7-839F-3EBB67D4DC30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,10 +28,6 @@ Global
 		{46404A46-4922-4966-82E1-2C9EAAA02C08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46404A46-4922-4966-82E1-2C9EAAA02C08}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46404A46-4922-4966-82E1-2C9EAAA02C08}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{90D114B1-0520-4659-922C-0E49B27F3D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90D114B1-0520-4659-922C-0E49B27F3D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90D114B1-0520-4659-922C-0E49B27F3D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90D114B1-0520-4659-922C-0E49B27F3D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A9FA187-1ED0-404A-906B-59D2F9E49E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A9FA187-1ED0-404A-906B-59D2F9E49E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A9FA187-1ED0-404A-906B-59D2F9E49E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
