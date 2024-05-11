@@ -34,15 +34,15 @@
                    FontSize="48"  FontAttributes="Bold" />
 
                     <CollectionView Margin="40"
-                Grid.Row="2" Grid.ColumnSpan="3" SelectionMode="Single"
-                ItemsSource="{Binding Items}"
-                SelectedItem="{Binding SelectedItem}"
-                SelectionChangedCommand="{Binding ItemClickedCommand}"
-                SelectionChangedCommandParameter="{Binding SelectedItem}">
+                        Grid.Row="2" Grid.ColumnSpan="3" SelectionMode="Single"
+                        ItemsSource="{Binding Items}"
+                        SelectedItem="{Binding SelectedItem}"
+                        SelectionChangedCommand="{Binding ItemClickedCommand}"
+                        SelectionChangedCommandParameter="{Binding SelectedItem}">
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout 
-                        Orientation="Vertical" Span="{Binding ColumnCount}" 
-                        HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                                Orientation="Vertical" Span="{Binding ColumnCount}" 
+                                HorizontalItemSpacing="10" VerticalItemSpacing="10" />
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>

@@ -26,7 +26,8 @@ public abstract class ArdrinoCommunicator
         return true;
     }
 
-    public abstract string ReadData();
+    public abstract Task<string?> ReadDataAsync();
+
     public abstract void SendData(string data);
 
     public bool IsRunning
@@ -57,12 +58,13 @@ public abstract class ArdrinoCommunicator
         _matchup.Reset();
 
         _isRunning = true;
-#if DEBUG
-        await Task.Run(() => DoFakeReadData());
-#else
-        await Task.Run(() => DoReadData());
-#endif
+        await Task.Run(() => DoReadDataAsync());
 
+//#if DEBUG
+//        await Task.Run(() => DoFakeReadData());
+//#else
+//        await Task.Run(() => DoReadData());
+//#endif
     }
 
     private bool IsActive(Player player)
@@ -140,7 +142,7 @@ public abstract class ArdrinoCommunicator
         OnMatchupFinished?.Invoke(this, _matchup);
     }
 
-    public void DoReadData()
+    public async Task DoReadDataAsync()
     {
         double start_counter_a = 0, start_counter_b = 0;
 
@@ -148,10 +150,14 @@ public abstract class ArdrinoCommunicator
         {
             try
             {
-                var message = ReadData();
-                var json_object = JObject.Parse(message.ToString());
-                var strDistance1 = (string)json_object["distance1"];
-                var strDistance2 = (string)json_object["distance2"];
+                var message = await ReadDataAsync();
+                if (string.IsNullOrEmpty(message))
+                    continue;
+
+                var json = JObject.Parse(message.ToString());
+
+                var strDistance1 = (string)json["distance_1"];
+                var strDistance2 = (string)json["distance_2"];
 
                 double distance1 = 0, distance2 = 0;
 
@@ -166,15 +172,14 @@ public abstract class ArdrinoCommunicator
                     }
                     else
                     {
-                        distance1 = double.Parse(strDistance1) - start_counter_a / 1000.0;
-                        distance2 = double.Parse(strDistance2) - start_counter_b / 1000.0;
+                        distance1 = bike_a - start_counter_a / 1000.0;
+                        distance2 = bike_b - start_counter_b / 1000.0;
                     }
                 }
                 else
                 {
-                    int bike_a = Convert.ToInt32(json_object["bikeA"]);
-                    int bike_b = Convert.ToInt32(json_object["bikeB"]);
-
+                    int bike_a = Convert.ToInt32(json["bikeA"]);
+                    int bike_b = Convert.ToInt32(json["bikeB"]);
 
                     if (start_counter_a == 0)
                     {
@@ -199,5 +204,7 @@ public abstract class ArdrinoCommunicator
                 //  MessageBox.Show(ex.Message);
             }
         }
+
+        OnMatchupFinished?.Invoke(this, _matchup);
     }
 }

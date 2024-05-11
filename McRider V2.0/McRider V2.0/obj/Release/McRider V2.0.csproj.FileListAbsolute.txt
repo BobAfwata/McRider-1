@@ -1,0 +1,22 @@
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.csproj.AssemblyReference.cache
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\MainWindow.g.cs
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\App.g.cs
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0_MarkupCompile.cache
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0_MarkupCompile.lref
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\McRider V2.0.exe.config
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\McRider V2.0.exe
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\McRider V2.0.pdb
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\InTheHand.Net.Personal.dll
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\Newtonsoft.Json.dll
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\InTheHand.Net.Personal.xml
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\Newtonsoft.Json.xml
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\MainWindow.baml
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.g.resources
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider_V2._0.Properties.Resources.resources
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.csproj.GenerateResource.cache
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.csproj.CoreCompileInputs.cache
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.csproj.CopyComplete
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.exe
+C:\Users\Bob Afwata\source\repos\McRider V2.0\obj\Release\McRider V2.0.pdb
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\InTheHand.Net.Bluetooth.dll
+C:\Users\Bob Afwata\source\repos\McRider V2.0\bin\Release\InTheHand.Net.Bluetooth.xml

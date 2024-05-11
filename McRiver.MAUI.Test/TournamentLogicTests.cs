@@ -116,6 +116,18 @@ public class TournamentLogicTests
         tournament.Save().Wait();
     }
 
+    [Test]
+    public void Test4()
+    {
+        string[] ports = SerialPort.GetPortNames();
+
+        Console.WriteLine("Available COM Ports:");
+        foreach (string port in ports)
+        {
+            Console.WriteLine(port);
+        }
+    }
+
     private void SetRandomScores(Matchup matchup)
     {
         matchup.IsPlayed = true;
