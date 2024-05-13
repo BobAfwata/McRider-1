@@ -163,9 +163,9 @@
                             StrokeThickness="4" StrokeShape="Polyline 0 0, 630 0, 325 0, 325 200" />
 
                         <Label Grid.Row="1" Grid.Column="1" Text="{Binding Matchup.Player1.Nickname}" 
-                       FontFamily="MontserratBold" Padding="0,10,0,0"
-                       HorizontalTextAlignment="Center" FontSize="30" 
-                       TextColor="{StaticResource Primary}"/>
+                           FontFamily="MontserratBold" Padding="0,10,0,0"
+                           HorizontalTextAlignment="Center" FontSize="30" 
+                           TextColor="{StaticResource Primary}"/>
 
                         <Frame Grid.Row="2" Grid.Column="1" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
                             <Label Text="{Binding Player1Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>

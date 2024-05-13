@@ -228,8 +228,15 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerWon += async (sender, player) =>
         {
+            var entry = player.GetEntry(Matchup);
+
+            _logger.LogInformation("{Player1} wins! {Distance:0.00} {Time:hh\\:mm\\:ss}", player.Name, entry?.Time, entry?.Distance);
+
             // Update the game play progress
-            OnPropertyChanged(nameof(Matchup));
+            OnPropertyChanged(nameof(TournamentImageSource));
+            OnPropertyChanged(nameof(IsPlayer1Winner));
+            OnPropertyChanged(nameof(IsPlayer2Winner));
+            OnPropertyChanged(nameof(IsComplete));
 
             // Broudcast the game play progress
             WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, Matchup, 100));
@@ -237,23 +244,26 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnMatchupFinished += async (sender, matchup) =>
         {
+            // Update the game play progress
+            OnPropertyChanged(nameof(TournamentImageSource));
+
             // Save the game play
             await Tournament?.Save();
 
             // Close the game play page
             await StopGame();
 
-            // Give the winner some time to celebrate
-            await Task.Delay(5000);
-
-            // 
-            ShowResults = true;
-
             // Calculate the game play progress based on match position
             var progress = 100.0 * Tournament.Matchups.IndexOf(Matchup) / (double)Tournament.Matchups.Count();
 
             // Broudcast the game play progress
             WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, null, progress));
+
+            // Give the winner some time to celebrate
+            await Task.Delay(5000);
+
+            // Show match results
+            ShowResults = true;
         };
 
         await StartCountDown(countDown);

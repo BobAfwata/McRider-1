@@ -91,8 +91,13 @@ public class ServiceWorker
 
                                 tasks[action.GetHashCode()]?.ContinueWith(task =>
                                 {
-                                    if (task.Result != true)
+                                    if (task.Result == true)
                                     {
+                                        // True = Repeat again
+                                    }
+                                    else
+                                    {
+                                        // False = Stop the timer
                                         completedActions.Add(action);
                                         Interlocked.Increment(ref count);
                                     }
@@ -127,7 +132,7 @@ public class ServiceWorker
             IsRunning = false;
         }
 
-        return count;
+        return count; // Number of completed tasks
     }
 
     /// <summary>

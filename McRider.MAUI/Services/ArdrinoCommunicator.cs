@@ -142,10 +142,12 @@ public abstract class ArdrinoCommunicator
 
             OnMatchupProgressChanged?.Invoke(this, _matchup);
 
-            return IsRunning == true;
+            if (!IsRunning)
+                OnMatchupFinished?.Invoke(this, _matchup);
+
+            return IsRunning;
         });
 
-        OnMatchupFinished?.Invoke(this, _matchup);
     }
 
     public virtual async Task DoReadDataAsync()
@@ -213,11 +215,11 @@ public abstract class ArdrinoCommunicator
             finally
             {
                 OnMatchupProgressChanged?.Invoke(this, _matchup);
+                if (!IsRunning)
+                    OnMatchupFinished?.Invoke(this, _matchup);
             }
 
-            return IsRunning == true;
+            return IsRunning;
         });
-
-        OnMatchupFinished?.Invoke(this, _matchup);
     }
 }

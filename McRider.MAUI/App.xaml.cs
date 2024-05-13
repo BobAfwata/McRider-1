@@ -89,7 +89,7 @@ namespace McRider.MAUI
             worker?.AddAction(async p =>
             {
                 await Task.Delay(timeSpan);
-                return action?.Invoke() == true;
+                return action?.Invoke() == true; // True = Repeat again, False = Stop the timer
             });
         }
 
