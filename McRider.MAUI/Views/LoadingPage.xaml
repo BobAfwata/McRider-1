@@ -5,7 +5,7 @@
     x:Class="McRider.MAUI.Views.LoadingPage"    
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled">
-    <Grid>
+    <Grid BackgroundColor="{StaticResource White}">
         <Grid.RowDefinitions>
             <RowDefinition Height="120" />
             <RowDefinition Height="*" />
