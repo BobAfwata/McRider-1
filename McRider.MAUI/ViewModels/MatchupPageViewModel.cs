@@ -127,7 +127,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         // Return true to continue the timer, false to stop it
         return Matchup?.IsPlayed != true;
-    } 
+    }
 
     private async Task StartNextGame()
     {
@@ -174,7 +174,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
             var page = await Shell.Current.Navigation.PopAsync();
 
-            while (page != null) 
+            while (page != null)
                 page = await Shell.Current.Navigation.PopAsync();
 
             await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
@@ -200,10 +200,10 @@ public partial class MatchupPageViewModel : BaseViewModel
         IsBusy = false;
 
         // Check every second for game updates untill we have a winner
-        Device.StartTimer(TimeSpan.FromMilliseconds(100), RefreshBottleProgressView);
+        //Device.StartTimer(TimeSpan.FromMilliseconds(100), RefreshBottleProgressView);
 
         // Refresh the bottle progress view when the matchup progress changes
-        //_communicator.OnMatchupProgressChanged += async (sender, matchup) =>  RefreshBottleProgressView();
+        _communicator.OnMatchupProgressChanged += (sender, matchup) => RefreshBottleProgressView();
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {

@@ -121,10 +121,11 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             await base.DoReadDataAsync();
     }
 
-    public override async Task<string?> ReadDataAsync()
+    public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null)
     {
-        var cancellationTokenSource = new CancellationTokenSource();
+        timeout ??= TimeSpan.FromSeconds(0.5);
 
+        var cancellationTokenSource = new CancellationTokenSource();
         var readTask = Task.Run(() =>
         {
             try
@@ -137,7 +138,8 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             }
         }, cancellationTokenSource.Token);
 
-        var completedTask = await Task.WhenAny(readTask, Task.Delay(1000, cancellationTokenSource.Token));
+        var completedTask = await Task.WhenAny(readTask, Task.Delay(timeout ?? TimeSpan.FromSeconds(0.5), cancellationTokenSource.Token));
+
         if (completedTask == readTask)
             return await readTask;
 

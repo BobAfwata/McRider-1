@@ -57,7 +57,7 @@
                     IsRunning="True"   
                     Color="{StaticResource White}"                 
                     Margin="40"  HeightRequest="80" WidthRequest="80"/>
-                <Label Text="Detecting bikes..." HorizontalTextAlignment="Center" />
+                <Label Text="Connecting..." HorizontalTextAlignment="Center" />
             </StackLayout>            
         </Grid>
         

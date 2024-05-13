@@ -26,7 +26,7 @@ public abstract class ArdrinoCommunicator
         return true;
     }
 
-    public abstract Task<string?> ReadDataAsync();
+    public abstract Task<string?> ReadDataAsync(TimeSpan? timeout = null);
 
     public abstract void SendData(string data);
 
@@ -126,12 +126,9 @@ public abstract class ArdrinoCommunicator
     protected async Task DoFakeReadData()
     {
         double minValue = 1, maxValue = 5;
-        long count = 0;
 
-        while (IsRunning)
+        App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
-            Thread.Sleep(100);
-
             foreach (var entry in _matchup.Entries)
             {
                 var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
@@ -143,11 +140,11 @@ public abstract class ArdrinoCommunicator
                 UpdatePlayerDistance(entry, entry.Distance + delta);
             }
 
-            if (count++ % 5 == 0)
-                OnMatchupProgressChanged?.Invoke(this, _matchup);
-        }
+            OnMatchupProgressChanged?.Invoke(this, _matchup);
 
-        _isRunning = false;
+            return IsRunning == true;
+        });
+
         OnMatchupFinished?.Invoke(this, _matchup);
     }
 
@@ -156,16 +153,15 @@ public abstract class ArdrinoCommunicator
         double start_counter_a = 0, start_counter_b = 0;
         long count = 0;
 
-        while (IsRunning)
+        App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
+
             try
             {
-                var message = await ReadDataAsync();
+                var message = ReadDataAsync().Result;
                 if (string.IsNullOrEmpty(message))
-                {
-                    await Task.Delay(100);
-                    continue;
-                }
+                    return IsRunning == true;
+
                 var json = JObject.Parse(message.ToString());
 
                 var strDistance1 = (string)json["distance_1"];
@@ -205,26 +201,24 @@ public abstract class ArdrinoCommunicator
                     }
                 }
 
-
                 if (_matchup.Entries.Count > 0)
                     UpdatePlayerDistance(_matchup.Entries[0], distance1);
 
                 if (_matchup.Entries.Count > 1)
                     UpdatePlayerDistance(_matchup.Entries[1], distance2);
             }
-            catch
+            catch (Exception e)
             {
-                //  MessageBox.Show(ex.Message);
+                _logger.LogError(e, "Error reading data from the ardrino");
             }
             finally
             {
-                await Task.Delay(100);
-                if (count++ % 5 == 0)
-                    OnMatchupProgressChanged?.Invoke(this, _matchup);
+                OnMatchupProgressChanged?.Invoke(this, _matchup);
             }
-        }
 
-        _isRunning = false;
+            return IsRunning == true;
+        });
+
         OnMatchupFinished?.Invoke(this, _matchup);
     }
 }
