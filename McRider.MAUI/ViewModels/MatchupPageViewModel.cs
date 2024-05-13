@@ -215,9 +215,6 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         IsBusy = false;
 
-        // Check every second for game updates untill we have a winner
-        //Device.StartTimer(TimeSpan.FromMilliseconds(100), RefreshBottleProgressView);
-
         // Refresh the bottle progress view when the matchup progress changes
         _communicator.OnMatchupProgressChanged += (sender, matchup) => RefreshProgressView();
 
