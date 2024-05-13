@@ -58,7 +58,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TeamsCount = 1,
                 Description = "Description 1",
                 TargetDistance = 1000,
-                TargetTime = TimeSpan.FromMinutes(5),
+                TargetTime = TimeSpan.FromMinutes(1),
                 Image = "cycling_single_player.png",
             },
             new GameItem {
@@ -68,7 +68,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TeamsCount = 1,
                 Description = "Description 2",
                 TargetDistance = 1000,
-                TargetTime = TimeSpan.FromMinutes(5),
+                TargetTime = TimeSpan.FromMinutes(1),
                 Image = "trophy.png",
             },
             new GameItem { 
@@ -78,7 +78,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TeamsCount = 2, 
                 Description = "Description 2",
                 TargetDistance = 1000,
-                TargetTime = TimeSpan.FromMinutes(5),
+                TargetTime = TimeSpan.FromMinutes(1),
                 Image = "cycling_race.png",
             },
             new GameItem {
@@ -88,7 +88,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TeamsCount = 2,
                 Description = "Description 3",
                 TargetDistance = 1000,
-                TargetTime = TimeSpan.FromMinutes(5),
+                TargetTime = TimeSpan.FromMinutes(1),
                 Image = "cycling_team.png",
             },
         ];

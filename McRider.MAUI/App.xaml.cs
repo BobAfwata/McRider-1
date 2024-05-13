@@ -82,7 +82,7 @@ namespace McRider.MAUI
         ///     - Return true to keep repeating after the set interval
         ///     - Return false task was completed no farther action needed
         /// </param>
-        public static void StartTimer(TimeSpan timeSpan, Func<Boolean> action)
+        public static void StartBackgroundTimer(TimeSpan timeSpan, Func<Boolean> action)
         {
             var worker = ServiceProvider.GetService<ServiceWorker>();
 
@@ -91,6 +91,32 @@ namespace McRider.MAUI
                 await Task.Delay(timeSpan);
                 return action?.Invoke() == true; // True = Repeat again, False = Stop the timer
             });
+        }
+
+        /// <summary>
+        /// Runs a task in the background/foreground service
+        /// Can be used interchangably with Device.StartTimer but more flexible
+        /// </summary>
+        /// <param name="timeSpan">Interval between which to retry the task</param>
+        /// <param name="action">
+        ///     - Return true to keep repeating after the set interval
+        ///     - Return false task was completed no farther action needed
+        /// </param>
+        public static void StartTimer(TimeSpan timeSpan, Func<Boolean> action)
+        {
+            Timer timer = null;
+
+            // Create a new timer with a interval of 100 milliseconds
+            TimerCallback timerCallback = (state) =>
+            {
+                // Call your method here
+                if (action?.Invoke() == true)
+                    timer?.Change(timeSpan.Milliseconds, Timeout.Infinite);
+                else
+                    timer?.Change(Timeout.Infinite, Timeout.Infinite);                    
+            };
+
+            timer = new Timer(timerCallback, null, TimeSpan.Zero, timeSpan);
         }
 
         #region Toasts and Dialog
