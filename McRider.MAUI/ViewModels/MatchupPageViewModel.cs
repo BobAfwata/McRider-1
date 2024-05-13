@@ -92,7 +92,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown <= 0)
             await StartGame();
         else
-            Device.StartTimer(TimeSpan.FromSeconds(1), () => DoCountDown().Result);
+            App.StartTimer(TimeSpan.FromSeconds(1), () => DoCountDown().Result);
     }
 
     private async Task<bool> DoCountDown()
@@ -233,9 +233,10 @@ public partial class MatchupPageViewModel : BaseViewModel
             var entry = player.GetEntry(Matchup);
             if (entry is not null)
             {
-                // Hide count down text
-                Device.StartTimer(TimeSpan.FromSeconds(3), () => ShowCountDown = false);
                 entry.StartTime ??= DateTime.UtcNow;
+
+                // Hide count down text after a shot delay
+                App.StartTimer(TimeSpan.FromSeconds(3), () => ShowCountDown = false);
             }
         };
 

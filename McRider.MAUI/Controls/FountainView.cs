@@ -1,8 +1,4 @@
-﻿using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Controls;
-using System;
-
-namespace McRider.MAUI.Controls;
+﻿namespace McRider.MAUI.Controls;
 
 public class FountainView : GraphicsView
 {
@@ -16,7 +12,7 @@ public class FountainView : GraphicsView
         FountainDrawable fountainDrawable = new FountainDrawable();
 
         Drawable = fountainDrawable;
-        Device.StartTimer(TimeSpan.FromMilliseconds(16), () =>
+        App.StartTimer(TimeSpan.FromMilliseconds(16), () =>
         {
             fountainDrawable.ElaspedTime += 0.016;
             Invalidate();
