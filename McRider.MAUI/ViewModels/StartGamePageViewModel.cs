@@ -6,9 +6,12 @@ namespace McRider.MAUI.ViewModels;
 public partial class StartGamePageViewModel : BaseViewModel
 {
     RepositoryService<Tournament> _repository;
-    public StartGamePageViewModel(RepositoryService<Tournament> repository)
+    ArdrinoCommunicator _communicator;
+
+    public StartGamePageViewModel(ArdrinoCommunicator communicator, RepositoryService<Tournament> repository)
     {
         _repository = repository;
+        _communicator = communicator;
     }
 
     [ObservableProperty]
@@ -23,7 +26,6 @@ public partial class StartGamePageViewModel : BaseViewModel
         if (IsValid(Matchup) != true)
             return;
 
-        IsBusy = true;
         _tcs.TrySetResult();
     }
 
@@ -93,7 +95,15 @@ public partial class StartGamePageViewModel : BaseViewModel
             Matchup = matchup;
             if (_tcs == null || _tcs?.Task?.Status == TaskStatus.RanToCompletion)
                 _tcs = new TaskCompletionSource();
+
             await _tcs.Task;
+
+            IsBusy = true;
+
+            if (await _communicator.Initialize() != true)
+                await Application.Current.MainPage.DisplayAlert("Hello, this is a dialog box!", "Dialog Box Title", "Ok");
+
+            IsBusy = false;
 
             // Navigate to Game Play Page
             await Shell.Current.GoToAsync($"///{nameof(MatchupPage)}");
@@ -104,7 +114,6 @@ public partial class StartGamePageViewModel : BaseViewModel
                 // Start the game and wait for it to end
                 await vm.StartMatchup(matchup);
                 await tournament.Save();
-                IsBusy = false;
             }
 
             matchup = tournament.GetNextMatchup(matchup);

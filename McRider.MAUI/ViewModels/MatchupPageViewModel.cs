@@ -1,5 +1,6 @@
 ﻿
 using McRider.Domain.Models;
+using McRider.MAUI.Messages;
 using System.Drawing;
 
 namespace McRider.MAUI.ViewModels;
@@ -10,7 +11,23 @@ public partial class MatchupPageViewModel : BaseViewModel
     private ArdrinoCommunicator _communicator;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsComplete))]
+    [NotifyPropertyChangedFor(nameof(IsPlayer1Winner))]
+    [NotifyPropertyChangedFor(nameof(IsPlayer2Winner))]
+    [NotifyPropertyChangedFor(nameof(PercentageTimeProgress))]
+    [NotifyPropertyChangedFor(nameof(Player1Progress))]
+    [NotifyPropertyChangedFor(nameof(Player2Progress))]
+    [NotifyPropertyChangedFor(nameof(Player1BottleProgress))]
+    [NotifyPropertyChangedFor(nameof(Player2BottleProgress))]
+    [NotifyPropertyChangedFor(nameof(NextMatch))]
+    [NotifyPropertyChangedFor(nameof(WinningEntry))]
+    [NotifyPropertyChangedFor(nameof(Player1Entry))]
+    [NotifyPropertyChangedFor(nameof(Player2Entry))]
+
     Matchup _matchup;
+
+    [ObservableProperty]
+    Tournament _tournament;
 
     [ObservableProperty]
     int _countDown;
@@ -20,22 +37,16 @@ public partial class MatchupPageViewModel : BaseViewModel
 
 
     [ObservableProperty]
-    public bool _showResults;
-
-    partial void OnCountDownChanging(int oldValue, int newValue)
-    {
-        OnPropertyChanged(nameof(ShowCountDown));
-    }
+    bool _showResults;
 
     public MatchupPageViewModel(ArdrinoCommunicator communicator, RepositoryService<Tournament> repository)
     {
         Title = "Game Play";
-        Tournament = null;
+        _tournament = null;
         _communicator = communicator;
         _repository = repository;
     }
 
-    public Tournament Tournament { get; set; }
 
     public ImageSource TournamentImageSource
     {
@@ -58,8 +69,8 @@ public partial class MatchupPageViewModel : BaseViewModel
     public double PercentageTimeProgress => Matchup?.GetPercentageTimeProgress() ?? 0;
     public double Player1Progress => Matchup?.GetPlayersProgress().ElementAtOrDefault(0) ?? 0;
     public double Player2Progress => Matchup?.GetPlayersProgress().ElementAtOrDefault(1) ?? 0;
-    public double Player1BottleProgress => (Matchup?.GetPlayersProgress().ElementAtOrDefault(0) ?? 0) * 580.0 / 100.0;
-    public double Player2BottleProgress => (Matchup?.GetPlayersProgress().ElementAtOrDefault(1) ?? 0) * 580.0 / 100.0;
+    public double Player1BottleProgress => Player1Progress / 100.0 * 580.0;
+    public double Player2BottleProgress => Player2Progress / 100.0 * 580.0;
 
     public Matchup NextMatch => Tournament?.GetNextMatchup(Matchup);
     public MatchupEntry WinningEntry => Matchup?.Winner?.GetEntry(Matchup);
@@ -72,22 +83,6 @@ public partial class MatchupPageViewModel : BaseViewModel
             OnPropertyChanged(nameof(TournamentImageSource));
     }
 
-    partial void OnMatchupChanged(Matchup value)
-    {
-        OnPropertyChanged(nameof(NextMatch));
-        OnPropertyChanged(nameof(IsComplete));
-        OnPropertyChanged(nameof(WinningEntry));
-        OnPropertyChanged(nameof(Player1Entry));
-        OnPropertyChanged(nameof(Player2Entry));
-        OnPropertyChanged(nameof(IsPlayer1Winner));
-        OnPropertyChanged(nameof(IsPlayer2Winner));
-        OnPropertyChanged(nameof(PercentageTimeProgress));
-        OnPropertyChanged(nameof(Player1Progress));
-        OnPropertyChanged(nameof(Player2Progress));
-        OnPropertyChanged(nameof(Player1BottleProgress));
-        OnPropertyChanged(nameof(Player2BottleProgress));
-    }
-
     private async Task StartCountDown(int countDown = 3)
     {
         CountDown = countDown;
@@ -97,15 +92,15 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown <= 0)
             await StartGame();
         else
-            Device.StartTimer(TimeSpan.FromSeconds(1), DoCountDown);
+            Device.StartTimer(TimeSpan.FromSeconds(1), () => DoCountDown().Result);
     }
 
-    private bool DoCountDown()
+    private async Task<bool> DoCountDown()
     {
         var countDown = CountDown - 1;
 
         if (countDown <= 0)
-            _ = StartGame();
+            await StartGame();
 
         if (countDown < 0)
             ShowCountDown = false;
@@ -115,6 +110,24 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         return countDown > 0;
     }
+
+    private bool RefreshBottleProgressView()
+    {
+        _logger.LogInformation("Matchup progress changed. Progress {Progress:0.00}%", Matchup?.GetPercentageProgress());
+
+        //Update the game play progress
+        OnPropertyChanged(nameof(PercentageTimeProgress));
+        OnPropertyChanged(nameof(Player1Progress));
+        OnPropertyChanged(nameof(Player2Progress));
+        OnPropertyChanged(nameof(Player1BottleProgress));
+        OnPropertyChanged(nameof(Player2BottleProgress));
+
+        // Broudcast the game play progress
+        WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, Matchup, Matchup?.GetPercentageProgress() ?? 0));
+
+        // Return true to continue the timer, false to stop it
+        return Matchup?.IsPlayed != true;
+    } 
 
     private async Task StartNextGame()
     {
@@ -136,8 +149,8 @@ public partial class MatchupPageViewModel : BaseViewModel
     private async Task StartGame()
     {
         ShowResults = false;
-        // Stop the game
-        await _communicator.Start(Matchup);
+        // Start the game, Do not wait for it to finish
+        _ = _communicator.Start(Matchup);
     }
 
     [RelayCommand]
@@ -158,25 +171,26 @@ public partial class MatchupPageViewModel : BaseViewModel
         else
         {
             _tcs.TrySetResult(Matchup);
-            
-            var page = await Shell.Current.Navigation.PopAsync();
-            while(page != null) page = await Shell.Current.Navigation.PopAsync();
 
-            await Shell.Current.GoToAsync($"//{nameof(LandingPage)}");
+            var page = await Shell.Current.Navigation.PopAsync();
+
+            while (page != null) 
+                page = await Shell.Current.Navigation.PopAsync();
+
+            await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
         }
     }
 
     TaskCompletionSource<Matchup> _tcs;
     public async Task<Matchup> StartMatchup(Matchup matchup, int countDown = 3)
     {
-        Tournament = Tournament ?? (await _repository.Find(t => t.Rounds.Any(r => r.Any(m => m.Id == matchup.Id)))).FirstOrDefault();
-        Matchup = Tournament.FixParentMatchupRef()?.Matchups.FirstOrDefault(m => m?.Id == matchup?.Id);
+        Tournament ??= (await _repository.Find(t => t.Rounds.Any(r => r.Any(m => m.Id == matchup.Id)))).FirstOrDefault();
+        Matchup = Tournament?.FixParentMatchupRef()?.Matchups.FirstOrDefault(m => m?.Id == matchup?.Id) ?? matchup;
 
         _tcs = new TaskCompletionSource<Matchup>();
         IsBusy = true;
-        //return Matchup;
 
-        if ((await _communicator.Initialize() != true))
+        if (await _communicator.Initialize() != true)
         {
             IsBusy = false;
             _tcs.SetException(new InvalidOperationException("Failed to initialize the game play! Check configs"));
@@ -186,20 +200,10 @@ public partial class MatchupPageViewModel : BaseViewModel
         IsBusy = false;
 
         // Check every second for game updates untill we have a winner
-        Device.StartTimer(TimeSpan.FromMicroseconds(500), () =>
-        {
-            try
-            {
-                // Update the game play
-                OnMatchupChanged(Matchup);
-            }
-            catch (Exception e)
-            {
+        Device.StartTimer(TimeSpan.FromMilliseconds(100), RefreshBottleProgressView);
 
-            }
-            // Return true to continue the timer, false to stop it
-            return Matchup?.IsPlayed != true;
-        });
+        // Refresh the bottle progress view when the matchup progress changes
+        //_communicator.OnMatchupProgressChanged += async (sender, matchup) =>  RefreshBottleProgressView();
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {
@@ -224,15 +228,15 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerWon += async (sender, player) =>
         {
-            var entry = player.GetEntry(Matchup);
-            //if (entry is not null)
-            //    entry.IsWinner = true;
+            // Update the game play progress
+            OnPropertyChanged(nameof(Matchup));
+
+            // Broudcast the game play progress
+            WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, Matchup, 100));
         };
 
         _communicator.OnMatchupFinished += async (sender, matchup) =>
         {
-            Tournament?.FixMatchupRef(matchup);
-
             // Save the game play
             await Tournament?.Save();
 
@@ -240,13 +244,16 @@ public partial class MatchupPageViewModel : BaseViewModel
             await StopGame();
 
             // Give the winner some time to celebrate
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(5000);
 
             // 
             ShowResults = true;
 
-            // Return the game play
-            //_tcs.TrySetResult(matchup);
+            // Calculate the game play progress based on match position
+            var progress = 100.0 * Tournament.Matchups.IndexOf(Matchup) / (double)Tournament.Matchups.Count();
+
+            // Broudcast the game play progress
+            WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, null, progress));
         };
 
         await StartCountDown(countDown);

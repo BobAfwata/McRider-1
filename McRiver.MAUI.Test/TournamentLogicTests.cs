@@ -21,7 +21,7 @@ public class TournamentLogicTests
     [Test]
     public void Test1()
     {
-        var players = MakeRandomPlayers(16).ToList();
+        var players = MakeRandomPlayers(10).ToList();
         var tournament = new Tournament()
         {
             Game = GetTounamentGame(),
@@ -36,7 +36,7 @@ public class TournamentLogicTests
             //tournament.Players = MakeRandomPlayers(16).ToList();
             //tournament?.CreateTournamentRounds();
             var nextMatchup = tournament?.GetNextMatchup();
-            while (nextMatchup != null)
+            while (i++ < players.Count && nextMatchup != null)
             {
                 SetRandomScores(nextMatchup);
                 //tournament?.CreateTournamentImage()?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament{i}.png");
@@ -44,7 +44,7 @@ public class TournamentLogicTests
             }
         }
 
-        var image = tournament.CreateTournamentImage(false);
+        var image = tournament.CreateTournamentImage(true);
 
         image.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament1.png");
         tournament.Save().Wait();
@@ -114,18 +114,6 @@ public class TournamentLogicTests
         image?.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament.png");
 
         tournament.Save().Wait();
-    }
-
-    [Test]
-    public void Test4()
-    {
-        string[] ports = SerialPort.GetPortNames();
-
-        Console.WriteLine("Available COM Ports:");
-        foreach (string port in ports)
-        {
-            Console.WriteLine(port);
-        }
     }
 
     private void SetRandomScores(Matchup matchup)

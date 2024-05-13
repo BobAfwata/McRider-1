@@ -57,26 +57,28 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0" Text="{Binding Matchup.Player1.Nickname}" 
-                   FontFamily="MontserratBold" 
-                   HorizontalTextAlignment="Center" FontSize="30" 
-                   TextColor="{StaticResource Primary}"/>
+                       FontFamily="MontserratBold" 
+                       HorizontalTextAlignment="Center" FontSize="30" 
+                       TextColor="{StaticResource Primary}"/>
 
                     <Label Grid.Column="2" Grid.Row="0" Text="{Binding Matchup.Player2.Nickname}" 
-                   FontFamily="MontserratBold" HorizontalTextAlignment="Center" FontSize="30"
-                   IsVisible="{Binding Matchup.Player2.IsActive}"
-                   TextColor="{StaticResource Primary}"/>
+                       FontFamily="MontserratBold" HorizontalTextAlignment="Center" FontSize="30"
+                       IsVisible="{Binding Matchup.Player2.IsActive}"
+                       TextColor="{StaticResource Primary}"/>
 
                     <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HeightRequest="580" HorizontalOptions="Center" Margin="50,0">
                         <Frame VerticalOptions="End" HeightRequest="{Binding Player1BottleProgress}" BackgroundColor="White" />
                         <Image Source="bottle_empty2.png" HeightRequest="580" Margin="0"/>
                     </Grid>
 
-                    <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" HeightRequest="580" HorizontalOptions="Center" Margin="50,0" IsVisible="{Binding Matchup.Player2.IsActive}">
+                    <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" HeightRequest="580" HorizontalOptions="Center" Margin="50,0" 
+                          IsVisible="{Binding Matchup.Player2.IsActive}">
                         <Frame VerticalOptions="End" HeightRequest="{Binding Player2BottleProgress}" BackgroundColor="White" />
                         <Image Source="bottle_empty2.png" HeightRequest="580" Margin="0"/>
                     </Grid>
 
-                    <Image Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Source="founding_year_inverted.png" HeightRequest="300" VerticalOptions="End" IsVisible="{Binding Matchup.Player2.IsActive}"/>
+                    <Image Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Source="founding_year_inverted.png" HeightRequest="300" VerticalOptions="End" 
+                           IsVisible="{Binding Matchup.Player2.IsActive}"/>
                     <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" 
                        Source="confetti.gif" HeightRequest="580" 
                        IsAnimationPlaying="True" IsVisible="False">

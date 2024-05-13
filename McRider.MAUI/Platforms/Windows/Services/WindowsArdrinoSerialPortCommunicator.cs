@@ -20,7 +20,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
         if (_serialPort != null)
         {
-            if(_detectPortTask != null)
+            if (_detectPortTask != null)
                 await _detectPortTask;
 
             return true;
@@ -71,15 +71,12 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             {
                 try
                 {
-                    _serialPort = new SerialPort(port);
+                    _serialPort = new SerialPort(port, _configs.BaudRate);
+                    _serialPort.ReadTimeout = _configs.ReadTimeout;
                     _serialPort.Open();
 
                     var message = await ReadDataAsync();
-                    if (string.IsNullOrEmpty(message))
-                    {
-                        _serialPort.Close();
-                        continue;
-                    }
+                    if (string.IsNullOrEmpty(message)) continue;
 
                     var json = JObject.Parse(message);
                     if (json["distance_1"] != null || json["bikeA"] != null)
@@ -113,6 +110,15 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         _serialPort.Close();
         return base.Stop();
+    }
+
+    public async override Task DoReadDataAsync()
+    {
+        await Initialize();
+        if (_serialPort.IsOpen != true)
+            await DoFakeReadData();
+        else
+            await base.DoReadDataAsync();
     }
 
     public override async Task<string?> ReadDataAsync()

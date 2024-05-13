@@ -1,4 +1,6 @@
-﻿namespace McRider.MAUI.Services;
+﻿using CommunityToolkit.Mvvm.Messaging;
+
+namespace McRider.MAUI.Services;
 
 public abstract class ArdrinoCommunicator
 {
@@ -10,14 +12,12 @@ public abstract class ArdrinoCommunicator
     protected FileCacheService _cacheService;
     protected Matchup _matchup;
     protected Configs _configs;
-    protected bool _isRunning = true;
+    protected bool _isRunning = false;
 
     public ArdrinoCommunicator(FileCacheService cacheService, ILogger<ArdrinoCommunicator>? logger = null)
     {
         _cacheService = cacheService;
         _logger = logger;
-
-        _ = Initialize();
     }
 
     public virtual async Task<bool> Initialize()
@@ -44,6 +44,7 @@ public abstract class ArdrinoCommunicator
         }
     }
 
+    public Action<object, Matchup> OnMatchupProgressChanged { get; set; }
     public Action<object, Matchup> OnMatchupFinished { get; set; }
     public Action<object, Player> OnPlayerWon { get; set; }
     public Action<object, Player> OnPlayerDisconnected { get; set; }
@@ -54,17 +55,15 @@ public abstract class ArdrinoCommunicator
 
     public virtual async Task Start(Matchup matchup)
     {
+        if (_isRunning)
+            return;
+
+        _isRunning = true;
+
         _matchup = matchup ?? throw new ArgumentNullException(nameof(matchup));
         _matchup.Reset();
 
-        _isRunning = true;
         await DoReadDataAsync();
-
-        //#if DEBUG
-        //        await Task.Run(() => DoFakeReadData());
-        //#else
-        //        await Task.Run(() => DoReadDataAsync());
-        //#endif
     }
 
     private bool IsActive(Player player)
@@ -91,7 +90,7 @@ public abstract class ArdrinoCommunicator
             // Reset Counter
             _matchup.IsPlayed = true;
             var winner = _matchup.Winner;
-            if (winner != null)
+            if (_isRunning && winner != null)
             {
                 winner.IsActive = true;
                 OnPlayerWon?.Invoke(this, winner); // Notify the winner
@@ -124,9 +123,10 @@ public abstract class ArdrinoCommunicator
             entry.Distance = distance;
     }
 
-    private void DoFakeReadData()
+    protected async Task DoFakeReadData()
     {
         double minValue = 1, maxValue = 5;
+        long count = 0;
 
         while (IsRunning)
         {
@@ -135,16 +135,26 @@ public abstract class ArdrinoCommunicator
             foreach (var entry in _matchup.Entries)
             {
                 var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
+
+                // Randomly slow down the player
+                if (Random.Shared.NextDouble() < 0.1)
+                    delta = 0;
+
                 UpdatePlayerDistance(entry, entry.Distance + delta);
             }
+
+            if (count++ % 5 == 0)
+                OnMatchupProgressChanged?.Invoke(this, _matchup);
         }
 
+        _isRunning = false;
         OnMatchupFinished?.Invoke(this, _matchup);
     }
 
-    public async Task DoReadDataAsync()
+    public virtual async Task DoReadDataAsync()
     {
         double start_counter_a = 0, start_counter_b = 0;
+        long count = 0;
 
         while (IsRunning)
         {
@@ -152,8 +162,10 @@ public abstract class ArdrinoCommunicator
             {
                 var message = await ReadDataAsync();
                 if (string.IsNullOrEmpty(message))
+                {
+                    await Task.Delay(100);
                     continue;
-
+                }
                 var json = JObject.Parse(message.ToString());
 
                 var strDistance1 = (string)json["distance_1"];
@@ -196,6 +208,7 @@ public abstract class ArdrinoCommunicator
 
                 if (_matchup.Entries.Count > 0)
                     UpdatePlayerDistance(_matchup.Entries[0], distance1);
+
                 if (_matchup.Entries.Count > 1)
                     UpdatePlayerDistance(_matchup.Entries[1], distance2);
             }
@@ -203,8 +216,15 @@ public abstract class ArdrinoCommunicator
             {
                 //  MessageBox.Show(ex.Message);
             }
+            finally
+            {
+                await Task.Delay(100);
+                if (count++ % 5 == 0)
+                    OnMatchupProgressChanged?.Invoke(this, _matchup);
+            }
         }
 
+        _isRunning = false;
         OnMatchupFinished?.Invoke(this, _matchup);
     }
 }

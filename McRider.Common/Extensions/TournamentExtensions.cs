@@ -42,7 +42,7 @@ public static class TournamentExtensions
 
     public static Tournament FixMatchupRef(this Tournament tournament, Matchup matchup)
     {
-        foreach (var round in tournament?.Rounds)
+        foreach (var round in tournament.Rounds)
         {
             var indexOf = round.IndexOf(m => m?.Id == matchup?.Id);
             if (indexOf >= 0)
@@ -52,19 +52,20 @@ public static class TournamentExtensions
             }
         }
 
-        return tournament;
+        return tournament.FixParentMatchupRef();
     }
 
     public static Tournament FixParentMatchupRef(this Tournament tournament)
     {
-        var allMatchup = tournament?.Matchups.ToArray();
+        var allMatchup = tournament.Matchups.ToArray();
         var allEntries = allMatchup.SelectMany(m => m.Entries).ToArray();
 
         foreach (var m in allMatchup)
         {
             m.Game = tournament.Game;
 
-            if (m.IsPlayed == true && m.Entries.Any(e => e.Distance == 0))
+            var isPlayed = m.Entries.Any(e => e.Distance >= m.Game.TargetDistance || e.Time >= m.Game.TargetTime);
+            if (m.IsPlayed == false && isPlayed)
                 m.IsPlayed = true;
 
             foreach (var e in allEntries)

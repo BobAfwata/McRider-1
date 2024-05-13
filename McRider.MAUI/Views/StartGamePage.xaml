@@ -50,5 +50,16 @@
 
             </StackLayout>
         </ScrollView>
+
+        <Grid Grid.RowSpan="3" BackgroundColor="#80000000" IsVisible="{Binding IsBusy}" >
+            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                <ActivityIndicator 
+                    IsRunning="True"   
+                    Color="{StaticResource White}"                 
+                    Margin="40"  HeightRequest="80" WidthRequest="80"/>
+                <Label Text="Detecting bikes..." HorizontalTextAlignment="Center" />
+            </StackLayout>            
+        </Grid>
+        
     </Grid>
 </ContentPage>
