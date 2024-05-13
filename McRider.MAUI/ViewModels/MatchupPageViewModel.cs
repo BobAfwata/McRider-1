@@ -230,7 +230,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         {
             var entry = player.GetEntry(Matchup);
 
-            _logger.LogInformation("{Player1} wins! {Distance:0.00} {Time:hh\\:mm\\:ss}", player.Name, entry?.Time, entry?.Distance);
+            _logger.LogInformation("{Player1} wins! {Distance:0.00} {Time:hh:mm:ss}", player.Name, entry?.Time, entry?.Distance);
 
             // Update the game play progress
             OnPropertyChanged(nameof(TournamentImageSource));
