@@ -20,7 +20,9 @@ public class Matchup
 
     public bool IsPlayed { get; set; } = false;
 
-    public bool IsByeMatchup => Entries.Count == 1;
+    public bool IsByeMatchup => Entries.Count == 1 || 
+        (Bracket == Bracket.Losers && ParentMatchups.All(p => p.IsByeMatchup)) ||
+        (Bracket == Bracket.Losers && Round == 2 && ParentMatchups.Any(p => p.IsByeMatchup && p.Bracket == Bracket.Losers));
 
     public bool HasPlayers => Entries.Count(e => e.Player is not null) > 1;
 

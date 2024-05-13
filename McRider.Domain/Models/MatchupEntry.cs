@@ -20,8 +20,10 @@ public class MatchupEntry : IComparable<MatchupEntry>
     public Matchup? CurrentMatchup { get; set; } // The matchup that this entry came from
     public Matchup? ParentMatchup { get; set; } // The matchup that this entry came from 
 
-    public Player? Player { 
-        get {
+    public Player? Player
+    {
+        get
+        {
             // If not played and not a bye, return null
             if (ParentMatchup?.IsPlayed == false && ParentMatchup?.IsByeMatchup == false)
                 return _player = null;
@@ -33,11 +35,12 @@ public class MatchupEntry : IComparable<MatchupEntry>
             // Same Players in Set 2 GrandFinals as Set 1
             if (CurrentMatchup?.Bracket == Bracket.GrandFinals && ParentMatchup?.Bracket == Bracket.GrandFinals)
             {
-                var winEntry = ParentMatchup.Entries.FirstOrDefault(e => e.IsWinner == true);
-                if (winEntry?.ParentMatchup?.Bracket == Bracket.Winners)
+                var parentEntries = ParentMatchup.Entries;
+                var winEntry = parentEntries.FirstOrDefault(e => e.IsWinner == true);
+                if (winEntry == null || winEntry?.ParentMatchup?.Bracket == Bracket.Winners)
                     return null;
 
-                var index = ParentMatchup.Entries.Select(x => x.Player).ToList().IndexOf(this.Player);
+                var index = CurrentMatchup.Entries.IndexOf(this);
                 return _player = ParentMatchup.GetPlayerAt(index);
             }
 
@@ -47,12 +50,20 @@ public class MatchupEntry : IComparable<MatchupEntry>
             // All loser bracket matchup must have a parentMatchup
             ParentMatchup = ParentMatchup ?? throw new InvalidOperationException("Parent Matchup is required for loser bracket.");
 
-
             if (ParentMatchup.Bracket == Bracket.Winners)
                 return _player = ParentMatchup.Loser;
-            else
+
+            if (ParentMatchup.IsByeMatchup == true)
+                return _player = ParentMatchup.Players.FirstOrDefault(x => x != null);
+
+            if (ParentMatchup.Bracket != Bracket.Losers)
                 return _player = ParentMatchup?.Winner;
-        } 
+
+            if (ParentMatchup.ExpectesPlayerEntry != true)
+                return _player = ParentMatchup.Players.FirstOrDefault(x => x != null);
+
+            return _player = ParentMatchup.Winner;
+        }
         set => _player = value;
     }
 

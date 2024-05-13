@@ -83,7 +83,9 @@ public static class TournamentExtensions
         tournament.FixMatchupRef(currentMatchup);
 
         // Flatten all matches in all rounds of the tournament
-        var readyMatches = tournament.Matchups.ToArray();
+        var readyMatches = tournament.Matchups
+            .OrderBy(m => m.Round * (int)m.Bracket)
+            .ToArray();
 
         // Manatory filters
         var manatoryFilters = new Func<Matchup, bool>[]

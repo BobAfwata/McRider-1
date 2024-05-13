@@ -18,7 +18,7 @@ public static class TournamentVisualizationExtensions
 
     static readonly Font font = new Font("Arial", 10);
 
-    public static Bitmap CreateTournamentImage(this Tournament tournament, bool showByes = true, bool showMatchId = true)
+    public static Bitmap CreateTournamentImage(this Tournament tournament, bool showByes = true, bool showMatchId = false)
     {
         if (tournament?.Matchups?.Any() != true) return null;
 
@@ -58,7 +58,12 @@ public static class TournamentVisualizationExtensions
                     matchupRect.Size = new SizeF(matchupRect.Width, entryRect.Y - matchupRect.Y + entryRect.Height);
 
                 if (showVisual)
+                {
+                    if (entry == 0 && showMatchId == true)
+                        g.DrawString(matchup.ToString(), font, Brushes.Black, new PointF(entryRect.Location.X + TEXT_PADDING, entryRect.Location.Y - entryRect.Height + TEXT_PADDING));
+
                     DrawEntry(g, tournament, e, entryRect);
+                }
             }
 
             possitions[matchup.Id] = matchupRect;
@@ -71,10 +76,8 @@ public static class TournamentVisualizationExtensions
             for (var match = 0; match < roundMatchups.Count; match++)
             {
                 var matchup = roundMatchups[match];
-                if(matchup.IsFinals())
-                {
-                    Console.WriteLine();
-                }
+                if (matchup.IsFinalsSet2() && !tournament.RequiresSet2Finals())
+                    continue;
 
                 var parentRects = new List<RectangleF>();
 
@@ -105,7 +108,12 @@ public static class TournamentVisualizationExtensions
                         matchupRect.Size = new SizeF(matchupRect.Width, entryRect.Y - matchupRect.Y + entryRect.Height);
 
                     if (showVisual)
+                    {
+                        if (entry == 0 && showMatchId == true)
+                            g.DrawString(matchup.ToString(), font, Brushes.Black, new PointF(entryRect.Location.X + TEXT_PADDING, entryRect.Location.Y - entryRect.Height + TEXT_PADDING));
+
                         DrawEntry(g, tournament, e, entryRect);
+                    }
                 }
 
                 possitions[matchup.Id] = matchupRect;
@@ -123,6 +131,9 @@ public static class TournamentVisualizationExtensions
             foreach (var parent in match.ParentMatchups)
             {
                 if (parent.Bracket == Bracket.Winners && match.Bracket == Bracket.Losers)
+                    continue;
+
+                if (parent.IsByeMatchup && showByes != true)
                     continue;
 
                 foreach (var e in parent.Entries)
@@ -182,6 +193,7 @@ public static class TournamentVisualizationExtensions
     {
         var scorePosFactor = 6.5F / 10.0F;
         var pos = rect.Location;
+
 
         g.DrawRectangle(Pens.Black, rect);
         g.DrawLine(Pens.DarkGray, new PointF(pos.X + (rect.Width * scorePosFactor), pos.Y), new PointF(pos.X + (rect.Width * scorePosFactor), pos.Y + rect.Height));

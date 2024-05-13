@@ -187,13 +187,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         else
         {
             _tcs.TrySetResult(Matchup);
-
-            var page = await Shell.Current.Navigation.PopAsync();
-
-            while (page != null)
-                page = await Shell.Current.Navigation.PopAsync();
-
-            await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
+            await Shell.Current.GoToAsync($"//{nameof(LandingPage)}");
         }
     }
 
@@ -244,7 +238,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         {
             var entry = player.GetEntry(Matchup);
 
-            _logger.LogInformation("{Player1} wins! {Distance:0.00}km in {Time}", player.Name, entry?.Distance, entry?.Time);
+            _logger.LogInformation("{Player1} wins! {Distance:0.00}km in {Time}", player.Nickname, entry?.Distance, entry?.Time);
 
             // Update the game play progress
             RefreshWinningView();
@@ -255,8 +249,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnMatchupFinished += async (sender, matchup) =>
         {
-            // Update the game play progress
-            RefreshWinningView();
+            _logger.LogInformation("Matchup finished {Matchup}, Winner: {Winner}", matchup.ToString(), matchup.Winner?.Nickname);
 
             // Save the game play
             await Tournament?.Save();
