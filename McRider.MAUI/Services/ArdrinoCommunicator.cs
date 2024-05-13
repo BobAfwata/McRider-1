@@ -155,7 +155,6 @@ public abstract class ArdrinoCommunicator
 
         App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
-
             try
             {
                 var message = ReadDataAsync().Result;
