@@ -15,7 +15,7 @@ public class TournamentLogicTests
     public void Setup()
     {
         _tournamentRepo = new RepositoryService<Tournament>(new FileCacheService());
-        _gameRepo = new RepositoryService<GameItem>(new FileCacheService(), "game-items2.json");
+        _gameRepo = new RepositoryService<GameItem>(new FileCacheService(), "game-items.json");
     }
 
     [Test]

@@ -22,7 +22,7 @@ public partial class GamesPageViewModel : BaseViewModel
 
     override public async Task Initialize(params object[] args)
     {
-        Items = new ObservableCollection<GameItem>(await _fileCacheService.GetAsync("game-items2.json", GetItemsAsync));
+        Items = new ObservableCollection<GameItem>(await _fileCacheService.GetAsync("game-items.json", GetItemsAsync));
         await base.Initialize(args);
     }
 
