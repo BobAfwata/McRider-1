@@ -11,6 +11,13 @@ public static class TournamentExtensions
     public static int GetScore(this Player player, Tournament tournament)
         => GetWins(player, tournament);// - GetLooses(player, tournament);
 
+    public static int GetKnockoutRound(this Player player, Tournament tournament)
+    {
+        var entries = GetEntries(player, tournament);
+        var rounds = entries.Select(e => e.CurrentMatchup?.Round ?? 0).Distinct().ToArray();
+        return rounds.Max();
+    }
+
     public static Player? GetWinner(this Tournament tournament)
     {
         var finals = tournament.Matchups.Where(m => m.IsFinals()).ToArray();

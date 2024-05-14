@@ -25,6 +25,9 @@ public static class TournamentVisualizationExtensions
         var height = tournament.Rounds.Max(r => r.Count) * BOX_HEIGHT * HEIGHT_SPACING_RATIO + PADDING_H * 3;
         var width = tournament.Rounds.Count * BOX_WIDTH * WIDTH_SPACING_RATIO + PADDING_H * 3;
 
+        if (tournament.Players.Count == 2)
+            height += BOX_HEIGHT;
+
         // Assume tournament is validated and contains required data.
         Bitmap bitmap = new Bitmap((int)width, (int)height); // Create a bitmap with some arbitrary dimensions.
         using Graphics g = Graphics.FromImage(bitmap);
@@ -166,7 +169,7 @@ public static class TournamentVisualizationExtensions
         var winnerText = winner != null ? winner.Nickname : "Winner";
 
         g.DrawRectangle(Pens.Black, new RectangleF(winPos.X, winPos.Y, BOX_WIDTH, BOX_HEIGHT));
-        g.DrawString(winnerText, new Font(font.FontFamily, font.Size * 1.8F), Brushes.Black, winPos + new SizeF(TEXT_PADDING * 2F, TEXT_PADDING * 2F));
+        g.DrawString(winnerText, new Font(font.FontFamily, font.Size * 1.8F), Brushes.Black, winPos + new SizeF(TEXT_PADDING * 2F, TEXT_PADDING * 1.8F));
 
         // Draw score board
         var sHeight = BOX_HEIGHT / 2;
@@ -174,7 +177,7 @@ public static class TournamentVisualizationExtensions
         g.DrawString("Score board", new Font(font.FontFamily, font.Size * 1.8F), Brushes.Black, scoresPos - new SizeF(PADDING_H, 0));
 
         // Draws scores for each player
-        var players = tournament.Players.OrderByDescending(p => p.GetWins(tournament)).ToList();
+        var players = tournament.Players.OrderByDescending(p => p.GetWins(tournament)).ThenByDescending(p => p.GetKnockoutRound(tournament)).ToList();
         for (int i = 0; i < players.Count; i++)
         {
             var player = players[i];

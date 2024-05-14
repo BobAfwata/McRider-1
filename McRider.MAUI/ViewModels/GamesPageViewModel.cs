@@ -22,7 +22,7 @@ public partial class GamesPageViewModel : BaseViewModel
 
     override public async Task Initialize(params object[] args)
     {
-        Items = new ObservableCollection<GameItem>(await _fileCacheService.GetAsync("game-items.json", GetItemsAsync));
+        Items = new ObservableCollection<GameItem>(await _fileCacheService.GetAsync("game-items2.json", GetItemsAsync));
         await base.Initialize(args);
     }
 
@@ -55,7 +55,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 Name = "Single Game",
                 GameType = GameType.SingleRace,
                 PlayersPerTeam = 1,
-                TeamsCount = 1,
+                TeamsCount = 2,
                 Description = "Description 1",
                 TargetDistance = 1000,
                 TargetTime = TimeSpan.FromMinutes(1),

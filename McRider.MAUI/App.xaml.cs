@@ -158,7 +158,6 @@ namespace McRider.MAUI
         }
         #endregion
 
-
         #region Global Error handling
         public static string ErrorFilePath
         {

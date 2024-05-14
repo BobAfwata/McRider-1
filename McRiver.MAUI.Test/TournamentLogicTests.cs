@@ -15,7 +15,7 @@ public class TournamentLogicTests
     public void Setup()
     {
         _tournamentRepo = new RepositoryService<Tournament>(new FileCacheService());
-        _gameRepo = new RepositoryService<GameItem>(new FileCacheService(), "game-items.json");
+        _gameRepo = new RepositoryService<GameItem>(new FileCacheService(), "game-items2.json");
     }
 
     [Test]
@@ -24,18 +24,18 @@ public class TournamentLogicTests
         var tournament = new Tournament()
         {
             Game = GetTounamentGame(),
-            Players = MakeRandomPlayers(10).ToList()
+            Players = MakeRandomPlayers(3).ToList()
         };
 
-        tournament.CreateTournamentRounds(false);
 
-        if (1 == 1)
+        if (tournament?.Matchups?.Any() != true)
         {
             int i = 0;
             //tournament.Players = MakeRandomPlayers(16).ToList();
+            tournament?.CreateTournamentRounds(false);
             //tournament?.CreateTournamentRounds();
             var nextMatchup = tournament?.GetNextMatchup();
-            while (i++ < tournament.Players.Count + 8 && nextMatchup != null)
+            while (nextMatchup != null)
             {
                 SetRandomScores(nextMatchup);
                 //tournament?.CreateTournamentImage()?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament{i}.png");
@@ -45,7 +45,7 @@ public class TournamentLogicTests
 
         var image = tournament.CreateTournamentImage(true, true);
 
-        image.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament2.png");
+        image?.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament2.png");
         tournament.Save().Wait();
     }
 
@@ -89,18 +89,21 @@ public class TournamentLogicTests
         var tournaments = _tournamentRepo.Find().Result;
         if (tournaments?.Any() != true)
         {
-            tournaments = [new Tournament() { Game = GetTounamentGame(), Players = MakeRandomPlayers(10).ToList() }];
+            tournaments = [new Tournament() { Game = GetTounamentGame(), Players = MakeRandomPlayers(3).ToList() }];
             tournaments.FirstOrDefault()?.CreateTournamentRounds(false);
         }
 
         var tournament = tournaments?.LastOrDefault()?.Save().Result;
-        tournament.CreateTournamentRounds(false);
+        //tournament?.CreateTournamentRounds(false);
 
-        if (1 == 1)
+        var matchup = tournament.Rounds[1][1];
+        var player2 = matchup.Player2;
+
+        if (tournament?.Matchups?.Any() != true)
         {
             int i = 0;
             //tournament.Players = MakeRandomPlayers(16).ToList();
-            //tournament?.CreateTournamentRounds();
+            tournament?.CreateTournamentRounds(false);
             var nextMatchup = tournament?.GetNextMatchup();
             while (nextMatchup != null)
             {

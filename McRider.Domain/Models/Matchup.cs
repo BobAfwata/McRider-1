@@ -20,9 +20,30 @@ public class Matchup
 
     public bool IsPlayed { get; set; } = false;
 
-    public bool IsByeMatchup => Entries.Count == 1 || 
-        (Bracket == Bracket.Losers && ParentMatchups.All(p => p.IsByeMatchup)) ||
-        (Bracket == Bracket.Losers && Round == 2 && ParentMatchups.Any(p => p.IsByeMatchup && p.Bracket == Bracket.Losers));
+    public bool IsByeMatchup
+    {
+        get
+        {
+            if (Players.Count() > 1)
+                return false;
+
+            if (Entries.Count() == 1)
+                return true;
+
+            if (ParentMatchups.All(p => p.IsByeMatchup))
+                return true;
+
+            // If this is a losers bracket match and
+            if (Bracket == Bracket.Losers)
+                // the one parent is a winners bracket match and
+                if (ParentMatchups.Any(p => p.Bracket == Bracket.Winners))
+                    // the other parent is a bye match
+                    if (ParentMatchups.Any(p => p.IsByeMatchup))
+                        return true;
+
+            return false;
+        }
+    }
 
     public bool HasPlayers => Entries.Count(e => e.Player is not null) > 1;
 
@@ -48,16 +69,16 @@ public class Matchup
     public Player? Player1 => GetPlayerAt(0);
     public Player? Player2 => GetPlayerAt(1);
 
-    public bool ExpectesPlayerEntry => Entries.Count(e => e.ExpectsPlayerEntry) > 0;
+    public bool ExpectesPlayerEntry => Entries.Any(e => e.ExpectsPlayerEntry);
 
     public Player? Winner
     {
         get
         {
-            if (IsByeMatchup == true)
+            if (PlayerCount == 1 && ExpectesPlayerEntry != true)
                 return Entries.FirstOrDefault()?.Player;
 
-            if (PlayerCount == 1 && ExpectesPlayerEntry != true)
+            if (IsByeMatchup == true)
                 return Entries.FirstOrDefault()?.Player;
 
             if (IsPlayed == false)
@@ -106,8 +127,8 @@ public class Matchup
         var entry = Entries?.ElementAtOrDefault(index);
 
         // No Entry probably a bye
-        if (entry is null) 
-            return null; 
+        if (entry is null)
+            return null;
 
         return entry.Player;
     }
@@ -126,7 +147,7 @@ public class Matchup
             entry?.Reset();
     }
 
-    
+
 }
 
 

@@ -24,45 +24,35 @@ public class MatchupEntry : IComparable<MatchupEntry>
     {
         get
         {
-            // If not played and not a bye, return null
-            if (ParentMatchup?.IsPlayed == false && ParentMatchup?.IsByeMatchup == false)
-                return _player = null;
+            var index = ParentMatchup?.Entries.IndexOf(this) ?? -1;
 
-            // If player is already set, return it
-            if (_player is not null)
+            if ((ParentMatchup?.IsPlayed == false && ParentMatchup?.IsByeMatchup == false) || _player is not null)
                 return _player;
 
-            // Same Players in Set 2 GrandFinals as Set 1
-            if (CurrentMatchup?.Bracket == Bracket.GrandFinals && ParentMatchup?.Bracket == Bracket.GrandFinals)
+            if (CurrentMatchup?.Bracket == Bracket.GrandFinals)
             {
-                var parentEntries = ParentMatchup.Entries;
-                var winEntry = parentEntries.FirstOrDefault(e => e.IsWinner == true);
-                if (winEntry == null || winEntry?.ParentMatchup?.Bracket == Bracket.Winners)
-                    return null;
+                if (ParentMatchup?.Bracket == Bracket.GrandFinals)
+                {
+                    // GrandFinals Set 2
+                    var parentEntries = ParentMatchup.Entries;
+                    var winEntry = parentEntries.FirstOrDefault(e => e.IsWinner == true);
+                    if (winEntry == null || winEntry?.ParentMatchup?.Bracket == Bracket.Winners)
+                        return null;
 
-                var index = CurrentMatchup.Entries.IndexOf(this);
-                return _player = ParentMatchup.GetPlayerAt(index);
+                    return _player = ParentMatchup.GetPlayerAt(index);
+                }
             }
 
-            if (CurrentMatchup?.Bracket == Bracket.Winners || CurrentMatchup?.Bracket == Bracket.GrandFinals)
-                return _player = ParentMatchup?.Winner;
+            if (CurrentMatchup?.Bracket == Bracket.Winners)
+                _player = ParentMatchup?.Winner;
+            else if (CurrentMatchup?.Bracket == Bracket.GrandFinals)
+                _player = ParentMatchup?.Winner;
+            else if (ParentMatchup?.Bracket == Bracket.Losers)
+                _player = ParentMatchup?.Winner;
+            else
+                _player = ParentMatchup?.Loser;
 
-            // All loser bracket matchup must have a parentMatchup
-            ParentMatchup = ParentMatchup ?? throw new InvalidOperationException("Parent Matchup is required for loser bracket.");
-
-            if (ParentMatchup.Bracket == Bracket.Winners)
-                return _player = ParentMatchup.Loser;
-
-            if (ParentMatchup.IsByeMatchup == true)
-                return _player = ParentMatchup.Players.FirstOrDefault(x => x != null);
-
-            if (ParentMatchup.Bracket != Bracket.Losers)
-                return _player = ParentMatchup?.Winner;
-
-            if (ParentMatchup.ExpectesPlayerEntry != true)
-                return _player = ParentMatchup.Players.FirstOrDefault(x => x != null);
-
-            return _player = ParentMatchup.Winner;
+            return _player;
         }
         set => _player = value;
     }
@@ -110,15 +100,12 @@ public class MatchupEntry : IComparable<MatchupEntry>
                 return false;
 
             // If the matchup exists and is complete, then we don't expect more players
-            if (CurrentMatchup != null)
-            {
-                if (CurrentMatchup.IsPlayed)
-                    return false;
+            if (CurrentMatchup?.IsPlayed == true)
+                return false;
 
-                // If the matchup is in Round 1 of the Winners bracket, then we don't expect more players
-                if (CurrentMatchup.Round == 1 && CurrentMatchup.Bracket == Bracket.Winners)
-                    return false;
-            }
+            // If the matchup is in Round 1 of the Winners bracket, then we don't expect more players
+            if (CurrentMatchup?.Round == 1 && CurrentMatchup.Bracket == Bracket.Winners)
+                return false;
 
             // Check recursively if any parent matchups expect players
             if (ParentMatchup?.ParentMatchups?.Any(p => p.Entries.Any(e => e.ExpectsPlayerEntry)) == true)
