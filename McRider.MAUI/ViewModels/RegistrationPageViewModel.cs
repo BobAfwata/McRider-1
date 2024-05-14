@@ -35,7 +35,7 @@ public partial class RegistrationPageViewModel : BaseViewModel
 
     public bool IsValidated { get; set; }
     public bool IsNotValidated => !IsValidated;
-    public bool IsValid => IsValidFullName && IsValidEmail && IsValidNickname && IsValidGender;
+    public bool IsValid => IsValidFullName && IsValidNickname && IsValidGender;
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {

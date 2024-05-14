@@ -49,24 +49,6 @@
 
                 <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
                     <Frame.Triggers>
-                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidEmail}" Value="False">
-                            <Setter Property="BackgroundColor" Value="LightPink" />
-                        </DataTrigger>
-                    </Frame.Triggers>
-                    <Entry Text="{Binding Email}" TextColor="Black" Margin="10,0" FontSize="24" FontFamily="MontserratBold" Placeholder="Enter your email address" />
-                </Frame>
-
-                <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
-                    <Frame.Triggers>
-                        <DataTrigger TargetType="Frame" Binding="{Binding IsValidPhone}" Value="False">
-                            <Setter Property="BackgroundColor" Value="LightPink" />
-                        </DataTrigger>
-                    </Frame.Triggers>
-                    <Entry Text="{Binding Phone}" TextColor="Black"  Margin="10,0" FontSize="24" FontFamily="MontserratBold"  Placeholder="Enter your phone number" />
-                </Frame>
-
-                <Frame HeightRequest="56" Margin="10" Padding="0" HorizontalOptions="FillAndExpand" CornerRadius="28" BackgroundColor="{StaticResource White}">
-                    <Frame.Triggers>
                         <DataTrigger TargetType="Frame" Binding="{Binding IsValidNickname}" Value="False">
                             <Setter Property="BackgroundColor" Value="LightPink" />
                         </DataTrigger>
