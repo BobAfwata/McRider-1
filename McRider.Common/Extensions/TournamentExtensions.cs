@@ -1,4 +1,6 @@
-﻿namespace McRider.Common.Extensions;
+﻿using McRider.Domain.Models;
+
+namespace McRider.Common.Extensions;
 
 public static class TournamentExtensions
 {
@@ -206,35 +208,21 @@ public static class TournamentExtensions
     {
         // Reset Counter
         Matchup.Counter = 0;
-        var matchups = tournament.Rounds.FirstOrDefault() ?? new List<Matchup>();
+
+        var matchups = tournament.Rounds.FirstOrDefault() ?? (tournament.Rounds[0] = new List<Matchup>());
         matchups.Clear();
 
-        // Schedule game plays so that each player plays once with a player of another team
-        for (int i = 0; i < teamsArray.Length; i++)
+        for(var i = 0; i < tournament.Players.Count - 1; i++)
         {
-            for (int j = i + 1; j < teamsArray.Length; j++)  // Ensure pairing between different teams
-            {
-                var team1Players = teamsArray[i].ToArray();
-                var team2Players = teamsArray[j].ToArray();
+            var count = tournament.Players.Count;
+            var matchup = new Matchup { Game = tournament.Game };
+            var player1 = tournament.Players.ElementAtOrDefault(i);
+            var player2 = tournament.Players.ElementAtOrDefault((i + 1) % count);
 
-                foreach (var player1 in team1Players)
-                {
-                    foreach (var player2 in team2Players)
-                    {
-                        var matchup = new Matchup { Game = tournament.Game };
+            matchup.Entries.Add(new MatchupEntry(matchup) { Player = player1 });
+            matchup.Entries.Add(new MatchupEntry(matchup) { Player = player2 });
 
-                        foreach (var player in new[] { player1, player2 })
-                        {
-                            var entry = new MatchupEntry(matchup) { Player = player };
-                            matchup.Entries.Add(entry);
-                        }
-
-                        var entries = new[] { player1, player2 }.Select(p => new MatchupEntry(matchup) { Player = p }).ToList();
-
-                        matchups.Add(matchup);
-                    }
-                }
-            }
+            matchups.Add(matchup);
         }
 
         // Reset Counter
