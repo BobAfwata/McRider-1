@@ -76,7 +76,11 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                     _serialPort.Open();
 
                     var message = await ReadDataAsync();
-                    if (string.IsNullOrEmpty(message)) continue;
+                    if (string.IsNullOrEmpty(message))
+                    {
+                        _serialPort?.Close();
+                        continue;
+                    }
 
                     var json = JObject.Parse(message);
                     if (json["distance_1"] != null || json["bikeA"] != null)
@@ -86,14 +90,14 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                         await _cacheService.SetAsync("configs.json", _configs);
                         break;
                     }
+                    else
+                    {
+                        _serialPort?.Close();
+                    }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Error accessing port {port}");
-                }
-                finally
-                {
-                    _serialPort?.Close();
                 }
             }
         }).ContinueWith(task => _detectPortTask = null);
@@ -115,9 +119,11 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     public async override Task DoReadDataAsync()
     {
         await Initialize();
+#if DEBUG1
         if (_serialPort.IsOpen != true)
             await DoFakeReadData();
         else
+#endif
             await base.DoReadDataAsync();
     }
 

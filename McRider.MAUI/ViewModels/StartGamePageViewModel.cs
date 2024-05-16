@@ -78,9 +78,6 @@ public partial class StartGamePageViewModel : BaseViewModel
             await tournament.Save();
         }
 
-        var count = 0;
-        var matchupCount = tournament.Rounds.Sum(r => r.Count);
-
         // Play each game
         var matchup = tournament.GetNextMatchup();
         while (matchup is not null)
@@ -101,8 +98,15 @@ public partial class StartGamePageViewModel : BaseViewModel
             IsBusy = true;
 
             if (await _communicator.Initialize() != true)
-                await Application.Current.MainPage.DisplayAlert("Hello, this is a dialog box!", "Dialog Box Title", "Ok");
+            {
+                IsBusy = false;
 
+                var res = await Application.Current.MainPage.DisplayAlert("Connection failed! Would you like to try again?", "Retry?", "Yes", "No");
+                if (res)
+                    return await AwaitMatchupsFor(players, game);
+
+                return null;
+            }
             IsBusy = false;
 
             // Navigate to Game Play Page
