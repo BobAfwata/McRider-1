@@ -67,8 +67,8 @@ public partial class MatchupPageViewModel : BaseViewModel
     public bool IsPlayer1Winner => Matchup?.Winner?.Id == Matchup?.Player1?.Id && Matchup?.Player1?.Id != null;
     public bool IsPlayer2Winner => Matchup?.Winner?.Id == Matchup?.Player2?.Id && Matchup?.Player2?.Id != null;
     public double PercentageTimeProgress => Matchup?.GetPercentageTimeProgress() ?? 0;
-    public double Player1Progress => Matchup?.GetPlayersProgress().ElementAtOrDefault(0) ?? 0;
-    public double Player2Progress => Matchup?.GetPlayersProgress().ElementAtOrDefault(1) ?? 0;
+    public double Player1Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(0) ?? 0;
+    public double Player2Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(1) ?? 0;
     public double Player1BottleProgress => Player1Progress / 100.0 * 580.0;
     public double Player2BottleProgress => Player2Progress / 100.0 * 580.0;
 

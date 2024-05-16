@@ -99,6 +99,8 @@ public static class TournamentExtensions
         // Manatory filters
         var manatoryFilters = new Func<Matchup, bool>[]
         {
+            // Can't be same player playing themselves
+            m => m.Player1?.Nickname != m.Player2?.Nickname,
             // Ignore if the match is already complete
             m => m.IsPlayed != true ,
             // Select matchs where players are assigned
