@@ -139,11 +139,26 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             {
                 return _serialPort?.ReadLine() ?? "";
             }
+            catch(InvalidOperationException ioex)
+            {
+                if(ioex.Message == "The port is closed.")
+                {
+                    try
+                    {
+                        _serialPort.Open();
+                        return _serialPort?.ReadLine() ?? "";
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.LogError(ex, "Error while reading " + _serialPort.PortName + "!!");
+                    }
+                }
+            }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error while reading " + _serialPort.PortName + "!!");
-                return null;
             }
+            return null;
         }, cancellationTokenSource.Token);
 
         var completedTask = await Task.WhenAny(readTask, Task.Delay(timeout.Value, cancellationTokenSource.Token));

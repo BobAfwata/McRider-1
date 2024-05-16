@@ -163,6 +163,8 @@ public abstract class ArdrinoCommunicator
                 if (string.IsNullOrEmpty(message))
                     return IsRunning == true;
 
+                _logger.LogDebug(message);
+
                 var json = JObject.Parse(message.ToString());
 
                 var strDistance1 = (string)json["distance_1"];
@@ -172,17 +174,17 @@ public abstract class ArdrinoCommunicator
 
                 if (strDistance1 != null)
                 {
-                    var bike_a = Convert.ToDouble(strDistance1);
-                    var bike_b = Convert.ToDouble(strDistance2);
+                    var counter_a = Convert.ToDouble(strDistance1);
+                    var counter_b = Convert.ToDouble(strDistance2);
                     if (start_counter_a == 0)
                     {
-                        start_counter_a = bike_a;
-                        start_counter_b = bike_b;
+                        start_counter_a = counter_a;
+                        start_counter_b = counter_b;
                     }
                     else
                     {
-                        distance1 = bike_a - start_counter_a / 1000.0;
-                        distance2 = bike_b - start_counter_b / 1000.0;
+                        distance1 = (counter_a - start_counter_a);
+                        distance2 = (counter_b - start_counter_b);
                     }
                 }
                 else
