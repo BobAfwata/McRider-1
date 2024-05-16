@@ -129,22 +129,24 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
     public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null)
     {
-        timeout ??= TimeSpan.FromSeconds(0.5);
+        timeout ??= TimeSpan.FromSeconds(1.2);
+        _serialPort.ReadTimeout = (int)(timeout?.TotalMilliseconds ?? 1000);
 
         var cancellationTokenSource = new CancellationTokenSource();
         var readTask = Task.Run(() =>
         {
             try
             {
-                return _serialPort.ReadLine();
+                return _serialPort?.ReadLine() ?? "";
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error while reading " + _serialPort.PortName + "!!");
                 return null;
             }
         }, cancellationTokenSource.Token);
 
-        var completedTask = await Task.WhenAny(readTask, Task.Delay(timeout ?? TimeSpan.FromSeconds(0.5), cancellationTokenSource.Token));
+        var completedTask = await Task.WhenAny(readTask, Task.Delay(timeout.Value, cancellationTokenSource.Token));
 
         if (completedTask == readTask)
             return await readTask;
