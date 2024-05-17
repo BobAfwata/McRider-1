@@ -26,7 +26,7 @@ public abstract class ArdrinoCommunicator
         return true;
     }
 
-    public abstract Task<string?> ReadDataAsync(TimeSpan? timeout = null);
+    public abstract Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0);
 
     public abstract void SendData(string data);
 

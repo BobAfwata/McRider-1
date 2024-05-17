@@ -23,7 +23,8 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             if (_detectPortTask != null)
                 await _detectPortTask;
 
-            return true;
+            if (_serialPort.IsOpen)
+                return true;
         }
 
         _serialPort = new SerialPort();
@@ -42,7 +43,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             try
             {
                 _serialPort.Open();
-                return true;
+                break;
             }
             catch (System.IO.IOException ex)
             {
@@ -51,10 +52,11 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             }
         } while (count++ < 1);
 
-#if DEBUG
+#if DEBUG1
         return true;
 #endif
-        return false;
+
+        return _serialPort.IsOpen;
     }
 
 
@@ -72,10 +74,12 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                 try
                 {
                     _serialPort = new SerialPort(port, _configs.BaudRate);
-                    _serialPort.ReadTimeout = _configs.ReadTimeout;
+                    _serialPort.ReadTimeout = _configs.ReadTimeout + 10;
                     _serialPort.Open();
 
-                    var message = await ReadDataAsync();
+                    var timeout = TimeSpan.FromMilliseconds(_configs.ReadTimeout + 10);
+
+                    var message = await ReadDataAsync(timeout, -1);
                     if (string.IsNullOrEmpty(message))
                     {
                         _serialPort?.Close();
@@ -112,7 +116,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
     public override Task Stop()
     {
-        _serialPort.Close();
+        //_serialPort.Close();
         return base.Stop();
     }
 
@@ -124,41 +128,33 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             await DoFakeReadData();
         else
 #endif
-            await base.DoReadDataAsync();
+        await base.DoReadDataAsync();
     }
 
-    public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null)
+    public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0)
     {
         timeout ??= TimeSpan.FromSeconds(1.2);
         _serialPort.ReadTimeout = (int)(timeout?.TotalMilliseconds ?? 1000);
 
         var cancellationTokenSource = new CancellationTokenSource();
-        var readTask = Task.Run(() =>
+        var readTask = Task.Run(async () =>
         {
             try
             {
+                if (_serialPort.IsOpen != true)
+                    _serialPort.Open();
+
                 return _serialPort?.ReadLine() ?? "";
-            }
-            catch(InvalidOperationException ioex)
-            {
-                if(ioex.Message == "The port is closed.")
-                {
-                    try
-                    {
-                        _serialPort.Open();
-                        return _serialPort?.ReadLine() ?? "";
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.LogError(ex, "Error while reading " + _serialPort.PortName + "!!");
-                    }
-                }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error while reading " + _serialPort.PortName + "!!");
+                _logger.LogError(e, "Error while reading from port " + _serialPort.PortName + "!!");
+                if (retryCount < 0 || retryCount >= 10)
+                    return null;
+
+                await Task.Delay(1000);
+                return await ReadDataAsync(timeout + TimeSpan.FromMilliseconds(100), retryCount + 1);
             }
-            return null;
         }, cancellationTokenSource.Token);
 
         var completedTask = await Task.WhenAny(readTask, Task.Delay(timeout.Value, cancellationTokenSource.Token));

@@ -221,6 +221,8 @@ public static class TournamentExtensions
             var player1 = tournament.Players.ElementAtOrDefault(i);
             var player2 = tournament.Players.ElementAtOrDefault((i + 1) % count);
 
+            if (player1?.Id == player2?.Id) 
+                continue;
             matchup.Entries.Add(new MatchupEntry(matchup) { Player = player1 });
             matchup.Entries.Add(new MatchupEntry(matchup) { Player = player2 });
 
