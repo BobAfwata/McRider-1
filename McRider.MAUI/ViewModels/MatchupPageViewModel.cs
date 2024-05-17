@@ -92,21 +92,21 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown <= 0)
             await StartGame();
         else
-            App.StartTimer(TimeSpan.FromSeconds(1), () => DoCountDown().Result);
+            Device.StartTimer(TimeSpan.FromSeconds(1.2), () => DoCountDown().Result);
     }
 
     private async Task<bool> DoCountDown()
     {
         var countDown = CountDown - 1;
 
-        if (countDown <= 0)
-            await StartGame();
-
         if (countDown < 0)
             ShowCountDown = false;
 
         if (countDown >= 0)
             CountDown = countDown;
+
+        if (countDown <= 0)
+            await StartGame();
 
         return countDown > 0;
     }

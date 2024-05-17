@@ -92,7 +92,7 @@ public class CustomLogger : ILogger
         string message = formatter(state, exception);
 
         // Example: Print the log message to the console
-        Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{Environment.CurrentManagedThreadId:00}] [{logLevel}] {_categoryName}: {message}");
+        //Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{Environment.CurrentManagedThreadId:00}] [{logLevel}] {_categoryName}: {message}");
 
         // Customize this part to log to use NLog
         var levelName = logLevel.ToString();

@@ -75,23 +75,23 @@ public class Matchup
     {
         get
         {
-            if (PlayerCount == 1 && ExpectesPlayerEntry != true)
-                return Entries.FirstOrDefault()?.Player;
+            if (ExpectesPlayerEntry == true)
+                return null;
 
-            if (IsByeMatchup == true)
-                return Entries.FirstOrDefault()?.Player;
+            if (PlayerCount == 1 || IsByeMatchup == true)
+                return Entries.FirstOrDefault(e => e.Player != null)?.Player;
 
             if (IsPlayed == false)
                 return null;
 
             var ordered = Entries.Where(e => e.Player is not null).OrderBy(e => e);
             var first = ordered.FirstOrDefault();
-            var firstTired = ordered.Where(e => e.CompareTo(first) == 0).ToList();
+            var tired = ordered.Where(e => e.CompareTo(first) == 0).ToList();
 
-            if (firstTired.Count != 1)
+            if (tired.Count != 1)
                 return null;
 
-            return firstTired.FirstOrDefault()?.Player;
+            return tired.FirstOrDefault()?.Player;
         }
     }
 
