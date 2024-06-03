@@ -17,8 +17,8 @@ public partial class StartGamePageViewModel : BaseViewModel
     [ObservableProperty]
     Matchup _matchup;
 
-    public string Player1GenderImage => Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
-    public string Player2GenderImage => Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
+    public string Player1GenderImage => Matchup?.Player1 == null ? null : Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
+    public string Player2GenderImage => Matchup?.Player2 == null ? null : Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
 
     [RelayCommand]
     private async Task StartGame()
@@ -35,10 +35,7 @@ public partial class StartGamePageViewModel : BaseViewModel
         OnPropertyChanged(nameof(Player2GenderImage));
     }
 
-    private bool IsValid(Matchup matchup)
-    {
-        return matchup != null && matchup.Player1 != null && matchup.Player2 != null;
-    }
+    private bool IsValid(Matchup matchup) => matchup?.Players.All(p => p != null) == true;
 
     TaskCompletionSource _tcs;
 
@@ -79,7 +76,7 @@ public partial class StartGamePageViewModel : BaseViewModel
         }
 
         // Play each game
-        var matchup = tournament.GetNextMatchup();
+        var matchup = tournament.GetNextMatchup() ?? tournament.Matchups.FirstOrDefault();
         while (matchup is not null)
         {
             // Skip finished games
@@ -110,7 +107,8 @@ public partial class StartGamePageViewModel : BaseViewModel
             IsBusy = false;
 
             // Navigate to Game Play Page
-            await Shell.Current.GoToAsync($"///{nameof(MatchupPage)}");
+            var matchupPage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupUnveilPage) : nameof(MatchupPage);
+            await Shell.Current.GoToAsync($"///{matchupPage.GetType().Name}");
             var vm = App.ServiceProvider.GetService<MatchupPageViewModel>();
 
             if (vm != null)

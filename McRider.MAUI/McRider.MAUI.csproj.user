@@ -13,6 +13,9 @@
     <MauiXaml Update="Views\Dialogs\MessageDialogView.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
+    <MauiXaml Update="Views\MatchupUnveilPage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
     <MauiXaml Update="Views\MatchupPage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>

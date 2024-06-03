@@ -13,38 +13,39 @@
             <RowDefinition Height="150" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
-        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
+        <Image Grid.Row="0" Source="{Binding Theme.HeaderImage}" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="{Binding Theme.FooterImage}" Aspect="AspectFit"/>
 
-        <Grid Grid.Row="1"  BackgroundColor="{StaticResource Primary}" Margin="25,0" Padding="80">
+        <Grid Grid.Row="1"  BackgroundColor="{Binding Theme.PrimaryColor}" Margin="25,0" Padding="80">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="300"/>
             </Grid.RowDefinitions>
 
-            <StackLayout Grid.Row="0"   Margin="0" Padding="0">
-
-                <Label Text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam" 
+            <Grid Grid.Row="0"   Margin="0" Padding="0">
+                <Label Text="{Binding Theme.Texts.LandingTitle}"
                    HorizontalOptions="Center" 
-                   VerticalOptions="Center"
+                   VerticalOptions="Start"
                    VerticalTextAlignment="Center"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource Tertiary}" 
+                   TextColor="{Binding Theme.TitleColor}" 
                    Margin="100, 40" FontFamily="MontserratBold"
                    FontSize="48"  FontAttributes="Bold" />
 
-                <Image Source="founding_year_transparent.png" WidthRequest="480" Margin="40" />
-            </StackLayout>
+                <Image Source="{Binding Theme.Logo2}" WidthRequest="480" MaximumHeightRequest="700" Margin="40" VerticalOptions="End" />
+            </Grid>
 
-            <StackLayout Grid.Row="1">
+            <StackLayout Grid.Row="1" Margin="40">
                 <Button Text="Take the challenge" Command="{Binding TakeChallengeCommand}"
-                    BackgroundColor="{StaticResource Tertiary}" HorizontalOptions="Center" TextColor="{StaticResource Primary}"
-                    Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
+                    BackgroundColor="{Binding Theme.TertiaryColor}" TextColor="White"
+                    HorizontalOptions="Center"
+                    Padding="80,20" FontSize="35" FontFamily="MontserratBold" CornerRadius="40" />
 
                 <Button Text="Resume incomplete challenge" Command="{Binding ResumeTournamentCommand}"
                     IsVisible="{Binding HasIncompleteTournament}"
-                    BackgroundColor="{StaticResource Tertiary}" HorizontalOptions="Center" TextColor="{StaticResource Primary}"
-                    Padding="80,20" Margin="10" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
+                    BackgroundColor="{Binding Theme.TertiaryColor}" TextColor="White"
+                    HorizontalOptions="Center" 
+                    Padding="80,20" Margin="10" FontSize="35" FontFamily="MontserratBold" CornerRadius="40" />
             </StackLayout>
         </Grid>
     </Grid>

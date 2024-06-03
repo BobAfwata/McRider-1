@@ -22,7 +22,7 @@ public abstract class ArdrinoCommunicator
 
     public virtual async Task<bool> Initialize()
     {
-        _configs = await _cacheService.GetAsync<Configs>("configs.json", async () => new Configs());
+        _configs = await _cacheService.GetAsync("configs.json", async () => new Configs());
         return true;
     }
 

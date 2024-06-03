@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections;
 using System.Reflection;
 
 namespace McRider.Common.Services;
@@ -124,6 +125,9 @@ public class FileCacheService
         if (string.IsNullOrEmpty(cachedData))
         {
             T freshData = await readFunc();
+
+            if (freshData is IEnumerator enumerator && enumerator.MoveNext() != true)
+                return JsonConvert.DeserializeObject<T>(cachedData, settings);
 
             await SetAsync(key, freshData);
 

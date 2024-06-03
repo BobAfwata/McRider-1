@@ -18,11 +18,14 @@ public class GameItem
     public double? TargetDistance { get; set; }
     public TimeSpan? TargetTime { get; set; }
     public bool AllowLosserToFinish { get; set; } = false;
+    public bool IsActive { get; set; } = false;
+    public List<string> RevealImages { get; set; } = [];
 }
 
 public enum GameType
 {
     Tournament,
     Team,
+    Reveal,
     SingleRace
 }

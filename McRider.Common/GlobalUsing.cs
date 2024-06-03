@@ -6,3 +6,4 @@ global using System.Threading.Tasks;
 
 global using McRider.Domain.Services;
 global using McRider.Domain.Models;
+global using McRider.Common.Extensions;

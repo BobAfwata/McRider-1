@@ -24,7 +24,6 @@ public class MatchupEntry : IComparable<MatchupEntry>
     {
         get
         {
-            var index = ParentMatchup?.Entries.IndexOf(this) ?? -1;
 
             if ((ParentMatchup?.IsPlayed == false && ParentMatchup?.IsByeMatchup == false) || _player is not null)
                 return _player;
@@ -35,11 +34,12 @@ public class MatchupEntry : IComparable<MatchupEntry>
                 {
                     // GrandFinals Set 2
                     var parentEntries = ParentMatchup.Entries;
+                    var indexEntry = CurrentMatchup?.Entries.IndexOf(x => x.Id == Id) ?? -1;
                     var winEntry = parentEntries.FirstOrDefault(e => e.IsWinner == true);
                     if (winEntry == null || winEntry?.ParentMatchup?.Bracket == Bracket.Winners)
                         return null;
 
-                    return _player = ParentMatchup.GetPlayerAt(index);
+                    return _player = ParentMatchup.GetPlayerAt(indexEntry);
                 }
             }
 

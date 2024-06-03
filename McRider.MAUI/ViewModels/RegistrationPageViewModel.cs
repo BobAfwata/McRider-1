@@ -90,6 +90,7 @@ public partial class RegistrationPageViewModel : BaseViewModel
                 Gender = Gender
             };
 
+            if(Players.Any(p => p.Name == FullName) != true)
             Players.Add(player);
         }
 
@@ -122,6 +123,8 @@ public partial class RegistrationPageViewModel : BaseViewModel
         };
 
         Players.Add(player);
+        ResetInput(Players.Count - 1);
+
         _tcs?.SetResult(player);
 
         // Start Game after all players are registered

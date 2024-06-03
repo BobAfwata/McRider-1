@@ -89,6 +89,20 @@ public class ConcurrentList<T> : IList<T>
         }
     }
 
+    public int IndexOf(Func<T, bool> compare)
+    {
+        lock (_syncRoot)
+        {
+            for(var i = 0; i < _list.Count; i++)
+            {
+                if (compare?.Invoke(_list[i]) == true)
+                    return i;
+            }
+        }
+
+        return -1;
+    }
+
     public void Insert(int index, T item)
     {
         lock (_syncRoot)

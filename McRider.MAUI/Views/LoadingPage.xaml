@@ -15,20 +15,20 @@
         <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
         <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
 
-        <StackLayout Grid.Row="1"  BackgroundColor="{StaticResource Tertiary}" Margin="25,0" Padding="80">
+        <StackLayout Grid.Row="1"  BackgroundColor="Black" Margin="25,0" Padding="80">
 
-            <Label Text="Lorem ipsum dolor sit amet, consectetuer" 
+            <Label Text="Loading..."
                    HorizontalOptions="Center" 
                    VerticalOptions="Center"
                    VerticalTextAlignment="Center"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource Primary}" 
+                   TextColor="{Binding Theme.TitleColor}" 
                    Margin="100, 40" FontFamily="MontserratBold"
                    FontSize="48"  FontAttributes="Bold" />
 
-            <Image Source="founding_year_inverted.png" WidthRequest="480" Margin="40" />
+            <Image Source="cycle_loading_1.gif" IsAnimationPlaying="True" WidthRequest="480" MinimumHeightRequest="780" Margin="40" />
 
-            <ActivityIndicator IsRunning="True" Color="{StaticResource Primary}" Margin="40"  HeightRequest="80" WidthRequest="80" />
+            <ActivityIndicator IsRunning="True" Color="White" Margin="40"  HeightRequest="80" WidthRequest="80" VerticalOptions="End" />
         </StackLayout>
     </Grid>
 </ContentPage>

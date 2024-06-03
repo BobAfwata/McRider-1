@@ -91,16 +91,11 @@ public static class TournamentExtensions
     {
         tournament.FixMatchupRef(currentMatchup);
 
-        // Flatten all matches in all rounds of the tournament
-        var readyMatches = tournament.Matchups
-            .OrderBy(m => m.Round * (int)m.Bracket)
-            .ToArray();
-
         // Manatory filters
         var manatoryFilters = new Func<Matchup, bool>[]
         {
             // Can't be same player playing themselves
-            m => m.Player1?.Nickname != m.Player2?.Nickname,
+            m => m.Player1?.Nickname == null || m.Player1?.Nickname != m.Player2?.Nickname,
             // Ignore if the match is already complete
             m => m.IsPlayed != true ,
             // Select matchs where players are assigned
@@ -119,6 +114,11 @@ public static class TournamentExtensions
             // Ignore players in the current matchup
             m => currentMatchup == null || m.Players.All(p1 => currentMatchup.Players.All(p2 => p1?.Id != p2?.Id)),
         };
+
+        // Flatten all matches in all rounds of the tournament
+        var readyMatches = tournament.Matchups
+            .OrderBy(m => m.Round * (int)m.Bracket)
+            .ToArray();
 
         // Apply Manatory filters
         foreach (var filter in manatoryFilters)
@@ -214,17 +214,16 @@ public static class TournamentExtensions
         var matchups = tournament.Rounds.FirstOrDefault() ?? (tournament.Rounds[0] = new List<Matchup>());
         matchups.Clear();
 
-        for(var i = 0; i < tournament.Players.Count - 1; i++)
+        for(var i = 0; i < tournament.Players.Count - 1 || matchups.Count <= 0; i++)
         {
             var count = tournament.Players.Count;
             var matchup = new Matchup { Game = tournament.Game };
             var player1 = tournament.Players.ElementAtOrDefault(i);
             var player2 = tournament.Players.ElementAtOrDefault((i + 1) % count);
 
-            if (player1?.Id == player2?.Id) 
-                continue;
             matchup.Entries.Add(new MatchupEntry(matchup) { Player = player1 });
-            matchup.Entries.Add(new MatchupEntry(matchup) { Player = player2 });
+            if (player1?.Id != player2?.Id)
+                matchup.Entries.Add(new MatchupEntry(matchup) { Player = player2 });
 
             matchups.Add(matchup);
         }

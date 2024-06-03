@@ -23,10 +23,10 @@
             <RowDefinition Height="150" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
-        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
+        <Image Grid.Row="0" Source="{Binding Theme.HeaderImage}" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="{Binding Theme.FooterImage}" Aspect="AspectFit"/>
 
-        <ScrollView Grid.Row="1" BackgroundColor="{StaticResource Primary}" Margin="25,0" >
+        <ScrollView Grid.Row="1" BackgroundColor="{Binding Theme.PrimaryColor}" Margin="25,0" >
             <StackLayout Padding="80">
 
                 <Label Text="{Binding Title}" 
@@ -82,7 +82,7 @@
                 <Button Text="Next" Margin="40" 
                     Command="{Binding NextCommand}"
                     BackgroundColor="{StaticResource Tertiary}"  
-                    TextColor="{StaticResource Primary}"
+                    TextColor="{Binding Theme.PrimaryColor}"
                     HorizontalOptions="Center"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50">
                     <Button.Triggers>
@@ -96,7 +96,7 @@
                 <Button Text="Skip" Margin="40" 
                     Command="{Binding StartGameCommand}"
                     BackgroundColor="{StaticResource Tertiary}"  
-                    TextColor="{StaticResource Primary}"
+                    TextColor="{Binding Theme.PrimaryColor}"
                     IsVisible="{Binding CanSkip}"
                     HorizontalOptions="Center"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50">

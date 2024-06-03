@@ -35,6 +35,8 @@ public class TournamentLogicTests
             tournament?.CreateTournamentRounds(false);
             //tournament?.CreateTournamentRounds();
             var nextMatchup = tournament?.GetNextMatchup();
+                       
+
             while (nextMatchup != null)
             {
                 SetRandomScores(nextMatchup);
@@ -45,14 +47,14 @@ public class TournamentLogicTests
 
         var image = tournament.CreateTournamentImage(true, true);
 
-        image?.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament2.png");
+        image?.Save("C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament1.png");
         tournament.Save().Wait();
     }
 
     [Test]
     public void Test2()
     {
-        var tournaments = _tournamentRepo.Find(t => t.IsPending && t.IsStarted).Result;
+        var tournaments = _tournamentRepo.Find().Result;
         if (tournaments?.Any() != true)
             tournaments = [new Tournament() { Game = GetTounamentGame(), Players = MakeRandomPlayers(10).ToList() }];
 
@@ -78,7 +80,7 @@ public class TournamentLogicTests
             }
         }
 
-        GifCreator.CreateGif(images, "C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament.gif", 10000);
+        GifCreator.CreateGif(images, "C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament2.gif", 10000);
 
         tournament?.Save();
     }
@@ -99,7 +101,7 @@ public class TournamentLogicTests
         var matchup = tournament.Rounds[1][1];
         var player2 = matchup.Player2;
 
-        if (tournament?.Matchups?.Any() != true)
+        if (tournament?.Matchups?.Any() == true)
         {
             int i = 0;
             //tournament.Players = MakeRandomPlayers(16).ToList();
@@ -108,7 +110,7 @@ public class TournamentLogicTests
             while (nextMatchup != null)
             {
                 SetRandomScores(nextMatchup);
-                //tournament?.CreateTournamentImage()?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament{i}.png");
+                tournament?.CreateTournamentImage(showMatchId: true)?.Save($"C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament_{i++}.png");
                 nextMatchup = tournament?.GetNextMatchup(nextMatchup);
             }
         }

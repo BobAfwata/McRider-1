@@ -20,7 +20,13 @@ namespace McRider.MAUI.ViewModels
 
         override public async Task Initialize(params object[] args)
         {
-            Items = new ObservableCollection<SliderItem>(await _fileCacheService.GetAsync("slider-items.json", GetItemsAsync));
+            if (App.Configs?.Theme == "showmax")
+            {
+                await LetsPlay();
+                return;
+            }
+
+            Items = new ObservableCollection<SliderItem>(await _fileCacheService.GetAsync(App.Configs?.Theme + ".slider-items.json", GetItemsAsync));
             await base.Initialize(args);
         }
 
@@ -32,12 +38,13 @@ namespace McRider.MAUI.ViewModels
 
         private async Task<SliderItem[]> GetItemsAsync()
         {
-            return new[]
-            {
-                new SliderItem{ Image = "founding_year_inverted.png", Title = "Image 1", Description = "Description 1" },
-                new SliderItem{ Image = "founding_year_transparent.png", Title = "Image 2", Description = "Description 2" },
-                new SliderItem{ Image = "founding_year_yellow.png", Title = "Image 3", Description = "Description 3" },
-            };
+            
+
+            return [
+                new SliderItem { Image = "founding_year_inverted.png", Title = "Image 1", Description = "Description 1" },
+                new SliderItem { Image = "founding_year_transparent.png", Title = "Image 2", Description = "Description 2" },
+                new SliderItem { Image = "founding_year_yellow.png", Title = "Image 3", Description = "Description 3" },
+            ];
         }
 
         public class SliderItem

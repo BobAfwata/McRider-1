@@ -133,7 +133,7 @@ public class Matchup
         return entry.Player;
     }
 
-    public string PlayerVsPlayerText => $"{Player1?.Nickname} vs {Player2?.Nickname}";
+    public string PlayerVsPlayerText => string.Join(" vs ", new[] { Player1?.Nickname, Player2?.Nickname }.Where(s => !string.IsNullOrEmpty(s)));
 
     public override string ToString()
     {

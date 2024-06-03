@@ -11,6 +11,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     private ArdrinoCommunicator _communicator;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsUnveilView))]
     [NotifyPropertyChangedFor(nameof(IsComplete))]
     [NotifyPropertyChangedFor(nameof(IsPlayer1Winner))]
     [NotifyPropertyChangedFor(nameof(IsPlayer2Winner))]
@@ -23,7 +24,6 @@ public partial class MatchupPageViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(WinningEntry))]
     [NotifyPropertyChangedFor(nameof(Player1Entry))]
     [NotifyPropertyChangedFor(nameof(Player2Entry))]
-
     Matchup _matchup;
 
     [ObservableProperty]
@@ -47,7 +47,6 @@ public partial class MatchupPageViewModel : BaseViewModel
         _repository = repository;
     }
 
-
     public ImageSource TournamentImageSource
     {
         get
@@ -63,9 +62,11 @@ public partial class MatchupPageViewModel : BaseViewModel
         }
     }
 
+    public bool IsUnveilView => Tournament?.Game?.GameType == GameType.Reveal;
     public bool IsComplete => IsPlayer1Winner || IsPlayer2Winner;
     public bool IsPlayer1Winner => Matchup?.Winner?.Id == Matchup?.Player1?.Id && Matchup?.Player1?.Id != null;
     public bool IsPlayer2Winner => Matchup?.Winner?.Id == Matchup?.Player2?.Id && Matchup?.Player2?.Id != null;
+
     public double PercentageTimeProgress => Matchup?.GetPercentageTimeProgress() ?? 0;
     public double Player1Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(0) ?? 0;
     public double Player2Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(1) ?? 0;
@@ -133,6 +134,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         // Update the game play progress
         OnPropertyChanged(nameof(TournamentImageSource));
+        OnPropertyChanged(nameof(IsUnveilView));
         OnPropertyChanged(nameof(IsPlayer1Winner));
         OnPropertyChanged(nameof(IsPlayer2Winner));
         OnPropertyChanged(nameof(IsComplete));

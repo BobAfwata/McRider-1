@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using McRider.Common.Services;
+using McRider.Domain.Models;
 using McRider.MAUI.Extensions;
 using McRider.MAUI.Services;
 using System.Runtime.CompilerServices;
@@ -9,11 +10,15 @@ namespace McRider.MAUI
 {
     public partial class App : Application
     {
+        FileCacheService _cacheService = App.ServiceProvider.GetService<FileCacheService>();
+
         public App()
         {
             InitializeComponent();
             MainPage = new AppShell();
         }
+
+        public static Configs Configs { get; set; }
 
         protected override void OnStart()
         {
@@ -24,6 +29,33 @@ namespace McRider.MAUI
 
             // Start BackgroundService
             ServiceProvider.GetService<IBackgroundService>()?.Start();
+        }
+
+        private async Task Initialize()
+        {
+            // Load Configs
+            Configs = _cacheService.GetAsync("configs.json", async () => new Configs()).Result;
+
+            // Set IP Address
+            await SetInternetIP();
+
+            // Check last error exception
+            OnCheckException();
+
+            // Set App Information
+            Logger?.LogInformation($"App Name: {AppName}");
+            Logger?.LogInformation($"App Version: {AppVersion}");
+            Logger?.LogInformation($"App Build Date: {AppBuildDate}");
+            Logger?.LogInformation($"IP Address: {IPAddress}");
+
+            // Global Error handling
+            AppDomain.CurrentDomain.UnhandledException += (a, e) => App.OnGlobalException(a, e?.ExceptionObject as Exception);
+
+            // Delay for a short period
+            await Task.Delay(1000);
+
+            // Redirect to SliderPage
+            await Shell.Current.GoToAsync($"///{nameof(LandingPage)}");
         }
 
         protected override void OnResume()
@@ -46,32 +78,6 @@ namespace McRider.MAUI
 
         public static IServiceProvider ServiceProvider => IPlatformApplication.Current.Services;
         public static ILogger? Logger => ServiceProvider.GetService<ILogger<App>>();
-
-        #region Initialization
-        private async Task Initialize()
-        {
-            // Set IP Address
-            await SetInternetIP();
-
-            // Check last error exception
-            OnCheckException();
-
-            // Set App Information
-            Logger?.LogInformation($"App Name: {AppName}");
-            Logger?.LogInformation($"App Version: {AppVersion}");
-            Logger?.LogInformation($"App Build Date: {AppBuildDate}");
-            Logger?.LogInformation($"IP Address: {IPAddress}");
-
-            // Global Error handling
-            AppDomain.CurrentDomain.UnhandledException += (a, e) => App.OnGlobalException(a, e?.ExceptionObject as Exception);
-
-            // Delay for a short period
-            await Task.Delay(1000);
-
-            // Redirect to SliderPage
-            await Shell.Current.GoToAsync($"///{nameof(SliderPage)}");
-        }
-        #endregion
 
         /// <summary>
         /// Runs a task in the background/foreground service
@@ -111,9 +117,9 @@ namespace McRider.MAUI
             {
                 // Call your method here
                 if (action?.Invoke() == true)
-                    timer?.Change(timeSpan.Milliseconds, Timeout.Infinite);
+                    timer?.Change(timeSpan, Timeout.InfiniteTimeSpan);
                 else
-                    timer?.Change(Timeout.Infinite, Timeout.Infinite);                    
+                    timer?.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);                    
             };
 
             timer = new Timer(timerCallback, null, TimeSpan.Zero, timeSpan);

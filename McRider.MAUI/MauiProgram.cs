@@ -27,6 +27,7 @@ public static class MauiProgram
 
         builder.Logging.AddProvider(new CustomLoggerProvider(NLogConfigFile, GetLogData));
         builder.Services.AddServices();   //Add Other services
+
 #if WINDOWS
         builder.ConfigureLifecycleEvents(events =>
         {
@@ -87,7 +88,8 @@ public static class MauiProgram
             {
                 Name = App.AppName,
                 BuildVersion = App.AppVersion,
-                BuildDate = App.AppBuildDate
+                BuildDate = App.AppBuildDate,
+                Theme = App.Configs?.Theme
             };
 
             return obj.ToDictionary().ToDictionary(d => d.Key, d => d.Value != null ? Newtonsoft.Json.JsonConvert.SerializeObject(d.Value) : null);

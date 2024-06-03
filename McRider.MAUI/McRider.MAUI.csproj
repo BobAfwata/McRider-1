@@ -63,10 +63,12 @@
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
-		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<!-- Raw Assets -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
 
+		<!-- Theme Assets -->
+		<EmbeddedResource Include="Resources\Themes\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\Configs\nlog.android.config" />
@@ -90,5 +92,21 @@
 
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\MatchupUnveilPage.xaml.cs">
+	    <DependentUpon>MatchupUnveilPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\MatchupUnveilPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\Images\theme\" />
 	</ItemGroup>
 </Project>
