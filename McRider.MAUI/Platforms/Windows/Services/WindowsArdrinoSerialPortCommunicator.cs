@@ -123,12 +123,16 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     public async override Task DoReadDataAsync()
     {
         await Initialize();
-#if DEBUG1
-        if (_serialPort.IsOpen != true)
-            await DoFakeReadData();
+
+        if (_configs?.FakeRead == true)
+        {
+            if (_serialPort.IsOpen != true)
+                await DoFakeReadData();
+            else
+                await base.DoReadDataAsync();
+        }
         else
-#endif
-        await base.DoReadDataAsync();
+            await base.DoReadDataAsync();        
     }
 
     public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0)

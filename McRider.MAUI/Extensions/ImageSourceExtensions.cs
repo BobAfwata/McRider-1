@@ -45,7 +45,7 @@ public static class ImageSourceExtensions
             var assembly = Application.Current?.GetType().Assembly;
 
             // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
-            var matches = assembly?.GetManifestResourceNames().Where(str => str.EndsWith("." + url.Replace("/", ".")));
+            var matches = assembly?.GetManifestResourceNames().Where(str => str.EndsWith("." + url.Replace("/", ".")) || str.EndsWith(url.Replace("/", ".")));
 
             if (matches?.Count() > 1)
                 throw new Exception($"File name '{url}' matches multiple resources!!");

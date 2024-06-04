@@ -7,7 +7,10 @@ public partial class GamesPageViewModel : BaseViewModel
     private FileCacheService _fileCacheService;
 
     [ObservableProperty]
-    private int _columnCount = 2;
+    private int _columnCount = 2; 
+    
+    [ObservableProperty]
+    private int _rowHeight = 300;
 
     [ObservableProperty]
     private GameItem _selectedItem;
@@ -29,6 +32,7 @@ public partial class GamesPageViewModel : BaseViewModel
 
     partial void OnItemsChanged(ObservableCollection<GameItem>? oldValue, ObservableCollection<GameItem> newValue)
     {
+        RowHeight = newValue.Count <= 0 ? 600 : 300;
         ColumnCount = (int)Math.Max(1, Math.Min(3, Math.Ceiling(Math.Sqrt(newValue.Count))));
     }
 

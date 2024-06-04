@@ -15,9 +15,9 @@ public class RepositoryService<T>
         _fileName = fileName;
     }
 
-    public string FilePrefix { get; set; }
+    private static string FilePrefix => FileCacheService.FilePrefix;
 
-    public string FileName => _fileName ?? (FilePrefix ?? "") + $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
+    public string FileName => _fileName ?? (_fileName?.EndsWith("configs.json") == true ? "" : FilePrefix ?? "") + $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
 
     public async Task<List<T>> GetAllAsync()
     {

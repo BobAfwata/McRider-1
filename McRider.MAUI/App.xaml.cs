@@ -34,7 +34,10 @@ namespace McRider.MAUI
         private async Task Initialize()
         {
             // Load Configs
-            Configs = _cacheService.GetAsync("configs.json", async () => new Configs()).Result;
+            Configs = await _cacheService.GetAsync("configs.json", () => Task.FromResult(new Configs()));
+
+            // Set Cache file Prefix
+            FileCacheService.FilePrefix = App.Configs?.Theme + ".";
 
             // Set IP Address
             await SetInternetIP();
@@ -46,7 +49,7 @@ namespace McRider.MAUI
             Logger?.LogInformation($"App Name: {AppName}");
             Logger?.LogInformation($"App Version: {AppVersion}");
             Logger?.LogInformation($"App Build Date: {AppBuildDate}");
-            Logger?.LogInformation($"IP Address: {IPAddress}");
+            Logger?.LogInformation($"App IP Address: {IPAddress}");
 
             // Global Error handling
             AppDomain.CurrentDomain.UnhandledException += (a, e) => App.OnGlobalException(a, e?.ExceptionObject as Exception);
@@ -119,7 +122,7 @@ namespace McRider.MAUI
                 if (action?.Invoke() == true)
                     timer?.Change(timeSpan, Timeout.InfiniteTimeSpan);
                 else
-                    timer?.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);                    
+                    timer?.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             };
 
             timer = new Timer(timerCallback, null, TimeSpan.Zero, timeSpan);
@@ -152,6 +155,7 @@ namespace McRider.MAUI
 
             var view = new MessageDialogView(vm => { }, vm => { }, title, message, okButtonText, cancelButtonText);
             await semaphore.WaitAsync();
+
             try
             {
                 var ok = (await view.ShowPopupAsync()) as Boolean?;
@@ -237,7 +241,7 @@ namespace McRider.MAUI
                 Logger?.LogInformation($"Loading Ip from {url}");
 
                 // Check IP using DynDNS's service
-                using HttpClient client = new HttpClient();
+                using var client = new HttpClient();
                 var htmlResponse = await client.GetStringAsync(url);
 
                 // Use regex to extract IP address without the prefix

@@ -17,6 +17,7 @@ public partial class StartGamePageViewModel : BaseViewModel
     [ObservableProperty]
     Matchup _matchup;
 
+    public bool IsMultiplePlayers => Matchup?.Player2?.IsActive == true;
     public string Player1GenderImage => Matchup?.Player1 == null ? null : Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
     public string Player2GenderImage => Matchup?.Player2 == null ? null : Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
 
@@ -93,22 +94,28 @@ public partial class StartGamePageViewModel : BaseViewModel
             await _tcs.Task;
 
             IsBusy = true;
+            await Task.Delay(1000);
 
-            if (await _communicator.Initialize() != true)
+            while (await _communicator.Initialize() != true)
             {
                 IsBusy = false;
 
+                // Allow Retry with user confirmation
                 var res = await Application.Current.MainPage.DisplayAlert("Connection failed! Would you like to try again?", "Retry?", "Yes", "No");
-                if (res)
-                    return await AwaitMatchupsFor(players, game);
+                if (res != true)
+                    return null;
 
-                return null;
+                // Try again
+                IsBusy = true;
+                await Task.Delay(1000);
             }
+
+            // Start the game
             IsBusy = false;
 
             // Navigate to Game Play Page
             var matchupPage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupUnveilPage) : nameof(MatchupPage);
-            await Shell.Current.GoToAsync($"///{matchupPage.GetType().Name}");
+            await Shell.Current.GoToAsync($"///{matchupPage}");
             var vm = App.ServiceProvider.GetService<MatchupPageViewModel>();
 
             if (vm != null)

@@ -142,10 +142,18 @@ public class MatchupEntry : IComparable<MatchupEntry>
             return -1; // Player 1 wins by distance covered
         else if (this is null || Distance < other?.Distance)
             return 1; // Player 2 wins by distance covered
+#if DEBUG
         else if (Time < other?.Time)
             return -1; // Player 1 wins by time taken
         else if (Time > other?.Time)
             return 1;
+#else
+        else if ((int)Time.Value.TotalSeconds < (int)other?.Time.Value.TotalSeconds)
+            return -1; // Player 1 wins by time taken
+        else if ((int)Time.Value.TotalSeconds > (int)other?.Time.Value.TotalSeconds)
+            return 1;
+#endif
+
 
         return 0; // It's a tie
     }

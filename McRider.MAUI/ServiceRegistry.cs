@@ -29,6 +29,7 @@ namespace McRider.MAUI
             services.AddView<RegistrationPage>();
             services.AddView<StartGamePage>();
             services.AddView<MatchupPage>();
+            services.AddView<MatchupUnveilPage>();
 
             return services;
         }

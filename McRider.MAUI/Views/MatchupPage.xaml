@@ -27,7 +27,7 @@
                     <Image Source="watch_start_white.png"/>
                     <controls:PieChart StartAngle="90" HeightRequest="360" WidthRequest="360" Margin="0,80,0,0" Thickness="180">
                         <controls:PieChart.Data>
-                            <controls:PieChartData Label="Progress" Value="{Binding PercentageTimeProgress}" BackgroundColor="{StaticResource Primary}"/>
+                            <controls:PieChartData Label="Progress" Value="{Binding PercentageTimeProgress}" BackgroundColor="{Binding Theme.PrimaryColor}"/>
                         </controls:PieChart.Data>
                     </controls:PieChart>
                     <Label Text="{Binding CountDown}" FontSize="100" Padding="0,80,0,0" FontFamily="MontserratBold"
@@ -59,26 +59,26 @@
                     <Label Grid.Column="0" Grid.Row="0" Text="{Binding Matchup.Player1.Nickname}" 
                        FontFamily="MontserratBold" 
                        HorizontalTextAlignment="Center" FontSize="30" 
-                       TextColor="{StaticResource Primary}"/>
+                       TextColor="{Binding Theme.PrimaryColor}"/>
 
                     <Label Grid.Column="2" Grid.Row="0" Text="{Binding Matchup.Player2.Nickname}" 
                        FontFamily="MontserratBold" HorizontalTextAlignment="Center" FontSize="30"
-                       IsVisible="{Binding Matchup.Player2.IsActive}"
-                       TextColor="{StaticResource Primary}"/>
+                       IsVisible="{Binding IsMultiplePlayers}"
+                       TextColor="{Binding Theme.PrimaryColor}"/>
 
                     <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HeightRequest="580" HorizontalOptions="Center" Margin="50,0">
-                        <Frame VerticalOptions="End" HeightRequest="{Binding Player1BottleProgress}" BackgroundColor="White" />
+                        <Frame VerticalOptions="End" HeightRequest="{Binding Player1ProgressFillHeight}" BackgroundColor="White" />
                         <Image Source="progress_back.png" HeightRequest="580" Margin="0"/>
                     </Grid>
 
                     <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" HeightRequest="580" HorizontalOptions="Center" Margin="50,0" 
-                          IsVisible="{Binding Matchup.Player2.IsActive}">
-                        <Frame VerticalOptions="End" HeightRequest="{Binding Player2BottleProgress}" BackgroundColor="White" />
+                          IsVisible="{Binding IsMultiplePlayers}">
+                        <Frame VerticalOptions="End" HeightRequest="{Binding Player2ProgressFillHeight}" BackgroundColor="White" />
                         <Image Source="progress_back.png" HeightRequest="580" Margin="0"/>
                     </Grid>
 
                     <Image Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Source="founding_year_inverted.png" HeightRequest="300" VerticalOptions="End" 
-                           IsVisible="{Binding Matchup.Player2.IsActive}"/>
+                           IsVisible="{Binding IsMultiplePlayers}"/>
                     <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" 
                        Source="confetti.gif" HeightRequest="580" 
                        IsAnimationPlaying="True" IsVisible="False">
@@ -103,7 +103,7 @@
                     <Label Grid.Column="0" Grid.Row="2" Text="{Binding Player1Progress, StringFormat='{0:0}%'}" 
                        FontFamily="MontserratBold" 
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
-                       TextColor="{StaticResource Primary}">
+                       TextColor="{Binding Theme.PrimaryColor}">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding Player1Progress}" Value="0">
                                 <Setter Property="IsVisible" Value="False"/>
@@ -114,8 +114,8 @@
                     <Label Grid.Column="2" Grid.Row="2" Text="{Binding Player2Progress, StringFormat='{0:0}%'}"
                        FontFamily="MontserratBold" 
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
-                       IsVisible="{Binding Matchup.Player2.IsActive}"
-                       TextColor="{StaticResource Primary}">
+                       IsVisible="{Binding IsMultiplePlayers}"
+                       TextColor="{Binding Theme.PrimaryColor}">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding Player1Progress}" Value="0">
                                 <Setter Property="IsVisible" Value="False"/>
@@ -152,11 +152,11 @@
                             <Label Text="{Binding WinningEntry.Player.Nickname}" 
                            FontFamily="MontserratBold" Padding="0,0,0,0"
                            HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{StaticResource Primary}"/>
+                           TextColor="{Binding Theme.PrimaryColor}"/>
                             <Label Text=" Wins!!" 
                            FontFamily="MontserratBold" Padding="0,0,0,0"
                            HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{StaticResource Primary}"/>
+                           TextColor="{Binding Theme.PrimaryColor}"/>
                         </StackLayout>
 
                         <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="5" 
@@ -165,7 +165,7 @@
                         <Label Grid.Row="1" Grid.Column="1" Text="{Binding Matchup.Player1.Nickname}" 
                            FontFamily="MontserratBold" Padding="0,10,0,0"
                            HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{StaticResource Primary}"/>
+                           TextColor="{Binding Theme.PrimaryColor}"/>
 
                         <Frame Grid.Row="2" Grid.Column="1" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
                             <Label Text="{Binding Player1Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
@@ -180,7 +180,7 @@
                         <Label Grid.Column="2" Grid.Row="1" Text="{Binding Matchup.Player2.Nickname}" 
                        FontFamily="MontserratBold" Padding="0,10,0,0"
                        HorizontalTextAlignment="Center" FontSize="30" 
-                       TextColor="{StaticResource Primary}"/>
+                       TextColor="{Binding Theme.PrimaryColor}"/>
 
                         <Frame Grid.Row="2" Grid.Column="2" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
                             <Label Text="{Binding Player2Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" FontFamily="OpenSansSemibold" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
@@ -196,12 +196,12 @@
                             <Label Grid.Column="1" Grid.Row="1" Text="{Binding NextMatch.PlayerVsPlayerText, StringFormat='Up next: {0}'}" 
                            FontFamily="MontserratBold" Padding="0,10,10,0"
                            HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{StaticResource Primary}"/>
+                           TextColor="{Binding Theme.PrimaryColor}"/>
                             <Image Source="{Binding TournamentImageSource}" HorizontalOptions="Center"/>
                         </StackLayout>
 
                         <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Continue" Command="{Binding NextCommand}"
-                        BackgroundColor="{StaticResource Primary}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary }"
+                        BackgroundColor="{Binding Theme.PrimaryColor}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary }"
                         Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                     </Grid>
                 </Frame>

@@ -47,6 +47,7 @@ public abstract class ArdrinoCommunicator
     public Action<object, Matchup> OnMatchupProgressChanged { get; set; }
     public Action<object, Matchup> OnMatchupFinished { get; set; }
     public Action<object, Player> OnPlayerWon { get; set; }
+    public Action<object, Player[]> OnMatchupTired { get; set; }
     public Action<object, Player> OnPlayerDisconnected { get; set; }
     public Action<object, Player> OnPlayerStopped { get; set; }
     public Action<object, Player> OnPlayerStart { get; set; }
@@ -87,13 +88,18 @@ public abstract class ArdrinoCommunicator
         var progress = _matchup.GetPercentageProgress();
         if (progress >= 100)
         {
-            // Reset Counter
+            // Mark the matchup as played
             _matchup.IsPlayed = true;
+
             var winner = _matchup.Winner;
             if (_isRunning && winner != null)
             {
                 winner.IsActive = true;
                 OnPlayerWon?.Invoke(this, winner); // Notify the winner
+            }
+            else if(_matchup.Loser == null)
+            {
+                OnMatchupTired?.Invoke(this, _matchup.Players.ToArray());
             }
 
             if (_matchup.Game.AllowLosserToFinish == true)

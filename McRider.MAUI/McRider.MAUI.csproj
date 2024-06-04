@@ -71,6 +71,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="Resources\Images\theme\**" />
+	  <Compile Remove="Resources\Images\theme\**" />
+	  <EmbeddedResource Remove="Resources\Images\theme\**" />
+	  <MauiCss Remove="Resources\Images\theme\**" />
+	  <MauiImage Remove="Resources\Images\theme\**" />
+	  <MauiXaml Remove="Resources\Images\theme\**" />
+	  <None Remove="Resources\Images\theme\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<EmbeddedResource Include="Resources\Configs\nlog.android.config" />
 		<EmbeddedResource Include="Resources\Configs\nlog.config" />
 		<EmbeddedResource Include="Resources\Configs\nlog.ios.config" />
@@ -104,9 +114,5 @@
 	  <MauiXaml Update="Views\MatchupUnveilPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Resources\Images\theme\" />
 	</ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ public class FileCacheService
     private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 2);
 
     public TimeSpan? DefaultCacheDuration { get; set; }
+    public static string FilePrefix { get; set; }
 
     public FileCacheService(ILogger<FileCacheService>? logger = null)
     {

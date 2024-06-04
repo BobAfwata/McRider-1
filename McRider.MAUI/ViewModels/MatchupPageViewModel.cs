@@ -13,13 +13,15 @@ public partial class MatchupPageViewModel : BaseViewModel
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsUnveilView))]
     [NotifyPropertyChangedFor(nameof(IsComplete))]
+    [NotifyPropertyChangedFor(nameof(IsSinglePlayer))]
+    [NotifyPropertyChangedFor(nameof(IsMultiplePlayers))]
     [NotifyPropertyChangedFor(nameof(IsPlayer1Winner))]
     [NotifyPropertyChangedFor(nameof(IsPlayer2Winner))]
     [NotifyPropertyChangedFor(nameof(PercentageTimeProgress))]
     [NotifyPropertyChangedFor(nameof(Player1Progress))]
     [NotifyPropertyChangedFor(nameof(Player2Progress))]
-    [NotifyPropertyChangedFor(nameof(Player1BottleProgress))]
-    [NotifyPropertyChangedFor(nameof(Player2BottleProgress))]
+    [NotifyPropertyChangedFor(nameof(Player1ProgressFillHeight))]
+    [NotifyPropertyChangedFor(nameof(Player2ProgressFillHeight))]
     [NotifyPropertyChangedFor(nameof(NextMatch))]
     [NotifyPropertyChangedFor(nameof(WinningEntry))]
     [NotifyPropertyChangedFor(nameof(Player1Entry))]
@@ -27,6 +29,8 @@ public partial class MatchupPageViewModel : BaseViewModel
     Matchup _matchup;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RevealImage))]
+    [NotifyPropertyChangedFor(nameof(RevealImages))]
     Tournament _tournament;
 
     [ObservableProperty]
@@ -35,16 +39,57 @@ public partial class MatchupPageViewModel : BaseViewModel
     [ObservableProperty]
     bool _showCountDown;
 
-
     [ObservableProperty]
     bool _showResults;
+
+    [ObservableProperty]
+    double _curtainWidth = 500;
+
+    [ObservableProperty]
+    double _progressFillHeight = 580;
+
+    double _player1CurtainCounter = 0;
+    double _player2CurtainCounter = 0;
 
     public MatchupPageViewModel(ArdrinoCommunicator communicator, RepositoryService<Tournament> repository)
     {
         Title = "Game Play";
+
         _tournament = null;
         _communicator = communicator;
         _repository = repository;
+
+        App.StartTimer(TimeSpan.FromSeconds(1), () =>
+        {
+            if (IsComplete) return false;
+
+            if (Player1CurtainTranslationX < 0)
+                _player1CurtainCounter--;
+
+            if (Player2CurtainTranslationX > 0)
+                _player2CurtainCounter--;
+
+            return true;
+        });
+    }
+
+
+    public ImageSource RevealImage => RevealImages.FirstRandom();
+
+    public IEnumerable<ImageSource> RevealImages
+    {
+        get
+        {
+            var images = Tournament?.Game?.RevealImages ?? [];
+            var assembly = Application.Current?.GetType().Assembly;
+            var revealRegex = new Regex($"{App.Configs?.Theme ?? ""}(.?)reveal(.*).png");
+            var matches = assembly?.GetManifestResourceNames().Where(r => revealRegex.IsMatch(r));
+
+            if (matches?.Any() == true)
+                images.AddRange(matches);
+
+            return images.Select(x => x.ToImageSource());
+        }
     }
 
     public ImageSource TournamentImageSource
@@ -63,15 +108,21 @@ public partial class MatchupPageViewModel : BaseViewModel
     }
 
     public bool IsUnveilView => Tournament?.Game?.GameType == GameType.Reveal;
-    public bool IsComplete => IsPlayer1Winner || IsPlayer2Winner;
-    public bool IsPlayer1Winner => Matchup?.Winner?.Id == Matchup?.Player1?.Id && Matchup?.Player1?.Id != null;
-    public bool IsPlayer2Winner => Matchup?.Winner?.Id == Matchup?.Player2?.Id && Matchup?.Player2?.Id != null;
+    public bool IsSinglePlayer => IsMultiplePlayers != true;
+    public bool IsMultiplePlayers => Matchup?.Player2?.IsActive == true;
+    public bool IsComplete => Matchup?.IsPlayed == true;
+    public bool IsPlayer1Winner => Matchup?.IsPlayed == true && Matchup?.Winner?.Id == Matchup?.Player1?.Id && Matchup?.Player1?.Id != null;
+    public bool IsPlayer2Winner => Matchup?.IsPlayed == true && Matchup?.Winner?.Id == Matchup?.Player2?.Id && Matchup?.Player2?.Id != null;
 
     public double PercentageTimeProgress => Matchup?.GetPercentageTimeProgress() ?? 0;
     public double Player1Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(0) ?? 0;
     public double Player2Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(1) ?? 0;
-    public double Player1BottleProgress => Player1Progress / 100.0 * 580.0;
-    public double Player2BottleProgress => Player2Progress / 100.0 * 580.0;
+
+    public double Player1ProgressFillHeight => Player1Progress / 100.0 * ProgressFillHeight;
+    public double Player2ProgressFillHeight => Player2Progress / 100.0 * ProgressFillHeight;
+
+    public double Player1CurtainTranslationX => -(Player1Progress / 100.0 * CurtainWidth / 2 - _player1CurtainCounter);
+    public double Player2CurtainTranslationX => IsSinglePlayer? -Player1CurtainTranslationX: (Player2Progress / 100.0 * CurtainWidth / 2 - _player2CurtainCounter);
 
     public Matchup NextMatch => Tournament?.GetNextMatchup(Matchup);
     public MatchupEntry WinningEntry => Matchup?.Winner?.GetEntry(Matchup);
@@ -120,8 +171,10 @@ public partial class MatchupPageViewModel : BaseViewModel
         OnPropertyChanged(nameof(PercentageTimeProgress));
         OnPropertyChanged(nameof(Player1Progress));
         OnPropertyChanged(nameof(Player2Progress));
-        OnPropertyChanged(nameof(Player1BottleProgress));
-        OnPropertyChanged(nameof(Player2BottleProgress));
+        OnPropertyChanged(nameof(Player1ProgressFillHeight));
+        OnPropertyChanged(nameof(Player2ProgressFillHeight));
+        OnPropertyChanged(nameof(Player1CurtainTranslationX));
+        OnPropertyChanged(nameof(Player2CurtainTranslationX));
 
         // Broudcast the game play progress
         WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, Matchup, Matchup?.GetPercentageProgress() ?? 0));
@@ -251,6 +304,9 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnMatchupFinished += async (sender, matchup) =>
         {
+            if (Tournament == null) return;
+
+            // Update the game play progress on match finish
             _logger.LogInformation("Matchup finished {Matchup}, Winner: {Winner}", matchup.ToString(), matchup.Winner?.Nickname);
 
             // Save the game play

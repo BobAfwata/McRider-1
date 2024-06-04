@@ -15,7 +15,6 @@ namespace McRider.MAUI.ViewModels
         public LandingPageViewModel(RepositoryService<Tournament> repository)
         {
             _repository = repository;
-            repository.FilePrefix = App.Configs?.Theme + ".";
         }
 
         public override async Task Initialize(params object[] args)
