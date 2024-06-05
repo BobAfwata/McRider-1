@@ -15,9 +15,12 @@ public partial class StartGamePageViewModel : BaseViewModel
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMultiplePlayers))]
+    [NotifyPropertyChangedFor(nameof(Player1GenderImage))]
+    [NotifyPropertyChangedFor(nameof(Player2GenderImage))]
     Matchup _matchup;
 
-    public bool IsMultiplePlayers => Matchup?.Player2?.IsActive == true;
+    public bool IsMultiplePlayers => Matchup?.Players.DistinctBy(p => p?.Nickname).Count() > 1;
     public string Player1GenderImage => Matchup?.Player1 == null ? null : Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
     public string Player2GenderImage => Matchup?.Player2 == null ? null : Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
 
@@ -28,12 +31,6 @@ public partial class StartGamePageViewModel : BaseViewModel
             return;
 
         _tcs.TrySetResult();
-    }
-
-    partial void OnMatchupChanged(Matchup value)
-    {
-        OnPropertyChanged(nameof(Player1GenderImage));
-        OnPropertyChanged(nameof(Player2GenderImage));
     }
 
     private bool IsValid(Matchup matchup) => matchup?.Players.All(p => p != null) == true;
@@ -54,8 +51,8 @@ public partial class StartGamePageViewModel : BaseViewModel
     public async Task<Tournament> AwaitMatchupsFor(Tournament tournament, GameItem game)
     {
         var players = tournament.Players.ToArray();
-
         var teamsArray = players.GroupBy(p => p.Team).ToArray();
+
         if (tournament.Rounds.Count == 0)
             tournament.Rounds.Add([]);
 
@@ -66,10 +63,14 @@ public partial class StartGamePageViewModel : BaseViewModel
         {
             if (players.Length <= 0)
                 throw new InvalidOperationException("At least one player is required to start a game.");
-            else if (game.TeamsCount > 1 || players.Length == 1)
+            else if (game.GameType == GameType.Reveal)
+                // Create reveal rounds
+                tournament.CreateRevealRounds();
+            else if (game.GameType == GameType.Team)
                 // Create teamup rounds
                 tournament.CreateTeamupRounds(teamsArray);
-            else // Create tournament rounds
+            else 
+                // Create tournament rounds
                 tournament.CreateTournamentRounds();
 
             // Save the tournament
@@ -77,7 +78,7 @@ public partial class StartGamePageViewModel : BaseViewModel
         }
 
         // Play each game
-        var matchup = tournament.GetNextMatchup() ?? tournament.Matchups.FirstOrDefault();
+        var matchup = tournament.GetNextMatchup();
         while (matchup is not null)
         {
             // Skip finished games
@@ -130,4 +131,6 @@ public partial class StartGamePageViewModel : BaseViewModel
 
         return tournament;
     }
+
+
 }

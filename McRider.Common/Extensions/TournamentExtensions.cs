@@ -91,6 +91,8 @@ public static class TournamentExtensions
     {
         tournament.FixMatchupRef(currentMatchup);
 
+        var allowSinglePlayer = tournament.Game.GameType != GameType.Tournament;
+
         // Manatory filters
         var manatoryFilters = new Func<Matchup, bool>[]
         {
@@ -99,9 +101,9 @@ public static class TournamentExtensions
             // Ignore if the match is already complete
             m => m.IsPlayed != true ,
             // Select matchs where players are assigned
-            m => m.HasPlayers == true,
+            m => allowSinglePlayer || m.HasPlayers == true,
             // Ignore Byes
-            m => m.IsByeMatchup == false,
+            m => allowSinglePlayer || m.IsByeMatchup == false,
             // Ignore if the match is in the Grand Finals and the set 1 finals is not complete
             m => m.IsFinalsSet2() == false || tournament.RequiresSet2Finals(),
         };

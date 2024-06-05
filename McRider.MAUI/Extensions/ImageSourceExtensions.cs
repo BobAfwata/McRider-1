@@ -9,6 +9,12 @@ namespace McRider.MAUI.Extensions;
 
 public static class ImageSourceExtensions
 {
+    public static ImageSource ToImageSource(this string url, string defaultImageSource, object parameter = null)
+    {
+        var _defaultImageSource = defaultImageSource?.ToImageSource();
+        return url.ToImageSource(_defaultImageSource, parameter);
+    }
+
     public static ImageSource ToImageSource(this string url, ImageSource defaultImageSource = null, object parameter = null)
     {
         if (string.IsNullOrEmpty(url))
@@ -37,15 +43,16 @@ public static class ImageSourceExtensions
         if (url.IsBase64(out var stream))
             return ImageSource.FromStream(() => stream);
 
-        if(File.Exists("./" + url))
-            return ImageSource.FromFile(url);
+        //var fileImageSource = ImageSource.FromFile(url);
+        //if (fileImageSource.IsEmpty != true)
+        //    return fileImageSource;
 
         try
         {
             var assembly = Application.Current?.GetType().Assembly;
 
             // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
-            var matches = assembly?.GetManifestResourceNames().Where(str => str.EndsWith("." + url.Replace("/", ".")) || str.EndsWith(url.Replace("/", ".")));
+            var matches = assembly?.GetManifestResourceNames().Where(str => str.EndsWith("." + url.Replace("/", ".")) || str.Equals(url));
 
             if (matches?.Count() > 1)
                 throw new Exception($"File name '{url}' matches multiple resources!!");
@@ -55,7 +62,7 @@ public static class ImageSourceExtensions
             if (!string.IsNullOrEmpty(resourcePath))
                 return ImageSource.FromResource(resourcePath);
 
-            return ImageSource.FromFile(url);
+            return defaultImageSource ?? ImageSource.FromFile(url);
         }
         catch
         {

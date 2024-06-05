@@ -13,7 +13,11 @@ public class Matchup
     public Bracket Bracket { get; set; } = Bracket.Winners;
 
     public int Round { get; set; } = 1;
+
     public GameItem Game { get; set; }
+
+    public Dictionary<string, object> Metadata { get; set; } = [];
+
     public ConcurrentList<MatchupEntry> Entries { get; set; } = [];
 
     public ConcurrentList<Matchup> ParentMatchups => Entries.Select(e => e.ParentMatchup).Where(x => x is not null).ToList();

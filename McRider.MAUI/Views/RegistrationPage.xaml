@@ -72,10 +72,10 @@
                         </Frame.Triggers>
                     </Frame>
 
-                    <ImageButton Grid.Column="0" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="M" Source="male.png"/>
+                    <ImageButton Grid.Column="0" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="M" Source="male.png" BackgroundColor="Transparent"/>
                     <Image Grid.Column="0" Source="check.png" Margin="0,40" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsMale}"/>
 
-                    <ImageButton Grid.Column="1" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="F" Source="female.png"/>
+                    <ImageButton Grid.Column="1" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="F" Source="female.png" BackgroundColor="Transparent"/>
                     <Image Grid.Column="1" Source="check.png" Margin="0,40" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsFemale}"/>
                 </Grid>
 

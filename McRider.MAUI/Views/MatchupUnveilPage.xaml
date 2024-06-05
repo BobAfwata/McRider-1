@@ -24,15 +24,41 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Image Grid.Column="0" Source="{Binding RevealImage}" Grid.ColumnSpan="2" IsAnimationPlaying="True" Aspect="AspectFill" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="180"/>
+                </Grid.RowDefinitions>
 
-                <Image Grid.Column="0" IsAnimationPlaying="True" 
+                <Image Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Source="{Binding RevealImage}" IsAnimationPlaying="True" Aspect="AspectFill" />
+
+                <Border Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" 
+                        WidthRequest="800" VerticalOptions="End" Margin="0,0,0,20"
+                        Stroke="LightGray" StrokeThickness="4"
+                        StrokeShape="RoundRectangle 10"
+                        IsVisible="{Binding ShowResults}" >
+                    <Image Source="{Binding PromoImage}" />                    
+                </Border>
+
+                <Image Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" WidthRequest="700" 
+                       IsAnimationPlaying="True" Aspect="AspectFill" IsVisible="{Binding IsComplete}"
+                       Source="confetti.gif"  />
+
+                <Image Grid.Column="0" Grid.RowSpan="2" x:Name="CurtainLeft"
                        Source="curtain.png" BackgroundColor="Red" Aspect="AspectFill"
                        TranslationX="{Binding Player1CurtainTranslationX}" />
-                
-                <Image Grid.Column="1" IsAnimationPlaying="True" 
+
+                <Image Grid.Column="1" Grid.RowSpan="2" x:Name="CurtainRight"
                        Source="curtain.png" BackgroundColor="Red" Aspect="AspectFill"
                        TranslationX="{Binding Player2CurtainTranslationX}"/>
+                                
+                <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="40" HorizontalOptions="Center"
+                     Stroke="LightGray" StrokeShape="RoundRectangle 50" IsVisible="{Binding IsComplete}">
+                    <Button Text="Next" Command="{Binding NextCommand}"
+                        BackgroundColor="{Binding Theme.TertiaryColor}"  
+                        TextColor="{Binding Theme.PrimaryColor}"                        
+                        Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50"/>
+                </Border>
+                
             </Grid>
         </ScrollView>
     </Grid>

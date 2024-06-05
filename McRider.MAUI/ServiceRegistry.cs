@@ -40,7 +40,7 @@ namespace McRider.MAUI
             services.AddViewModel<SliderPageViewModel>();
             services.AddViewModel<LandingPageViewModel>();
             services.AddViewModel<GamesPageViewModel>();
-            services.AddViewModel<RegistrationPageViewModel>();
+            services.AddViewModel<RegistrationPageViewModel>(false);
             services.AddViewModel<StartGamePageViewModel>();
             services.AddViewModel<MatchupPageViewModel>();
 

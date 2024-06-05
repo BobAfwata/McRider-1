@@ -181,10 +181,10 @@ public static class TournamentVisualizationExtensions
         for (int i = 0; i < players.Count; i++)
         {
             var player = players[i];
-            var score = player.GetScore(tournament);
+            var score = player.GetWins(tournament) + "-" + player.GetLooses(tournament);
 
             g.DrawString(player?.Nickname, font, Brushes.Black, new PointF(scoresPos.X, scoresPos.Y + BOX_HEIGHT + sHeight * i));
-            g.DrawString(score.ToString().PadLeft(2, ' '), font, Brushes.Black, new PointF(scoresPos.X + BOX_WIDTH, scoresPos.Y + BOX_HEIGHT + sHeight * i));
+            g.DrawString(score.ToString().PadLeft(2, ' '), font, Brushes.Black, new PointF(scoresPos.X + BOX_WIDTH * .8F, scoresPos.Y + BOX_HEIGHT + sHeight * i));
         }
 
         return bitmap;

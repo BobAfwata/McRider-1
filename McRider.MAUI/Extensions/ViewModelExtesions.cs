@@ -18,13 +18,13 @@ public static class ViewViewModelExtensions
     {
         var isAdded = services.IsServiceAdded<V>();
 
-            if (singleton)
+        if (singleton)
             services.AddSingleton<V>();
         else
             services.AddTransient<V>();
 
         route = string.IsNullOrEmpty(route) ? typeof(V).Name : route;
-        if (isAdded != true)
+        if (isAdded != true) 
             Routing.RegisterRoute(route, typeof(V));
 
         return services;

@@ -171,13 +171,14 @@ public partial class ThemeConfig : ObservableObject
 
     public ImageSource GetLogo(int index = 0) => $"Themes/logo{(index == 0 ? "" : index)}.png".Replace("Themes/", "Themes/" + Theme + "/").ToImageSource();
 
-    public ImageSource HeaderImage => "Themes/header.png".Replace("Themes/", "Themes/" + Theme + "/").ToImageSource();
+    public ImageSource ProgressImage => "Themes/progress_back.png".Replace("Themes/", "Themes/" + Theme + "/").ToImageSource("./progress_back.png");
 
-    public ImageSource FooterImage => "Themes/footer.png".Replace("Themes/", "Themes/" + Theme + "/").ToImageSource();
+    public ImageSource HeaderImage => "Themes/header.png".Replace("Themes/", "Themes/" + Theme + "/").ToImageSource("./header.png");
+
+    public ImageSource FooterImage => "Themes/footer.png".Replace("Themes/", "Themes/" + Theme + "/").ToImageSource("./footer.png");
 
     public List<ImageSource> SliderImages => new List<string> { "Themes/slider1.png", "Themes/slider2.png", "Themes/slider3.png" }
         .Select(x => x.Replace("Themes/", "Themes/" + Theme + "/").ToImageSource())
         .Where(x => x != null)
         .ToList();
-
 }
