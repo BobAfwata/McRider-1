@@ -17,11 +17,13 @@ public partial class MatchupPage : ContentPage
     private void OnCurtainGridSizeChanged(object? sender, EventArgs e)
     {
         if (BindingContext is MatchupPageViewModel vm)
+        {
             if (Player1ProgressImage.Height > 0)
             {
                 Player1ProgressImage.SizeChanged -= OnCurtainGridSizeChanged;
                 vm.ProgressFillHeight = Player1ProgressImage.Height;
             }
+        }
     }
 
     protected override void OnAppearing()
