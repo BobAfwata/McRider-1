@@ -32,29 +32,34 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
         // Detect port if not set or modified more than 24 hours ago
         if ((DateTime.UtcNow - _configs.ModifiedTime).TotalHours > 24)
             await DetectPort();
-
-        _serialPort.PortName = _configs?.PortName ?? "COM4";
-        _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
-        _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
-
-        int count = 0;
-        do
+        else if (_serialPort.IsOpen != true)
         {
-            try
-            {
-                _serialPort.Open();
-                break;
-            }
-            catch (System.IO.IOException ex)
-            {
-                _logger.LogError(ex, "Error opening serial port!");
-                await DetectPort();
-            }
-        } while (count++ < 1);
+            _serialPort.PortName = _configs?.PortName ?? "COM4";
+            _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
+            _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
+        }
 
-#if DEBUG1
-        return true;
-#endif
+        if (_serialPort.IsOpen != true)
+        {
+            int count = 0;
+            do
+            {
+                try
+                {
+                    _serialPort.Open();
+                    break;
+                }
+                catch (System.IO.IOException ex)
+                {
+                    _logger.LogError(ex, "Error opening serial port!");
+                    await DetectPort();
+                }
+            } while (count++ < 1);
+        }
+
+        // for DEBUG
+        if (_configs?.FakeRead == true)
+            return true;
 
         return _serialPort.IsOpen;
     }
@@ -132,7 +137,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                 await base.DoReadDataAsync();
         }
         else
-            await base.DoReadDataAsync();        
+            await base.DoReadDataAsync();
     }
 
     public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0)

@@ -216,7 +216,6 @@
                         Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                     </Grid>
                 </Frame>
-
                 
             </Grid>
         </ScrollView>

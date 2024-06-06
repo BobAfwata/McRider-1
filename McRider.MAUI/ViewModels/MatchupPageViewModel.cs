@@ -36,7 +36,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     int _countDown;
 
     [ObservableProperty]
-    bool _showCountDown;
+    bool _showCountDown = true;
 
     [ObservableProperty]
     bool _showResults;
@@ -58,22 +58,22 @@ public partial class MatchupPageViewModel : BaseViewModel
         _communicator = communicator;
         _repository = repository;
 
-        App.StartTimer(TimeSpan.FromSeconds(1), () =>
+        App.StartTimer(TimeSpan.FromSeconds(0.1), () =>
         {
             if (IsComplete) return false;
 
             if (Player1CurtainTranslationX < 0)
-                _player1CurtainCounter--;
+                _player1CurtainCounter += 1;
 
             if (Player2CurtainTranslationX > 0)
-                _player2CurtainCounter--;
+                _player2CurtainCounter += 10;
 
             return true;
         });
     }
 
     public ImageSource? RevealImage => Matchup?.Metadata?.TryGetValue("RevealImage", out var obj) == true && obj is string ? obj?.ToString().ToImageSource() : null;
-    
+
     public ImageSource PromoImage
     {
         get
@@ -104,7 +104,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     public ImageSource Player1ProgressImage => Matchup?.Player1?.Gender == "F"
         ? Theme.GetImage("Themes/progress_back_female.png", "./progress_back_female.png")
         : Theme.GetImage("Themes/progress_back_male.png", "./progress_back_male.png");
-    
+
     public ImageSource Player2ProgressImage => Matchup?.Player2?.Gender == "F"
         ? Theme.GetImage("Themes/progress_back_female.png", "./progress_back_female.png")
         : Theme.GetImage("Themes/progress_back_male.png", "./progress_back_male.png");
@@ -142,24 +142,28 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown > 0)
             ShowCountDown = true;
 
-        if (countDown <= 0)
+        if (countDown < 0)
             await StartGame();
         else
-            Device.StartTimer(TimeSpan.FromSeconds(1.2), () => DoCountDown().Result);
+            App.StartTimer(TimeSpan.FromSeconds(1.2), () => DoCountDown().Result);
     }
 
     private async Task<bool> DoCountDown()
     {
         var countDown = CountDown - 1;
 
-        if (countDown < 0)
-            ShowCountDown = false;
-
         if (countDown >= 0)
             CountDown = countDown;
 
         if (countDown <= 0)
+        {
             await StartGame();
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(3000);
+                ShowCountDown = false;
+            });
+        }
 
         return countDown > 0;
     }
@@ -205,16 +209,27 @@ public partial class MatchupPageViewModel : BaseViewModel
     private async Task StartNextGame()
     {
         IsBusy = true;
-        Matchup = null;
 
-        _player1CurtainCounter = 0;
-        _player2CurtainCounter = 0;
-        OnPropertyChanged(nameof(Player1CurtainTranslationX));
-        OnPropertyChanged(nameof(Player2CurtainTranslationX));
+        // Close Curtains
+        while (Player1CurtainTranslationX < 0 || Player2CurtainTranslationX > 0)
+        {
+            if (Player1CurtainTranslationX < 0)
+                _player1CurtainCounter += 50;
+            if (Player2CurtainTranslationX > 0)
+                _player2CurtainCounter += 50;
+
+            OnPropertyChanged(nameof(Player1CurtainTranslationX));
+            OnPropertyChanged(nameof(Player2CurtainTranslationX));
+
+            await Task.Delay(100);
+        }
+
         await Task.Delay(1000);
-
         await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
         var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
+
+        _showCountDown = true;
+        Matchup = null;
 
         if (vm is not null)
         {

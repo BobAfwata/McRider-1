@@ -61,9 +61,9 @@ public partial class GamesPageViewModel : BaseViewModel
                 PlayersPerTeam = 1,
                 TeamsCount = 1,
                 Description = "Description 2",
-                TargetDistance = 1000,
+                TargetDistance = 500,
                 IsActive = App.Configs?.Theme == "showmax",
-                TargetTime = TimeSpan.FromMinutes(1),
+                TargetTime = TimeSpan.FromMinutes(2),
                 Image = "unveil.png",
             },
             new GameItem {

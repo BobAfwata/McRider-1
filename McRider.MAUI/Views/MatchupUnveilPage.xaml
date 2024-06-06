@@ -50,7 +50,23 @@
                 <Image Grid.Column="1" Grid.RowSpan="2" x:Name="CurtainRight"
                        Source="curtain.png" BackgroundColor="Red" Aspect="AspectFill"
                        TranslationX="{Binding Player2CurtainTranslationX}"/>
-                                
+
+                <Grid Grid.Row="0" Grid.ColumnSpan="2"  HeightRequest="580" VerticalOptions="Start" Margin="100" IsVisible="{Binding ShowCountDown}">
+                    <Image Source="watch_start_white.png"/>
+                    <Label Text="{Binding CountDown}" FontSize="100" Padding="0,80,0,0" FontFamily="MontserratBold"
+                       TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"> 
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding CountDown}" Value="0">
+                                <Setter Property="Text" Value="GO!!"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label"  Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="Text" Value="3"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </Grid>
+
+
                 <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="40" HorizontalOptions="Center"
                      Stroke="LightGray" StrokeShape="RoundRectangle 50" IsVisible="{Binding IsComplete}">
                     <Button Text="Next" Command="{Binding NextCommand}"
