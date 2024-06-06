@@ -37,13 +37,11 @@ namespace McRider.MAUI.ViewModels
         }
 
         private async Task<SliderItem[]> GetItemsAsync()
-        {
-            
-
+        {           
             return [
-                new SliderItem { Image = "founding_year_inverted.png", Title = "Image 1", Description = "Description 1" },
-                new SliderItem { Image = "founding_year_transparent.png", Title = "Image 2", Description = "Description 2" },
-                new SliderItem { Image = "founding_year_yellow.png", Title = "Image 3", Description = "Description 3" },
+                new SliderItem { Image = "logo1.png", Title = "Image 1", Description = "Description 1" },
+                new SliderItem { Image = "logo2.png", Title = "Image 2", Description = "Description 2" },
+                new SliderItem { Image = "logo3.png", Title = "Image 3", Description = "Description 3" },
             ];
         }
 

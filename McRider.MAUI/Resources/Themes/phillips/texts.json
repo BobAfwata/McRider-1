@@ -1,3 +1,8 @@
 {
-  "LoadingTitle": "Lorem ipsum dolor sit amet, consectetuer"
+  "TitleColor": "#ffffff",
+  "PrimaryColor": "#0879bf",
+  "TertiaryColor": "#000000",
+  "GamesTitle": "Lorem ipsum dolor sit amet, consectetuer",
+  "LoadingTitle": "Loading philips challenge.",
+  "LandingTitle": "Lorem ipsum dolor sit amet, consectetuer"
 }

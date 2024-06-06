@@ -62,7 +62,12 @@ public static class ImageSourceExtensions
             if (!string.IsNullOrEmpty(resourcePath))
                 return ImageSource.FromResource(resourcePath);
 
-            return defaultImageSource ?? ImageSource.FromFile(url);
+            if (defaultImageSource != null)
+                return defaultImageSource;
+
+            var fileSource = new FileImageSource { File = url };
+
+            return fileSource;
         }
         catch
         {

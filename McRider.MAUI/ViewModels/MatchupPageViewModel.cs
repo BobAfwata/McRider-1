@@ -101,6 +101,14 @@ public partial class MatchupPageViewModel : BaseViewModel
         }
     }
 
+    public ImageSource Player1ProgressImage => Matchup?.Player1?.Gender == "F"
+        ? Theme.GetImage("Themes/progress_back_female.png", "./progress_back_female.png")
+        : Theme.GetImage("Themes/progress_back_male.png", "./progress_back_male.png");
+    
+    public ImageSource Player2ProgressImage => Matchup?.Player2?.Gender == "F"
+        ? Theme.GetImage("Themes/progress_back_female.png", "./progress_back_female.png")
+        : Theme.GetImage("Themes/progress_back_male.png", "./progress_back_male.png");
+
     public bool IsSinglePlayer => IsMultiplePlayers != true;
     public bool IsMultiplePlayers => Matchup?.Players.DistinctBy(p => p?.Nickname).Count() > 1;
     public bool IsComplete => Matchup?.IsPlayed == true;

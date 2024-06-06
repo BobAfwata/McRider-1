@@ -30,8 +30,8 @@
                         <RowDefinition Height="55"/>
                     </Grid.RowDefinitions>
 
-                    <ImageButton Aspect="AspectFill" Grid.Column="0" Grid.RowSpan="2" Source="{Binding Player1GenderImage}" HeightRequest="500"/>
-                    <ImageButton Aspect="AspectFill" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Player2GenderImage}" HeightRequest="500" IsVisible="{Binding IsMultiplePlayers}"/>
+                    <ImageButton Aspect="AspectFill" Grid.Column="0" Grid.RowSpan="2" Source="{Binding Player1GenderImage}" HeightRequest="500" BackgroundColor="Transparent"/>
+                    <ImageButton Aspect="AspectFill" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Player2GenderImage}" HeightRequest="500" BackgroundColor="Transparent" IsVisible="{Binding IsMultiplePlayers}"/>
 
                     <Label Grid.Column="0" Grid.Row="2" Text="{Binding Matchup.Player1.Nickname}" 
                        FontFamily="MontserratBold"  
