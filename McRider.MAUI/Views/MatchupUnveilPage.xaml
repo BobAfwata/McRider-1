@@ -59,9 +59,6 @@
                             <DataTrigger TargetType="Label" Binding="{Binding CountDown}" Value="0">
                                 <Setter Property="Text" Value="GO!!"/>
                             </DataTrigger>
-                            <DataTrigger TargetType="Label"  Binding="{Binding IsBusy}" Value="True">
-                                <Setter Property="Text" Value="3"/>
-                            </DataTrigger>
                         </Label.Triggers>
                     </Label>
                 </Grid>

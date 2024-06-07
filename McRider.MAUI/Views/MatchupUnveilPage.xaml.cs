@@ -16,9 +16,11 @@ public partial class MatchupUnveilPage : ContentPage
 
     private void OnCurtainGridSizeChanged(object? sender, EventArgs e)
     {
-        CurtainsGrid.SizeChanged -= OnCurtainGridSizeChanged;
-        if (BindingContext is MatchupPageViewModel vm)
+        if (BindingContext is MatchupPageViewModel vm && CurtainsGrid.Width > 0)
+        {
+            CurtainsGrid.SizeChanged -= OnCurtainGridSizeChanged;
             vm.CurtainWidth = CurtainsGrid.Width;
+        }
     }
 
     protected override void OnAppearing()

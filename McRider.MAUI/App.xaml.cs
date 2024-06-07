@@ -91,14 +91,14 @@ namespace McRider.MAUI
         ///     - Return true to keep repeating after the set interval
         ///     - Return false task was completed no farther action needed
         /// </param>
-        public static void StartBackgroundTimer(TimeSpan timeSpan, Func<Boolean> action)
+        public static void StartBackgroundTimer(TimeSpan timeSpan, Func<Task<Boolean>> action)
         {
             var worker = ServiceProvider.GetService<ServiceWorker>();
 
             worker?.AddAction(async p =>
             {
                 await Task.Delay(timeSpan);
-                return action?.Invoke() == true; // True = Repeat again, False = Stop the timer
+                return (await action?.Invoke()) == true; // True = Repeat again, False = Stop the timer
             });
         }
 
@@ -111,15 +111,15 @@ namespace McRider.MAUI
         ///     - Return true to keep repeating after the set interval
         ///     - Return false task was completed no farther action needed
         /// </param>
-        public static void StartTimer(TimeSpan timeSpan, Func<Boolean> action)
+        public static void StartTimer(TimeSpan timeSpan, Func<Task<Boolean>> action)
         {
             Timer timer = null;
 
             // Create a new timer with a interval of 100 milliseconds
-            TimerCallback timerCallback = (state) =>
+            TimerCallback timerCallback = async (state) =>
             {
                 // Call your method here
-                if (action?.Invoke() == true)
+                if ((await action?.Invoke()) == true)
                     timer?.Change(timeSpan, Timeout.InfiniteTimeSpan);
                 else
                     timer?.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
@@ -127,6 +127,12 @@ namespace McRider.MAUI
 
             timer = new Timer(timerCallback, null, TimeSpan.Zero, timeSpan);
         }
+
+        public static void StartTimer(TimeSpan timeSpan, Func<Boolean> action)
+            => StartTimer(timeSpan, () => Task.FromResult(action?.Invoke() == true));
+
+        public static void StartBackgroundTimer(TimeSpan timeSpan, Func<Boolean> action)
+            => StartBackgroundTimer(timeSpan, () => Task.FromResult(action?.Invoke() == true));
 
         #region Toasts and Dialog
 
