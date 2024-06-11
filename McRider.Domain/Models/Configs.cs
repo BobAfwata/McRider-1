@@ -7,6 +7,7 @@ public class Configs
     public string PortName { get; set; } = "COM7";
     public int BaudRate { get; set; } = 9600;
     public int ReadTimeout { get; set; } = 500;
-    public string Theme { get; set; } = "showmax";
+    public string Theme { get; set; } = "";
     public bool FakeRead { get; set; }
+    public bool ReverseAnimation { get; set; } = true;
 }

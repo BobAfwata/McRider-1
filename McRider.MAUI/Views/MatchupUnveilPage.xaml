@@ -2,8 +2,10 @@
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="McRider.MAUI.Views.MatchupUnveilPage"  
     xmlns:controls="clr-namespace:McRider.MAUI.Controls"
+    xmlns:viewmodel="clr-namespace:McRider.MAUI.ViewModels"
+    x:DataType="viewmodel:MatchupPageViewModel"
+    x:Class="McRider.MAUI.Views.MatchupUnveilPage"  
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled" 
     IsBusy="{Binding IsBusy}">
@@ -39,7 +41,7 @@
                     <Image Source="{Binding PromoImage}" />                    
                 </Border>
 
-                <Image Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" WidthRequest="700" 
+                <Image Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" WidthRequest="570" 
                        IsAnimationPlaying="True" Aspect="AspectFill" IsVisible="{Binding IsComplete}"
                        Source="confetti.gif"  />
 
@@ -51,9 +53,9 @@
                        Source="curtain.png" BackgroundColor="Red" Aspect="AspectFill"
                        TranslationX="{Binding Player2CurtainTranslationX}"/>
 
-                <Grid Grid.Row="0" Grid.ColumnSpan="2"  HeightRequest="580" VerticalOptions="Start" Margin="100" IsVisible="{Binding ShowCountDown}">
+                <Grid Grid.Row="0" Grid.ColumnSpan="2"  HeightRequest="480" VerticalOptions="Start" Margin="100" IsVisible="{Binding ShowCountDown}">
                     <Image Source="watch_start_white.png"/>
-                    <Label Text="{Binding CountDown}" FontSize="100" Padding="0,80,0,0" FontFamily="MontserratBold"
+                    <Label Text="{Binding CountDown}" FontSize="100" Padding="0,70,0,0" FontFamily="MontserratBold"
                        TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"> 
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding CountDown}" Value="0">

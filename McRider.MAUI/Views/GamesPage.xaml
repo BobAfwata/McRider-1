@@ -3,7 +3,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:viewmodel="clr-namespace:McRider.MAUI.ViewModels"
+    xmlns:model="clr-namespace:McRider.Domain.Models;assembly=McRider.Domain"
     x:Class="McRider.MAUI.Views.GamesPage"    
+    x:DataType="viewmodel:GamesPageViewModel"
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled">
     
@@ -18,9 +20,7 @@
         <Image Grid.Row="2" Source="{Binding Theme.FooterImage}" Aspect="AspectFit"/>
 
         <ScrollView Grid.Row="1" BackgroundColor="{Binding Theme.PrimaryColor}" Margin="25,0">
-
             <Grid Grid.Row="0"   Margin="0" Padding="0">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="300"/>
                     <RowDefinition Height="*"/>
@@ -47,16 +47,18 @@
                                 HorizontalItemSpacing="10" VerticalItemSpacing="10" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate
+                            x:DataType="model:GameItem">
                             <Grid Padding="10">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="300" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Image Grid.Row="0" Source="{Binding Image}"  BackgroundColor="{StaticResource White}" Aspect="AspectFit"/>
+                                <Image Grid.Row="0" Source="{Binding Image}"  BackgroundColor="{StaticResource White}" Aspect="AspectFit"
+                                       HeightRequest="{Binding RowHeight, Source={RelativeSource AncestorType={x:Type viewmodel:GamesPageViewModel}}}"/>
                                 <Label Grid.Row="1" Text="{Binding Name}" FontSize="28" FontFamily="MontserratBold"
                                        Padding="5" HorizontalTextAlignment="Center"
-                                       BackgroundColor="Black" TextColor="{Binding Theme.PrimaryColor}"/>
+                                       BackgroundColor="Black" TextColor="White"/>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

@@ -20,6 +20,7 @@ public class GameItem
     public bool AllowLosserToFinish { get; set; } = false;
     public bool IsActive { get; set; } = false;
     public List<string> RevealImages { get; set; } = [];
+    public bool? HorizontalProgress { get; set; }
 }
 
 public enum GameType

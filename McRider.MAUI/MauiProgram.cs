@@ -1,8 +1,5 @@
 ﻿using CommunityToolkit.Maui;
-using McRider.Common.Extensions;
 using McRider.Common.Logging;
-using McRider.MAUI.Services;
-using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
 
 [assembly: AssemblyVersion("1.0.*")]
@@ -27,6 +24,10 @@ public static class MauiProgram
 
         builder.Logging.AddProvider(new CustomLoggerProvider(NLogConfigFile, GetLogData));
         builder.Services.AddServices();   //Add Other services
+
+#if DEBUG
+        builder.Logging.AddDebug();
+#endif
 
 #if WINDOWS
         builder.ConfigureLifecycleEvents(events =>
@@ -56,10 +57,6 @@ public static class MauiProgram
                 });
             });
         });
-#endif
-
-#if DEBUG
-        builder.Logging.AddDebug();
 #endif
 
         return builder.Build();
@@ -92,7 +89,7 @@ public static class MauiProgram
                 Theme = App.Configs?.Theme
             };
 
-            return obj.ToDictionary().ToDictionary(d => d.Key, d => d.Value != null ? Newtonsoft.Json.JsonConvert.SerializeObject(d.Value) : null);
+            return obj.ToDictionary().ToDictionary(d => d.Key, d => d.Value != null ? JsonConvert.SerializeObject(d.Value) : null);
         }
     }
 

@@ -1,16 +1,14 @@
-﻿using McRider.Common.Services;
-
-namespace McRider.MAUI.ViewModels;
+﻿namespace McRider.MAUI.ViewModels;
 
 public partial class GamesPageViewModel : BaseViewModel
 {
     private FileCacheService _fileCacheService;
 
     [ObservableProperty]
-    private int _columnCount = 2; 
-    
+    private double _columnCount = 2;
+
     [ObservableProperty]
-    private int _rowHeight = 300;
+    private double _rowHeight = 300;
 
     [ObservableProperty]
     private GameItem _selectedItem;
@@ -32,7 +30,7 @@ public partial class GamesPageViewModel : BaseViewModel
 
     partial void OnItemsChanged(ObservableCollection<GameItem>? oldValue, ObservableCollection<GameItem> newValue)
     {
-        RowHeight = newValue.Count <= 0 ? 600 : 300;
+        RowHeight = newValue.Count <= 1 ? 600 : 300;
         ColumnCount = (int)Math.Max(1, Math.Min(3, Math.Ceiling(Math.Sqrt(newValue.Count))));
     }
 
@@ -63,7 +61,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 Description = "Description 2",
                 TargetDistance = 500,
                 IsActive = App.Configs?.Theme == "showmax",
-                TargetTime = TimeSpan.FromMinutes(2),
+                TargetTime = TimeSpan.FromMinutes(1),
                 Image = "unveil.png",
             },
             new GameItem {
@@ -88,11 +86,11 @@ public partial class GamesPageViewModel : BaseViewModel
                 TargetTime = TimeSpan.FromMinutes(1),
                 Image = "cycling_single_player.png",
             },
-            new GameItem { 
+            new GameItem {
                 Name = "Distance challenge",
                 GameType = GameType.SingleRace,
                 PlayersPerTeam = 1,
-                TeamsCount = 2, 
+                TeamsCount = 2,
                 Description = "Description 2",
                 TargetDistance = 1000,
                 IsActive  = App.Configs?.Theme == "philips",

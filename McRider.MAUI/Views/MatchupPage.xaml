@@ -2,8 +2,10 @@
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="McRider.MAUI.Views.MatchupPage"  
     xmlns:controls="clr-namespace:McRider.MAUI.Controls"
+    xmlns:viewmodel="clr-namespace:McRider.MAUI.ViewModels"
+    x:DataType="viewmodel:MatchupPageViewModel"
+    x:Class="McRider.MAUI.Views.MatchupPage"  
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled" IsBusy="{Binding IsBusy}">
     <Grid BackgroundColor="{StaticResource White}">
@@ -23,14 +25,14 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0"  HeightRequest="580" Margin="0">
+                <Grid Grid.Row="0"  HeightRequest="480" Margin="0">
                     <Image Source="watch_start_white.png"/>
-                    <controls:PieChart StartAngle="90" HeightRequest="360" WidthRequest="360" Margin="0,80,0,0" Thickness="180">
+                    <controls:PieChart StartAngle="90" HeightRequest="310" WidthRequest="310" Margin="0,70,0,0" Thickness="154">
                         <controls:PieChart.Data>
                             <controls:PieChartData Label="Progress" Value="{Binding PercentageTimeProgress}" BackgroundColor="{Binding Theme.PrimaryColor}"/>
                         </controls:PieChart.Data>
                     </controls:PieChart>
-                    <Label Text="{Binding CountDown}" FontSize="100" Padding="0,80,0,0" FontFamily="MontserratBold"
+                    <Label Text="{Binding CountDown}" FontSize="100" Padding="0,70,0,0" FontFamily="MontserratBold"
                        TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"
                        IsVisible="{Binding ShowCountDown}">
                         <Label.Triggers>
@@ -38,7 +40,7 @@
                                 <Setter Property="Text" Value="GO!!"/>
                             </DataTrigger>
                             <DataTrigger TargetType="Label"  Binding="{Binding IsBusy}" Value="True">
-                                <Setter Property="Text" Value="Loading.."/>
+                                <Setter Property="Text" Value=""/>
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
@@ -70,7 +72,11 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="80"/>
                         </Grid.RowDefinitions>
-                        <Frame Grid.Row="0" VerticalOptions="End" HeightRequest="{Binding Player1ProgressFillHeight}" BackgroundColor="White" />
+                        
+                        <Frame Grid.Row="0" VerticalOptions="End" 
+                               HeightRequest="{Binding Player1ProgressFillHeight}" 
+                               BackgroundColor="White" CornerRadius="0" />
+                        
                         <Image Grid.Row="0" Source="{Binding Player1ProgressImage}" x:Name="Player1ProgressImage" 
                                Margin="0" Aspect="AspectFit" 
                                MaximumWidthRequest="350"
@@ -85,6 +91,22 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
+                        <Grid Grid.Row="1" BackgroundColor="Black" IsVisible="{Binding ShowHorizontalProgress}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Text="Time" FontSize="24" Margin="20,0" />
+                            <Label Grid.Row="0" Text="{Binding Player1Entry.Time, StringFormat='{0:mm\\:ss} mins'}" 
+                                   FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
+                                   Margin="20,0"  BackgroundColor="Black"  MinimumWidthRequest="130" />
+                            <Label Grid.Row="1" Text="Distance" FontSize="24" Margin="20,0" />
+                            <Label Grid.Row="1" Text="{Binding Player1Entry.Distance, StringFormat='{0:#,##0.00} m'}" 
+                                   FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
+                                   Margin="20,0"  BackgroundColor="Black"  MinimumWidthRequest="130"/>
+                            <ProgressBar Grid.Row="2" Progress="{Binding Player1ProgressF}" ProgressColor="{Binding Theme.PrimaryColor}" ScaleY="5" />
+                        </Grid>
                     </Grid>
 
                     <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" HorizontalOptions="Center" Margin="50,0"  HeightRequest="580"
@@ -93,7 +115,11 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="80"/>
                         </Grid.RowDefinitions>
-                        <Frame Grid.Row="0" VerticalOptions="End" HeightRequest="{Binding Player2ProgressFillHeight}" BackgroundColor="White" />
+                        
+                        <Frame Grid.Row="0" VerticalOptions="End" 
+                               HeightRequest="{Binding Player2ProgressFillHeight}" 
+                               BackgroundColor="White" CornerRadius="0" />
+                        
                         <Image Grid.Row="0" Source="{Binding Player2ProgressImage}" x:Name="Player2ProgressImage" 
                                Margin="0" Aspect="AspectFit" 
                                MaximumWidthRequest="350"
@@ -108,9 +134,27 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
+                        <Grid Grid.Row="1" BackgroundColor="Black" IsVisible="{Binding ShowHorizontalProgress}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Text="Time" FontSize="24" Margin="20,0" />
+                            <Label Grid.Row="0" Text="{Binding Player2Entry.Time, StringFormat='{0:mm\\:ss} mins'}" 
+                                   FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
+                                   Margin="20,0"  BackgroundColor="Black"  MinimumWidthRequest="130" />
+                            <Label Grid.Row="1" Text="Distance" FontSize="24" Margin="20,0" />
+                            <Label Grid.Row="1" Text="{Binding Player2Entry.Distance, StringFormat='{0:#,##0.00} m'}" 
+                                   FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
+                                   Margin="20,0"  BackgroundColor="Black"  MinimumWidthRequest="130"/>
+                            <ProgressBar Grid.Row="2" Progress="{Binding Player2ProgressF}" ProgressColor="{Binding Theme.PrimaryColor}" ScaleY="5" Margin="0,5"  />
+                        </Grid>
                     </Grid>
 
-                    <Image Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Source="{Binding Theme.Logo1}" HeightRequest="300" VerticalOptions="End" 
+                    <Image Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" 
+                           Source="{Binding Theme.Logo1}" 
+                           HeightRequest="300" VerticalOptions="End" 
                            IsVisible="{Binding IsMultiplePlayers}"/>
                     
                     <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" 
@@ -189,9 +233,9 @@
                         </Frame>
 
                         <Label Grid.Column="2" Grid.Row="1" Text="{Binding Matchup.Player2.Nickname}" 
-                       FontFamily="MontserratBold" Padding="0,10,0,0"
-                       HorizontalTextAlignment="Center" FontSize="30" 
-                       TextColor="{Binding Theme.PrimaryColor}"/>
+                           FontFamily="MontserratBold" Padding="0,10,0,0"
+                           HorizontalTextAlignment="Center" FontSize="30" 
+                           TextColor="{Binding Theme.PrimaryColor}"/>
 
                         <Frame Grid.Row="2" Grid.Column="2" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
                             <Label Text="{Binding Player2Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" FontFamily="OpenSansSemibold" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
@@ -215,8 +259,7 @@
                         BackgroundColor="{Binding Theme.PrimaryColor}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary }"
                         Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                     </Grid>
-                </Frame>
-                
+                </Frame>                
             </Grid>
         </ScrollView>
     </Grid>

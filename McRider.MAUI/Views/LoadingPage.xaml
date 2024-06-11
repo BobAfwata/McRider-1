@@ -12,8 +12,8 @@
             <RowDefinition Height="150" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0" Source="{Binding Theme.HeaderImage}" Aspect="AspectFit"/>
-        <Image Grid.Row="2" Source="{Binding Theme.FooterImage}" Aspect="AspectFit"/>
+        <Image Grid.Row="0" Source="header.png" Aspect="AspectFit"/>
+        <Image Grid.Row="2" Source="footer.png" Aspect="AspectFit"/>
 
         <StackLayout Grid.Row="1"  BackgroundColor="Black" Margin="25,0" Padding="80">
 

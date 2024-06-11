@@ -59,7 +59,10 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
         // for DEBUG
         if (_configs?.FakeRead == true)
+        {
+            _detectPortTask = Task.CompletedTask;
             return true;
+        }
 
         return _serialPort.IsOpen;
     }
@@ -121,7 +124,8 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
     public override Task Stop()
     {
-        //_serialPort.Close();
+        if (_serialPort.IsOpen == true)
+            _serialPort.Close();
         return base.Stop();
     }
 
@@ -129,15 +133,12 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await Initialize();
 
-        if (_configs?.FakeRead == true)
-        {
-            if (_serialPort.IsOpen != true)
-                await DoFakeReadData();
-            else
-                await base.DoReadDataAsync();
-        }
-        else
+        if (_serialPort.IsOpen == true)
             await base.DoReadDataAsync();
+        else if (_configs?.FakeRead == true)
+            await DoFakeReadData();
+        else
+            _logger.LogError("Serial port is not open!");
     }
 
     public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0)
