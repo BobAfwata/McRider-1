@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections;
+using System.IO;
 using System.Reflection;
 
 namespace McRider.Common.Services;
@@ -121,21 +122,24 @@ public class FileCacheService
 
     public async Task<T> GetAsync<T>(string key, Func<Task<T>> readFunc, TimeSpan? cacheDuration = null)
     {
-        string cachedData = Get(key, cacheDuration);
+        T freshData;
 
-        if (string.IsNullOrEmpty(cachedData))
+        var cachedData = Get(key, cacheDuration);
+
+        if (!string.IsNullOrEmpty(cachedData))
+            freshData = JsonConvert.DeserializeObject<T>(cachedData, settings);
+        
+        else
         {
-            T freshData = await readFunc();
+            freshData = await readFunc();
 
             if (freshData is IEnumerator enumerator && enumerator.MoveNext() != true)
-                return JsonConvert.DeserializeObject<T>(cachedData, settings);
+                return freshData; // Do not cache empty enumerables
 
             await SetAsync(key, freshData);
-
-            return freshData;
         }
 
-        return JsonConvert.DeserializeObject<T>(cachedData, settings);
+        return freshData;
     }
 
     public void Remove(string key)

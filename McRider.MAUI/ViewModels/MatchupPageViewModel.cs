@@ -304,8 +304,8 @@ public partial class MatchupPageViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
         var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
 
-        _countDown = 3;
-        _showCountDown = true;
+        CountDown = 3;
+        ShowCountDown = true;
         _player1CurtainCounter = 0;
         _player2CurtainCounter = 0;
         _communicator?.Stop();
