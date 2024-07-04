@@ -154,6 +154,7 @@ public partial class ThemeConfig : ObservableObject
         "schweppes" => "#FFD700",
         "showmax" => "#0879bf",
         "philips" => "#0A5Ed8",
+        "absa" => "#0A5Ed8",
         _ => "#0A5Ed8"
     };
 
@@ -162,6 +163,7 @@ public partial class ThemeConfig : ObservableObject
         "schweppes" => "#000000",
         "showmax" => "#031124",
         "philips" => "#00000",
+        "absa" => "#00000",
         _ => "#00000"
     };
 
