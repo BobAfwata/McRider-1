@@ -20,6 +20,9 @@ public static class MauiProgram
                 fonts.AddFont("Montserrat-Bold.ttf", "MontserratBold");
                 fonts.AddFont("Montserrat-Medium.ttf", "MontserratMedium");
                 fonts.AddFont("Montserrat-SemiBold.ttf", "MontserratSemiBold");
+
+                fonts.AddFont("BraveSans-Bold.ttf", "BraveSansBold");
+                fonts.AddFont("BraveSans-Medium.ttf", "BraveSansMedium");
             });
 
         builder.Logging.AddProvider(new CustomLoggerProvider(NLogConfigFile, GetLogData));
