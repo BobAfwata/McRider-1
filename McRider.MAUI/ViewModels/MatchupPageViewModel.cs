@@ -213,12 +213,6 @@ public partial class MatchupPageViewModel : BaseViewModel
             if (i > 0) await Task.Delay(1200);
         }
 
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(3000);
-            ShowCountDown = false;
-        });
-
         await StartGame();
     }
 
@@ -226,6 +220,12 @@ public partial class MatchupPageViewModel : BaseViewModel
     private bool RefreshProgressView()
     {
         _logger.LogInformation("Matchup progress changed. Progress {Progress:0.00}%", Matchup?.GetPercentageProgress());
+
+        if (IsRunning == false)
+        {
+            IsRunning = true;
+            Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
+        }
 
         //Update the game play progress
         OnPropertyChanged(nameof(IsComplete));
@@ -379,20 +379,15 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerStart += async (sender, player) =>
         {
-            IsRunning = true;
-
             var entry = player.GetEntry(Matchup); 
             
             if (entry is not null)
-            {
                 entry.StartTime ??= DateTime.UtcNow;
-                IsRunning = true;
 
-                if (ShowCountDown)
-                {
-                    await Task.Delay(3000);
-                    ShowCountDown = false;
-                }
+            if (IsRunning == false)
+            {
+                IsRunning = true;
+                _ = Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
             }
         };
 
