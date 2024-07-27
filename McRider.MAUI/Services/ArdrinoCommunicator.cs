@@ -72,7 +72,7 @@ public abstract class ArdrinoCommunicator
         var lastActivity = player?.GetEntry(_matchup)?.LastActivity;
         if (lastActivity.HasValue)
         {
-            var delay = (DateTime.UtcNow - lastActivity.Value).Milliseconds;
+            var delay = (DateTime.UtcNow - lastActivity.Value).TotalMilliseconds;
 
             if (delay > ACTIVITY_ENDED_TIMEOUT)
             {
