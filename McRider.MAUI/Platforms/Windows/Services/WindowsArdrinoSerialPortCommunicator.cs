@@ -110,6 +110,8 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Error accessing port {port}");
+                    if(_serialPort?.IsOpen == true)
+                        _serialPort.Close();
                 }
             }
         }).ContinueWith(task => _detectPortTask = null);

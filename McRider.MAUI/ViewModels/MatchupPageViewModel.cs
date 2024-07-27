@@ -50,6 +50,9 @@ public partial class MatchupPageViewModel : BaseViewModel
     [ObservableProperty]
     double _progressFillHeight = 580;
 
+    [ObservableProperty]
+    bool _isRunning = false;
+
     double _player1CurtainCounter = 0;
     double _player2CurtainCounter = 0;
 
@@ -96,7 +99,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         get
         {
             if (Tournament?.Game?.GameType != GameType.Tournament)
-                return null;
+                return PromoImage;
 
             var _tournamentImage = Tournament.CreateTournamentImage();
             if (_tournamentImage is not null)
@@ -128,7 +131,6 @@ public partial class MatchupPageViewModel : BaseViewModel
     public double Player2ProgressF => Player2Progress / 100.0;
 
     public bool ShowHorizontalProgress => Tournament?.Game?.HorizontalProgress == true || App.Configs?.Theme == "philips";
-
 
     public double Player1ProgressFillHeight
     {
@@ -227,7 +229,7 @@ public partial class MatchupPageViewModel : BaseViewModel
             await StartGame();
             _ = Task.Run(async () =>
             {
-                await Task.Delay(2800);
+                await Task.Delay(3000);
                 ShowCountDown = false;
             });
         }
@@ -387,6 +389,8 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerStart += async (sender, player) =>
         {
+            IsRunning = true;
+
             var entry = player.GetEntry(Matchup);
             if (entry is not null)
             {
@@ -412,6 +416,8 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnMatchupFinished += async (sender, matchup) =>
         {
+            IsRunning = false;
+
             if (Tournament == null) return;
 
             // Update the game play progress on match finish

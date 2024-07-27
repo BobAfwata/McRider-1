@@ -37,6 +37,10 @@
         Route="MatchupUnveilPage" />
 
     <ShellContent
+        ContentTemplate="{DataTemplate views:MatchupRacingPage}"
+        Route="MatchupRacingPage" />
+
+    <ShellContent
         ContentTemplate="{DataTemplate views:StartGamePage}"
         Route="StartGamePage" />    
 

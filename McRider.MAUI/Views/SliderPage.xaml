@@ -40,7 +40,7 @@
 
             <StackLayout Grid.Row="1" VerticalOptions="End">
                 <Button Text="Let's Play" Command="{Binding LetsPlayCommand}"
-                    BackgroundColor="{StaticResource Primary}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary}"
+                    BackgroundColor="{StaticResource Primary}" HorizontalOptions="Center" TextColor="{Binding Theme.TertiaryColor}"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" Margin="10,10,10,100"/>
 
                 <IndicatorView x:Name="indicatorView"

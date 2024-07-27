@@ -28,5 +28,6 @@ public enum GameType
     Tournament,
     Team,
     Reveal,
+    Racing,
     SingleRace
 }

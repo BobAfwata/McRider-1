@@ -91,6 +91,13 @@
 	  <None Remove="Resources\Themes\absa\reveal_pl3.png" />
 	  <None Remove="Resources\Themes\absa\reveal_rhon.png" />
 	  <None Remove="Resources\Themes\absa\texts.json" />
+	  <None Remove="Resources\Themes\shell\Bus.gif" />
+	  <None Remove="Resources\Themes\shell\City.gif" />
+	  <None Remove="Resources\Themes\shell\female.png" />
+	  <None Remove="Resources\Themes\shell\male.png" />
+	  <None Remove="Resources\Themes\shell\Road.gif" />
+	  <None Remove="Resources\Themes\shell\texts.json" />
+	  <None Remove="Resources\Themes\shell\watch_start2.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -118,14 +125,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\MatchupUnveilPage.xaml.cs">
-	    <DependentUpon>MatchupUnveilPage.xaml</DependentUpon>
+	  <Compile Update="Views\MatchupRacingPage.xaml.cs">
+	    <DependentUpon>MatchupRacingPage.xaml</DependentUpon>
 	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <MauiXaml Update="Views\MatchupUnveilPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	</ItemGroup>
 </Project>
