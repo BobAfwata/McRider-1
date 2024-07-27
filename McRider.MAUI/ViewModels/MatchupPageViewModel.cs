@@ -127,7 +127,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     public double Player1Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(0) ?? 0;
     public double Player2Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(1) ?? 0;
 
-    public double Player1ProgressF => Player1Progress/100.0;
+    public double Player1ProgressF => Player1Progress / 100.0;
     public double Player2ProgressF => Player2Progress / 100.0;
 
     public bool ShowHorizontalProgress => Tournament?.Game?.HorizontalProgress == true || App.Configs?.Theme == "philips";
@@ -207,35 +207,21 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown > 0)
             ShowCountDown = true;
 
-        if (countDown < 0)
-            await StartGame();
-        else
-            App.StartTimer(TimeSpan.FromSeconds(1.2), async () =>
-            {
-                await Task.Delay(1200);
-                return await DoCountDown();
-            });
-    }
-
-    private async Task<bool> DoCountDown()
-    {
-        var countDown = CountDown - 1;
-
-        if (countDown >= 0)
-            CountDown = countDown;
-
-        if (countDown <= 0)
+        for (var i = countDown; i >= 0; i--)
         {
-            await StartGame();
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(3000);
-                ShowCountDown = false;
-            });
+            CountDown = i;
+            await Task.Delay(1200);
         }
 
-        return countDown > 0;
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            ShowCountDown = false;
+        });
+
+        await StartGame();
     }
+
 
     private bool RefreshProgressView()
     {
@@ -443,6 +429,8 @@ public partial class MatchupPageViewModel : BaseViewModel
         };
 
         await StartCountDown(countDown);
+
+        IsRunning = true;
 
         return await _tcs.Task;
     }
