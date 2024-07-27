@@ -381,13 +381,18 @@ public partial class MatchupPageViewModel : BaseViewModel
         {
             IsRunning = true;
 
-            var entry = player.GetEntry(Matchup);
+            var entry = player.GetEntry(Matchup); 
+            
             if (entry is not null)
             {
                 entry.StartTime ??= DateTime.UtcNow;
+                IsRunning = true;
 
-                // Hide count down text after a shot delay
-                App.StartTimer(TimeSpan.FromSeconds(3), () => ShowCountDown = false);
+                if (ShowCountDown)
+                {
+                    await Task.Delay(3000);
+                    ShowCountDown = false;
+                }
             }
         };
 
@@ -435,8 +440,6 @@ public partial class MatchupPageViewModel : BaseViewModel
         };
 
         await StartCountDown(countDown);
-
-        IsRunning = true;
 
         return await _tcs.Task;
     }

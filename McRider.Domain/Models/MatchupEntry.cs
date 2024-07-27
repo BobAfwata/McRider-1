@@ -75,7 +75,7 @@ public class MatchupEntry : IComparable<MatchupEntry>
         set
         {
             var delta = Math.Abs(_distance - value);
-            if (delta <= 0.009) return; // Ignore small changes
+            if (delta <= 0.009 && StartTime.HasValue) return; // Ignore small changes
 
             // If the matchup is not complete, then we need to update the last activity time
             if (CurrentMatchup?.IsPlayed != true || StartTime.HasValue == false)

@@ -121,7 +121,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await Initialize();
 
-        if (await ValidateSerialPort())
+        if (_serialPort?.IsOpen == true)
             await base.DoReadDataAsync();
         else if (_configs?.FakeRead == true)
             await DoFakeReadData();

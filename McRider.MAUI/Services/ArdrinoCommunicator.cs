@@ -97,7 +97,7 @@ public abstract class ArdrinoCommunicator
                 winner.IsActive = true;
                 OnPlayerWon?.Invoke(this, winner); // Notify the winner
             }
-            else if(_matchup.Loser == null)
+            else if (_matchup.Loser == null)
             {
                 OnMatchupTired?.Invoke(this, _matchup.Players.ToArray());
             }
@@ -132,25 +132,30 @@ public abstract class ArdrinoCommunicator
     protected async Task DoFakeReadData()
     {
         double minValue = 1, maxValue = 5;
-        var stopTimeout = 20000;
         var startTime = DateTime.UtcNow;
+        var stopTimeout = 10;
+        var pauseActivity = false;
 
         App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
-            if (stopTimeout > 0 && (DateTime.UtcNow - startTime).TotalMilliseconds > stopTimeout)
-                return _isRunning = false;
+            var seconds = Math.Ceiling((DateTime.UtcNow - startTime).TotalSeconds);
+            if (stopTimeout > 0 && seconds % stopTimeout == 0)
+                pauseActivity = true;
+            else if (stopTimeout > 0 && seconds % Math.Ceiling(stopTimeout * 1.5) == 0)
+                pauseActivity = false;
 
-            foreach (var entry in _matchup.Entries)
-            {
-                var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
+            if (pauseActivity != true)
+                foreach (var entry in _matchup.Entries)
+                {
+                    var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
 
-                // Randomly slow down the player
-                if (Random.Shared.NextDouble() < 0.1)
-                    delta = 0;
+                    // Randomly slow down the player
+                    if (Random.Shared.NextDouble() < 0.1)
+                        delta = 0;
 
-                UpdatePlayerDistance(entry, entry.Distance + delta);
-            }
-
+                    UpdatePlayerDistance(entry, entry.Distance + delta);
+                }
+            
             OnMatchupProgressChanged?.Invoke(this, _matchup);
 
             if (!IsRunning)
