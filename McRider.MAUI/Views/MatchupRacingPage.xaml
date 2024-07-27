@@ -64,7 +64,7 @@
                 </Grid>
 
                 <Frame Grid.RowSpan="2" WidthRequest="800" 
-                   Margin="0,-550,0,0" 
+                   Margin="0,-180,0,0" 
                    HorizontalOptions="Center" VerticalOptions="Center"
                    BackgroundColor="Black"
                    BorderColor="White"  IsVisible="{Binding ShowResults}">
