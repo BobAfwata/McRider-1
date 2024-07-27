@@ -71,7 +71,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TeamsCount = 1,
                 Description = "Description 3",
                 TargetDistance = 1000,
-                TargetTime = TimeSpan.FromMinutes(2),
+                TargetTime = TimeSpan.FromMinutes(.75),
                 IsActive = App.Configs?.Theme == "shell"
             },
             new GameItem {

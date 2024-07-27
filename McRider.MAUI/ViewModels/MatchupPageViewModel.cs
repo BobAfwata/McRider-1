@@ -210,7 +210,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         for (var i = countDown; i >= 0; i--)
         {
             CountDown = i;
-            await Task.Delay(1200);
+            if (i > 0) await Task.Delay(1200);
         }
 
         _ = Task.Run(async () =>
@@ -365,11 +365,15 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {
+            IsRunning = false;
+
             // TODO: Player disconnect notification
         };
 
         _communicator.OnPlayerStopped += async (sender, player) =>
         {
+            IsRunning = false;
+
             // TODO: Player stopped notification
         };
 
@@ -389,6 +393,8 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerWon += async (sender, player) =>
         {
+            IsRunning = false;
+
             var entry = player.GetEntry(Matchup);
 
             _logger.LogInformation("{Player1} wins! {Distance:0.00}km in {Time}", player.Nickname, entry?.Distance, entry?.Time);
