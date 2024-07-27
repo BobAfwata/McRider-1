@@ -132,9 +132,14 @@ public abstract class ArdrinoCommunicator
     protected async Task DoFakeReadData()
     {
         double minValue = 1, maxValue = 5;
+        var stopTimeout = 20000;
+        var startTime = DateTime.UtcNow;
 
         App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
+            if (stopTimeout > 0 && (DateTime.UtcNow - startTime).TotalMilliseconds > stopTimeout)
+                return _isRunning = false;
+
             foreach (var entry in _matchup.Entries)
             {
                 var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
