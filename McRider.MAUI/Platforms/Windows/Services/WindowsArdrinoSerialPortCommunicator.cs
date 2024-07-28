@@ -18,51 +18,63 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await base.Initialize();
 
-        if (_detectPortTask != null)
-            await _detectPortTask;
-
-        if (_serialPort?.IsOpen == true)
-            return true;
-
-        // Detect port if not set or modified more than 24 hours ago
-        if ((DateTime.UtcNow - _configs.ModifiedTime).TotalHours > 24)
-            await DetectPort();
-
-        if (_serialPort?.IsOpen != true)
+        try
         {
-            _serialPort ??= new SerialPort();
-            _serialPort.PortName = _configs?.PortName ?? "COM4";
-            _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
-            _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
-        }
+            if (_detectPortTask != null)
+                await _detectPortTask;
 
-        if (_serialPort?.IsOpen != true)
-        {
-            int count = 0;
-            do
+            if (_serialPort?.IsOpen == true)
+                return true;
+
+            // Detect port if not set or modified more than 24 hours ago
+            if ((DateTime.UtcNow - _configs.ModifiedTime).TotalHours > 24)
+                await DetectPort();
+
+            if (_serialPort?.IsOpen != true)
             {
-                try
-                {
-                    _serialPort?.Open();
-                    break;
-                }
-                catch (System.IO.IOException ex)
-                {
-                    _logger.LogError(ex, "Error opening serial port!");
-                    await DetectPort();
-                }
-            } while (count++ < 1);
-        }
+                _serialPort ??= new SerialPort();
+                _serialPort.PortName = _configs?.PortName ?? "COM4";
+                _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
+                _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
+            }
 
-        // for DEBUG
-        if (_configs?.FakeRead == true && _serialPort?.IsOpen != true)
+            if (_serialPort?.IsOpen != true)
+            {
+                int count = 0;
+                do
+                {
+                    try
+                    {
+                        _serialPort?.Open();
+                        break;
+                    }
+                    catch (System.IO.IOException ex)
+                    {
+                        _logger.LogError(ex, "Error opening serial port!");
+                        await DetectPort();
+                    }
+                } while (count++ < 1);
+            }
+
+            if (_serialPort?.IsOpen != true)
+                _logger.LogError("Serial port is not open!");
+
+            // for DEBUG
+            if (_configs?.FakeRead == true && _serialPort?.IsOpen != true)
+            {
+                _serialPort = null;
+                _detectPortTask = Task.CompletedTask;
+                return true;
+            }
+
+            return _serialPort?.IsOpen == true;
+        }
+        catch (Exception e)
         {
-            _serialPort = null;
-            _detectPortTask = Task.CompletedTask;
-            return true;
+            App.Logger?.LogError("Error initializing serial port!", e);
         }
 
-        return _serialPort?.IsOpen == true;
+        return false;
     }
 
 
@@ -85,7 +97,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                     _serialPort.ReadTimeout = _configs.ReadTimeout + 10;
                     _serialPort.Open();
 
-                    if(await ValidateSerialPort() != true)
+                    if (await ValidateSerialPort() != true)
                     {
                         _serialPort?.Close();
                         _serialPort = null;
