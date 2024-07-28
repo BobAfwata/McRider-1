@@ -163,7 +163,6 @@ public abstract class ArdrinoCommunicator
 
             return IsRunning;
         });
-
     }
 
     public virtual async Task DoReadDataAsync()

@@ -36,14 +36,14 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
         }
 
-        if (_serialPort.IsOpen != true)
+        if (_serialPort?.IsOpen != true)
         {
             int count = 0;
             do
             {
                 try
                 {
-                    _serialPort.Open();
+                    _serialPort?.Open();
                     break;
                 }
                 catch (System.IO.IOException ex)
@@ -121,7 +121,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await Initialize();
 
-        if (_serialPort?.IsOpen == true)
+        if (await ValidateSerialPort())
             await base.DoReadDataAsync();
         else if (_configs?.FakeRead == true)
             await DoFakeReadData();
@@ -159,7 +159,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                 if (_serialPort?.IsOpen != true)
                     _serialPort?.Open();
 
-                return _serialPort?.ReadLine() ?? "";
+                return _serialPort?.ReadLine();
             }
             catch (Exception e)
             {
@@ -183,7 +183,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
     public override void SendData(string data)
     {
-        if (_serialPort.IsOpen)
+        if (_serialPort?.IsOpen == true)
         {
             _serialPort.WriteLine(data);
         }
