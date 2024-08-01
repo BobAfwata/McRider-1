@@ -18,7 +18,7 @@
         <ScrollView Grid.Row="1" BackgroundColor="{Binding Theme.PrimaryColor}" Margin="25,0" >
             <StackLayout Padding="80">
 
-                <Image Source="watch_start_black.png" HeightRequest="450"/>
+                <Image Source="{Binding Theme.Clock2Image}" HeightRequest="450"/>
 
                 <Grid ColumnSpacing="40" Margin="0,80" HorizontalOptions="Center">
                     <Grid.ColumnDefinitions>
@@ -30,22 +30,27 @@
                         <RowDefinition Height="55"/>
                     </Grid.RowDefinitions>
 
-                    <ImageButton Aspect="AspectFill" Grid.Column="0" Grid.RowSpan="2" Source="{Binding Player1GenderImage}" HeightRequest="500" BackgroundColor="Transparent"/>
-                    <ImageButton Aspect="AspectFill" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Player2GenderImage}" HeightRequest="500" BackgroundColor="Transparent" IsVisible="{Binding IsMultiplePlayers}"/>
+                    <ImageButton Grid.Column="0" Grid.RowSpan="2" 
+                                 Source="{Binding Player1GenderImage}" HeightRequest="500" 
+                                 BackgroundColor="Transparent" Aspect="AspectFit"/>
+                    <ImageButton Grid.Column="1" Grid.RowSpan="2" 
+                                 Source="{Binding Player2GenderImage}" HeightRequest="500" 
+                                 BackgroundColor="Transparent"  Aspect="AspectFit"
+                                 IsVisible="{Binding IsMultiplePlayers}"/>
 
                     <Label Grid.Column="0" Grid.Row="2" Text="{Binding Matchup.Player1.Nickname}" 
                        FontFamily="MontserratBold"  
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
-                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="{StaticResource Tertiary}"/>
+                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="{Binding Theme.TertiaryColor}"/>
 
                     <Label Grid.Column="1" Grid.Row="2" Text="{Binding Matchup.Player2.Nickname}"
                        FontFamily="MontserratBold" IsVisible="{Binding IsMultiplePlayers}"
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
-                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="{StaticResource Tertiary}"/>
+                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="{Binding Theme.TertiaryColor}"/>
                 </Grid>
 
                 <Button Text="Start Game" Command="{Binding StartGameCommand}"  Margin="40"
-                    BackgroundColor="#e54417" HorizontalOptions="Center" TextColor="White"
+                    BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
 
             </StackLayout>

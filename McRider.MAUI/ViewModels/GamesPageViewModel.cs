@@ -65,6 +65,16 @@ public partial class GamesPageViewModel : BaseViewModel
                 Image = "unveil.png",
             },
             new GameItem {
+                Name = "Racing",
+                GameType = GameType.Racing,
+                PlayersPerTeam = 1,
+                TeamsCount = 1,
+                Description = "Description 3",
+                TargetDistance = 1000,
+                TargetTime = TimeSpan.FromMinutes(.75),
+                IsActive = App.Configs?.Theme == "shell"
+            },
+            new GameItem {
                 Name = "Tournamet",
                 GameType = GameType.Tournament,
                 PlayersPerTeam = 16,
@@ -106,7 +116,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TargetDistance = 1000,
                 TargetTime = TimeSpan.FromMinutes(1),
                 Image = "cycling_team.png",
-            },
+            }
         ];
     }
 }

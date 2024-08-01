@@ -6,7 +6,7 @@ public partial class MatchupUnveilPage : ContentPage
 {
     static ILogger logger = App.ServiceProvider.GetService<ILogger<MatchupUnveilPage>>();
 
-    public MatchupUnveilPage(MatchupPageViewModel vm)
+    public MatchupUnveilPage(MatchupUnveilPageViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;
@@ -16,7 +16,7 @@ public partial class MatchupUnveilPage : ContentPage
 
     private void OnCurtainGridSizeChanged(object? sender, EventArgs e)
     {
-        if (BindingContext is MatchupPageViewModel vm && CurtainsGrid.Width > 0)
+        if (BindingContext is MatchupUnveilPageViewModel vm && CurtainsGrid.Width > 0)
         {
             CurtainsGrid.SizeChanged -= OnCurtainGridSizeChanged;
             vm.CurtainWidth = CurtainsGrid.Width;
@@ -25,7 +25,7 @@ public partial class MatchupUnveilPage : ContentPage
 
     protected override void OnAppearing()
     {
-        if (BindingContext is MatchupPageViewModel vm)
+        if (BindingContext is MatchupUnveilPageViewModel vm)
             _ = vm.Initialize();
 
         base.OnAppearing();

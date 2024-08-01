@@ -26,8 +26,8 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0"  HeightRequest="480" Margin="0">
-                    <Image Source="watch_start_white.png"/>
-                    <controls:PieChart StartAngle="90" HeightRequest="310" WidthRequest="310" Margin="0,70,0,0" Thickness="154" >
+                    <Image Source="{Binding Theme.Clock2Image}"/>
+                    <controls:PieChart StartAngle="90" HeightRequest="310" WidthRequest="310" Margin="0,70,0,0" Thickness="154">
                         <controls:PieChart.Data>
                             <controls:PieChartData Label="Progress" Value="{Binding PercentageTimeProgress}" BackgroundColor="#533f90"/>
                         </controls:PieChart.Data>
@@ -254,15 +254,15 @@
 
                         <StackLayout Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Padding="8" Spacing="15" >
                             <Label Grid.Column="1" Grid.Row="1" Text="{Binding NextMatch.PlayerVsPlayerText, StringFormat='Up next: {0}'}" 
-                           FontFamily="MontserratBold" Padding="0,10,10,0"
-                           HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{Binding Theme.PrimaryColor}"/>
-                            <Image Source="{Binding TournamentImageSource}" HorizontalOptions="Center"/>
+                               FontFamily="MontserratBold" Padding="0,10,10,0"
+                               HorizontalTextAlignment="Center" FontSize="30" 
+                               TextColor="{Binding Theme.PrimaryColor}"/>
+                                <Image Source="{Binding TournamentImageSource}" HorizontalOptions="Center" MaximumHeightRequest="650"/>
                         </StackLayout>
 
                         <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Continue" Command="{Binding NextCommand}"
-                        BackgroundColor="{Binding Theme.PrimaryColor}" HorizontalOptions="Center" TextColor="{StaticResource Tertiary }"
-                        Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
+                            BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                            Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                     </Grid>
                 </Frame>                
             </Grid>
