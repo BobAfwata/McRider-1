@@ -81,8 +81,8 @@
 
                 <Button Text="Next" Margin="40" 
                     Command="{Binding NextCommand}"
-                    BackgroundColor="{StaticResource Tertiary}"  
-                    TextColor="{Binding Theme.PrimaryColor}"
+                    BackgroundColor="#e54417"  
+                    TextColor="White"
                     HorizontalOptions="Center"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50">
                     <Button.Triggers>

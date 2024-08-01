@@ -91,6 +91,22 @@
 	  <None Remove="Resources\Themes\absa\reveal_pl3.png" />
 	  <None Remove="Resources\Themes\absa\reveal_rhon.png" />
 	  <None Remove="Resources\Themes\absa\texts.json" />
+	  <None Remove="Resources\Themes\philips\Artboard 1.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 2.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 3.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 4.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 6.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 7.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 8.png" />
+	  <None Remove="Resources\Themes\philips\Artboard 9.png" />
+	  <None Remove="Resources\Themes\philips\Black Start Watch.png" />
+	  <None Remove="Resources\Themes\philips\Black Stop Watch.png" />
+	  <None Remove="Resources\Themes\philips\Female.png" />
+	  <None Remove="Resources\Themes\philips\logo2.png" />
+	  <None Remove="Resources\Themes\philips\Male.png" />
+	  <None Remove="Resources\Themes\philips\Visa Logo White.png" />
+	  <None Remove="Resources\Themes\philips\White Start Watch.png" />
+	  <None Remove="Resources\Themes\philips\White Start Watch_1.png" />
 	</ItemGroup>
 
 	<ItemGroup>
