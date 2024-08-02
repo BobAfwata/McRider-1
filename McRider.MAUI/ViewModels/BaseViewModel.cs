@@ -98,7 +98,7 @@ public partial class BaseViewModel : ObservableObject
 
 public class ThemeTexts
 {
-    public string GamesTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer";
+    public string GamesTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer";    
     public string LoadingTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer";
     public string LandingTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam";
 }
@@ -155,6 +155,7 @@ public partial class ThemeConfig : ObservableObject
         "showmax" => "#0879bf",
         "philips" => "#0A5Ed8",
         "absa" => "#0A5Ed8",
+        "shell" => "#0879bf",
         _ => "#0A5Ed8"
     };
 
@@ -164,6 +165,7 @@ public partial class ThemeConfig : ObservableObject
         "showmax" => "#031124",
         "philips" => "#00000",
         "absa" => "#00000",
+        "shell" => "#031124",
         _ => "#00000"
     };
 
@@ -191,6 +193,13 @@ public partial class ThemeConfig : ObservableObject
     public ImageSource Logo2 => GetLogo(2);
 
     public ImageSource GetLogo(int index = 0) => GetImage($"Themes/logo{(index == 0 ? "" : index)}.png");
+
+    public ImageSource ClockImage => GetImage("Themes/watch_start.png", "./watch_start.png");
+    public ImageSource Clock2Image => GetImage("Themes/watch_start2.png", "./watch_start.png");
+
+    public ImageSource MaleImage => GetImage("Themes/male.png", "./male.png");
+
+    public ImageSource FemaleImage => GetImage("Themes/female.png", "./female.png");
 
     public ImageSource ProgressImage => GetImage("Themes/progress_back.png", "./progress_back.png");
 

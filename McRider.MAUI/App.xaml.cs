@@ -40,7 +40,7 @@ namespace McRider.MAUI
             FileCacheService.FilePrefix = App.Configs?.Theme + ".";
 
             // Set IP Address
-            await SetInternetIP();
+            App.RunTaskInBackground(SetInternetIP);
 
             // Check last error exception
             OnCheckException();
@@ -133,6 +133,9 @@ namespace McRider.MAUI
 
         public static void StartBackgroundTimer(TimeSpan timeSpan, Func<Boolean> action)
             => StartBackgroundTimer(timeSpan, () => Task.FromResult(action?.Invoke() == true));
+
+        public static void RunTaskInBackground(Func<Task> action)
+            => StartBackgroundTimer(TimeSpan.FromSeconds(0.5), () => { action?.Invoke(); return false; });
 
         #region Toasts and Dialog
 

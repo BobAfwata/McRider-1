@@ -30,6 +30,7 @@ namespace McRider.MAUI
             services.AddView<StartGamePage>();
             services.AddView<MatchupPage>();
             services.AddView<MatchupUnveilPage>();
+            services.AddView<MatchupRacingPage>();
 
             return services;
         }
@@ -43,6 +44,8 @@ namespace McRider.MAUI
             services.AddViewModel<RegistrationPageViewModel>(false);
             services.AddViewModel<StartGamePageViewModel>();
             services.AddViewModel<MatchupPageViewModel>();
+            services.AddViewModel<MatchupRacingPageViewModel>();
+            services.AddViewModel<MatchupUnveilPageViewModel> ();
 
             return services;
         }

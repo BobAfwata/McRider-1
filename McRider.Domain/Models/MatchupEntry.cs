@@ -75,14 +75,13 @@ public class MatchupEntry : IComparable<MatchupEntry>
         set
         {
             var delta = Math.Abs(_distance - value);
-            if (delta <= 0.001) return; // Ignore small changes
+            if (delta <= 0.009 && StartTime.HasValue) return; // Ignore small changes
 
             // If the matchup is not complete, then we need to update the last activity time
-            if (CurrentMatchup?.IsPlayed != true)
+            if (CurrentMatchup?.IsPlayed != true || StartTime.HasValue == false)
             {
                 LastActivity = DateTime.UtcNow;
-
-                // If the start time is not set, then set it to the current time
+               // If the start time is not set, then set it to the current time
                 if (StartTime.HasValue == false)
                     StartTime = LastActivity;
             }

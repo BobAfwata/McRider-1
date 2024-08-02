@@ -24,7 +24,7 @@ public class TournamentLogicTests
         var tournament = new Tournament()
         {
             Game = GetTounamentGame(),
-            Players = MakeRandomPlayers(3).ToList()
+            Players = MakeRandomPlayers(5).ToList()
         };
 
 
@@ -80,7 +80,7 @@ public class TournamentLogicTests
             }
         }
 
-        GifCreator.CreateGif(images, "C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament2.gif", 10000);
+        GifCreator.CreateGif(images, "C:\\Users\\nmasuki\\Pictures\\Tournaments\\tournament.gif", 10000);
 
         tournament?.Save();
     }

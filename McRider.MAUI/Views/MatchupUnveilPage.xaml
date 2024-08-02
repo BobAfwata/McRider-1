@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:McRider.MAUI.Controls"
     xmlns:viewmodel="clr-namespace:McRider.MAUI.ViewModels"
-    x:DataType="viewmodel:MatchupPageViewModel"
+    x:DataType="viewmodel:MatchupUnveilPageViewModel"
     x:Class="McRider.MAUI.Views.MatchupUnveilPage"  
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled" 
@@ -54,7 +54,7 @@
                        TranslationX="{Binding Player2CurtainTranslationX}"/>
 
                 <Grid Grid.Row="0" Grid.ColumnSpan="2"  HeightRequest="480" VerticalOptions="Start" Margin="100" IsVisible="{Binding ShowCountDown}">
-                    <Image Source="watch_start_white.png"/>
+                    <Image Source="{Binding Theme.ClockImage}"/>
                     <Label Text="{Binding CountDown}" FontSize="100" Padding="0,70,0,0" FontFamily="MontserratBold"
                        TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"> 
                         <Label.Triggers>

@@ -18,53 +18,63 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await base.Initialize();
 
-        if (_serialPort != null)
+        try
         {
             if (_detectPortTask != null)
                 await _detectPortTask;
 
-            if (_serialPort.IsOpen)
+            if (_serialPort?.IsOpen == true)
                 return true;
-        }
 
-        _serialPort = new SerialPort();
+            // Detect port if not set or modified more than 24 hours ago
+            if ((DateTime.UtcNow - _configs.ModifiedTime).TotalHours > 24)
+                await DetectPort();
 
-        // Detect port if not set or modified more than 24 hours ago
-        if ((DateTime.UtcNow - _configs.ModifiedTime).TotalHours > 24)
-            await DetectPort();
-        else if (_serialPort.IsOpen != true)
-        {
-            _serialPort.PortName = _configs?.PortName ?? "COM4";
-            _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
-            _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
-        }
-
-        if (_serialPort.IsOpen != true)
-        {
-            int count = 0;
-            do
+            if (_serialPort?.IsOpen != true)
             {
-                try
-                {
-                    _serialPort.Open();
-                    break;
-                }
-                catch (System.IO.IOException ex)
-                {
-                    _logger.LogError(ex, "Error opening serial port!");
-                    await DetectPort();
-                }
-            } while (count++ < 1);
-        }
+                _serialPort ??= new SerialPort();
+                _serialPort.PortName = _configs?.PortName ?? "COM4";
+                _serialPort.BaudRate = _configs?.BaudRate ?? 9600;
+                _serialPort.ReadTimeout = _configs?.ReadTimeout ?? 500;
+            }
 
-        // for DEBUG
-        if (_configs?.FakeRead == true)
+            if (_serialPort?.IsOpen != true)
+            {
+                int count = 0;
+                do
+                {
+                    try
+                    {
+                        _serialPort?.Open();
+                        break;
+                    }
+                    catch (System.IO.IOException ex)
+                    {
+                        _logger.LogError(ex, "Error opening serial port!");
+                        await DetectPort();
+                    }
+                } while (count++ < 1);
+            }
+
+            if (_serialPort?.IsOpen != true)
+                _logger.LogError("Serial port is not open!");
+
+            // for DEBUG
+            if (_configs?.FakeRead == true && _serialPort?.IsOpen != true)
+            {
+                _serialPort = null;
+                _detectPortTask = Task.CompletedTask;
+                return true;
+            }
+
+            return _serialPort?.IsOpen == true;
+        }
+        catch (Exception e)
         {
-            _detectPortTask = Task.CompletedTask;
-            return true;
+            App.Logger?.LogError("Error initializing serial port!", e);
         }
 
-        return _serialPort.IsOpen;
+        return false;
     }
 
 
@@ -77,6 +87,8 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
         _detectPortTask = Task.Run(async () =>
         {
             var ports = SerialPort.GetPortNames();
+            _serialPort = null;
+
             foreach (string port in ports)
             {
                 try
@@ -85,31 +97,19 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                     _serialPort.ReadTimeout = _configs.ReadTimeout + 10;
                     _serialPort.Open();
 
-                    var timeout = TimeSpan.FromMilliseconds(_configs.ReadTimeout + 10);
-
-                    var message = await ReadDataAsync(timeout, -1);
-                    if (string.IsNullOrEmpty(message))
+                    if (await ValidateSerialPort() != true)
                     {
                         _serialPort?.Close();
+                        _serialPort = null;
                         continue;
-                    }
-
-                    var json = JObject.Parse(message);
-                    if (json["distance_1"] != null || json["bikeA"] != null)
-                    {
-                        _configs.PortName = port;
-                        _configs.ModifiedTime = DateTime.UtcNow;
-                        await _cacheService.SetAsync("configs.json", _configs);
-                        break;
-                    }
-                    else
-                    {
-                        _serialPort?.Close();
                     }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Error accessing port {port}");
+                    if (_serialPort?.IsOpen == true)
+                        _serialPort.Close();
+                    _serialPort = null;
                 }
             }
         }).ContinueWith(task => _detectPortTask = null);
@@ -124,7 +124,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
     public override Task Stop()
     {
-        if (_serialPort.IsOpen == true)
+        if (_serialPort?.IsOpen == true)
             _serialPort.Close();
         return base.Stop();
     }
@@ -133,12 +133,29 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await Initialize();
 
-        if (_serialPort.IsOpen == true)
+        if (await ValidateSerialPort())
             await base.DoReadDataAsync();
         else if (_configs?.FakeRead == true)
             await DoFakeReadData();
         else
             _logger.LogError("Serial port is not open!");
+    }
+
+    private async Task<bool> ValidateSerialPort()
+    {
+        if (_serialPort?.IsOpen != true)
+            return false;
+
+        var timeout = TimeSpan.FromMilliseconds(_configs.ReadTimeout + 10);
+        var message = await ReadDataAsync(timeout, -1);
+        if (string.IsNullOrEmpty(message))
+            return false;
+
+        var json = JObject.Parse(message);
+        if (json["distance_1"] != null || json["bikeA"] != null)
+            return true;
+
+        return false;
     }
 
     public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0)
@@ -151,14 +168,14 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
         {
             try
             {
-                if (_serialPort.IsOpen != true)
-                    _serialPort.Open();
+                if (_serialPort?.IsOpen != true)
+                    _serialPort?.Open();
 
-                return _serialPort?.ReadLine() ?? "";
+                return _serialPort?.ReadLine();
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error while reading from port " + _serialPort.PortName + "!!");
+                _logger.LogError(e, "Error while reading from _serialPort " + (_serialPort?.PortName) + "!!");
                 if (retryCount < 0 || retryCount >= 10)
                     return null;
 
@@ -178,7 +195,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
     public override void SendData(string data)
     {
-        if (_serialPort.IsOpen)
+        if (_serialPort?.IsOpen == true)
         {
             _serialPort.WriteLine(data);
         }

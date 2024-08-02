@@ -50,6 +50,9 @@ public partial class MatchupPageViewModel : BaseViewModel
     [ObservableProperty]
     double _progressFillHeight = 580;
 
+    [ObservableProperty]
+    bool _isRunning = false;
+
     double _player1CurtainCounter = 0;
     double _player2CurtainCounter = 0;
 
@@ -96,7 +99,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         get
         {
             if (Tournament?.Game?.GameType != GameType.Tournament)
-                return null;
+                return PromoImage;
 
             var _tournamentImage = Tournament.CreateTournamentImage();
             if (_tournamentImage is not null)
@@ -124,11 +127,10 @@ public partial class MatchupPageViewModel : BaseViewModel
     public double Player1Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(0) ?? 0;
     public double Player2Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(1) ?? 0;
 
-    public double Player1ProgressF => Player1Progress/100.0;
+    public double Player1ProgressF => Player1Progress / 100.0;
     public double Player2ProgressF => Player2Progress / 100.0;
 
     public bool ShowHorizontalProgress => Tournament?.Game?.HorizontalProgress == true || App.Configs?.Theme == "philips";
-
 
     public double Player1ProgressFillHeight
     {
@@ -205,39 +207,25 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown > 0)
             ShowCountDown = true;
 
-        if (countDown < 0)
-            await StartGame();
-        else
-            App.StartTimer(TimeSpan.FromSeconds(1.2), async () =>
-            {
-                await Task.Delay(1200);
-                return await DoCountDown();
-            });
-    }
-
-    private async Task<bool> DoCountDown()
-    {
-        var countDown = CountDown - 1;
-
-        if (countDown >= 0)
-            CountDown = countDown;
-
-        if (countDown <= 0)
+        for (var i = countDown; i >= 0; i--)
         {
-            await StartGame();
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(2800);
-                ShowCountDown = false;
-            });
+            CountDown = i;
+            if (i > 0) await Task.Delay(1200);
         }
 
-        return countDown > 0;
+        await StartGame();
     }
+
 
     private bool RefreshProgressView()
     {
         _logger.LogInformation("Matchup progress changed. Progress {Progress:0.00}%", Matchup?.GetPercentageProgress());
+
+        if (IsRunning == false)
+        {
+            IsRunning = true;
+            Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
+        }
 
         //Update the game play progress
         OnPropertyChanged(nameof(IsComplete));
@@ -304,8 +292,8 @@ public partial class MatchupPageViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
         var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
 
-        _countDown = 3;
-        _showCountDown = true;
+        CountDown = 3;
+        ShowCountDown = true;
         _player1CurtainCounter = 0;
         _player2CurtainCounter = 0;
         _communicator?.Stop();
@@ -377,28 +365,36 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {
+            IsRunning = false;
+
             // TODO: Player disconnect notification
         };
 
         _communicator.OnPlayerStopped += async (sender, player) =>
         {
+            IsRunning = false;
+
             // TODO: Player stopped notification
         };
 
         _communicator.OnPlayerStart += async (sender, player) =>
         {
-            var entry = player.GetEntry(Matchup);
+            var entry = player.GetEntry(Matchup); 
+            
             if (entry is not null)
-            {
                 entry.StartTime ??= DateTime.UtcNow;
 
-                // Hide count down text after a shot delay
-                App.StartTimer(TimeSpan.FromSeconds(3), () => ShowCountDown = false);
+            if (IsRunning == false)
+            {
+                IsRunning = true;
+                _ = Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
             }
         };
 
         _communicator.OnPlayerWon += async (sender, player) =>
         {
+            IsRunning = false;
+
             var entry = player.GetEntry(Matchup);
 
             _logger.LogInformation("{Player1} wins! {Distance:0.00}km in {Time}", player.Nickname, entry?.Distance, entry?.Time);
@@ -412,6 +408,8 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnMatchupFinished += async (sender, matchup) =>
         {
+            IsRunning = false;
+
             if (Tournament == null) return;
 
             // Update the game play progress on match finish

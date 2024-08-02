@@ -6,7 +6,7 @@
     <ActiveDebugProfile>Windows Machine</ActiveDebugProfile>
     <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
     <AppxShowAllApps>False</AppxShowAllApps>
-    <_LastSelectedProfileId>MSIX-win10-arm.pubxml</_LastSelectedProfileId>
+    <_LastSelectedProfileId>MSIX-win10-x641.pubxml</_LastSelectedProfileId>
     <PackageOptionalProjectsInIdeBuilds>False</PackageOptionalProjectsInIdeBuilds>
     <SelectedPlatformGroup>Emulator</SelectedPlatformGroup>
   </PropertyGroup>
@@ -15,6 +15,9 @@
   </PropertyGroup>
   <ItemGroup>
     <MauiXaml Update="Views\Dialogs\MessageDialogView.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="Views\MatchupRacingPage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
     <MauiXaml Update="Views\MatchupUnveilPage.xaml">

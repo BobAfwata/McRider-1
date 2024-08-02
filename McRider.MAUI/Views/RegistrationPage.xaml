@@ -34,7 +34,7 @@
                    VerticalOptions="Center"
                    VerticalTextAlignment="Center"
                    HorizontalTextAlignment="Center"
-                   TextColor="{StaticResource Tertiary}" 
+                   TextColor="{Binding Theme.TertiaryColor}" 
                    Margin="100, 40" FontFamily="MontserratBold"
                    FontSize="48"  FontAttributes="Bold" />
 
@@ -72,17 +72,21 @@
                         </Frame.Triggers>
                     </Frame>
 
-                    <ImageButton Grid.Column="0" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="M" Source="male.png" BackgroundColor="Transparent"/>
+                    <ImageButton Grid.Column="0" Margin="15" HeightRequest="500" Aspect="AspectFill"
+                                 Command="{Binding GenderClickedCommand}" CommandParameter="M" 
+                                 Source="{Binding Theme.MaleImage}" BackgroundColor="Transparent"/>
                     <Image Grid.Column="0" Source="check.png" Margin="0,40" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsMale}"/>
 
-                    <ImageButton Grid.Column="1" Margin="15" Command="{Binding GenderClickedCommand}" CommandParameter="F" Source="female.png" BackgroundColor="Transparent"/>
+                    <ImageButton Grid.Column="1" Margin="15" HeightRequest="500" Aspect="AspectFit"
+                                 Command="{Binding GenderClickedCommand}" CommandParameter="F" 
+                                 Source="{Binding Theme.FemaleImage}" BackgroundColor="Transparent"/>
                     <Image Grid.Column="1" Source="check.png" Margin="0,40" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="End" IsVisible="{Binding IsFemale}"/>
                 </Grid>
 
                 <Button Text="Next" Margin="40" 
                     Command="{Binding NextCommand}"
-                    BackgroundColor="#e54417"  
-                    TextColor="White"
+                    BackgroundColor="{Binding Theme.TertiaryColor}"  
+                    TextColor="{Binding Theme.PrimaryColor}"
                     HorizontalOptions="Center"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50">
                     <Button.Triggers>
@@ -95,7 +99,7 @@
 
                 <Button Text="Skip" Margin="40" 
                     Command="{Binding StartGameCommand}"
-                    BackgroundColor="{StaticResource Tertiary}"  
+                    BackgroundColor="{Binding Theme.TertiaryColor}"  
                     TextColor="{Binding Theme.PrimaryColor}"
                     IsVisible="{Binding CanSkip}"
                     HorizontalOptions="Center"

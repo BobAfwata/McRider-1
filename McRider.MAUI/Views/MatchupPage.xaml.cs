@@ -11,16 +11,16 @@ public partial class MatchupPage : ContentPage
         InitializeComponent();
         BindingContext = vm;
 
-        Player1ProgressImage.SizeChanged += OnCurtainGridSizeChanged;
+        Player1ProgressImage.SizeChanged += OnPlayer1ProgressImageChanged;
     }
 
-    private void OnCurtainGridSizeChanged(object? sender, EventArgs e)
+    private void OnPlayer1ProgressImageChanged(object? sender, EventArgs e)
     {
         if (BindingContext is MatchupPageViewModel vm)
         {
             if (Player1ProgressImage.Height > 0)
             {
-                Player1ProgressImage.SizeChanged -= OnCurtainGridSizeChanged;
+                Player1ProgressImage.SizeChanged -= OnPlayer1ProgressImageChanged;
                 vm.ProgressFillHeight = Player1ProgressImage.Height;
             }
         }

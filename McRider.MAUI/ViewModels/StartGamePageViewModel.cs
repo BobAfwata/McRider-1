@@ -21,8 +21,8 @@ public partial class StartGamePageViewModel : BaseViewModel
     Matchup _matchup;
 
     public bool IsMultiplePlayers => Matchup?.Players.DistinctBy(p => p?.Nickname).Count() > 1;
-    public string Player1GenderImage => Matchup?.Player1 == null ? null : Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
-    public string Player2GenderImage => Matchup?.Player2 == null ? null : Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? "male.png" : "female.png";
+    public ImageSource Player1GenderImage => Matchup?.Player1 == null ? null : Matchup?.Player1?.Gender?.FirstOrDefault() == 'M' ? Theme.MaleImage : Theme.FemaleImage;
+    public ImageSource Player2GenderImage => Matchup?.Player2 == null ? null : Matchup?.Player2?.Gender?.FirstOrDefault() == 'M' ? Theme.MaleImage : Theme.FemaleImage;
 
     [RelayCommand]
     private async Task StartGame()
@@ -114,10 +114,24 @@ public partial class StartGamePageViewModel : BaseViewModel
             // Start the game
             IsBusy = false;
 
+
+
             // Navigate to Game Play Page
-            var matchupPage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupUnveilPage) : nameof(MatchupPage);
+            //var matchupPage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupUnveilPage) : nameof(MatchupPage);
+            var matchupPage =  tournament.Game.GameType switch
+            {
+                GameType.Reveal => nameof(MatchupUnveilPage),
+                GameType.Racing => nameof(MatchupRacingPage),
+                _ => nameof(MatchupPage)
+            };
+
             await Shell.Current.GoToAsync($"///{matchupPage}");
-            var vm = App.ServiceProvider.GetService<MatchupPageViewModel>();
+            var vm = tournament.Game.GameType switch
+            {
+                GameType.Reveal => App.ServiceProvider.GetService<MatchupUnveilPageViewModel>(),
+                GameType.Racing => App.ServiceProvider.GetService<MatchupRacingPageViewModel>(),
+                _ => App.ServiceProvider.GetService<MatchupPageViewModel>()
+            };
 
             if (vm != null)
             {
