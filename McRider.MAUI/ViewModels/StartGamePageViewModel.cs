@@ -63,7 +63,7 @@ public partial class StartGamePageViewModel : BaseViewModel
         {
             if (players.Length <= 0)
                 throw new InvalidOperationException("At least one player is required to start a game.");
-            else if (game.GameType == GameType.Reveal)
+            else if (game.GameType == GameType.RevealChallenge)
                 // Create reveal rounds
                 tournament.CreateRevealRounds();
             else if (game.GameType == GameType.Team)
@@ -117,19 +117,20 @@ public partial class StartGamePageViewModel : BaseViewModel
 
 
             // Navigate to Game Play Page
-            //var matchupPage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupUnveilPage) : nameof(MatchupPage);
-            var matchupPage =  tournament.Game.GameType switch
+            //var MatchupSamplePage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupRevealPage) : nameof(MatchupSamplePage);
+            var matchupSamplePage =  tournament.Game.GameType switch
             {
-                GameType.Reveal => nameof(MatchupUnveilPage),
-                GameType.Racing => nameof(MatchupRacingPage),
-                _ => nameof(MatchupPage)
+                GameType.RevealChallenge => nameof(MatchupRevealPage),
+                GameType.RacingChallenge => nameof(MatchupRacingPage),
+                GameType.DistanceChallenge => nameof(MatchupDistancePage),
+                _ => nameof(MatchupSamplePage)
             };
 
-            await Shell.Current.GoToAsync($"///{matchupPage}");
+            await Shell.Current.GoToAsync($"///{matchupSamplePage}");
             var vm = tournament.Game.GameType switch
             {
-                GameType.Reveal => App.ServiceProvider.GetService<MatchupUnveilPageViewModel>(),
-                GameType.Racing => App.ServiceProvider.GetService<MatchupRacingPageViewModel>(),
+                GameType.RevealChallenge => App.ServiceProvider.GetService<MatchupRevealPageViewModel>(),
+                GameType.RacingChallenge => App.ServiceProvider.GetService<MatchupRacingPageViewModel>(),
                 _ => App.ServiceProvider.GetService<MatchupPageViewModel>()
             };
 

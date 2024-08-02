@@ -29,12 +29,16 @@
         Route="RegistrationPage" />
     
     <ShellContent
-        ContentTemplate="{DataTemplate views:MatchupPage}"
-        Route="MatchupPage" />
+        ContentTemplate="{DataTemplate views:MatchupSamplePage}"
+        Route="MatchupSamplePage" />
 
     <ShellContent
-        ContentTemplate="{DataTemplate views:MatchupUnveilPage}"
-        Route="MatchupUnveilPage" />
+        ContentTemplate="{DataTemplate views:MatchupDistancePage}"
+        Route="MatchupDistancePage" />
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:MatchupRevealPage}"
+        Route="MatchupRevealPage" />
 
     <ShellContent
         ContentTemplate="{DataTemplate views:MatchupRacingPage}"

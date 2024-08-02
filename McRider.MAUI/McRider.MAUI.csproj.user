@@ -16,10 +16,13 @@
     <MauiXaml Update="Views\MatchupRacingPage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
-    <MauiXaml Update="Views\MatchupUnveilPage.xaml">
+    <MauiXaml Update="Views\MatchupRevealPage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
-    <MauiXaml Update="Views\MatchupPage.xaml">
+    <MauiXaml Update="Views\MatchupDistancePage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="Views\MatchupSamplePage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
     <MauiXaml Update="Views\StartGamePage.xaml">

@@ -17,6 +17,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(IsPlayer1Winner))]
     [NotifyPropertyChangedFor(nameof(IsPlayer2Winner))]
     [NotifyPropertyChangedFor(nameof(PercentageTimeProgress))]
+    [NotifyPropertyChangedFor(nameof(PlayCountDown))]
     [NotifyPropertyChangedFor(nameof(Player1Progress))]
     [NotifyPropertyChangedFor(nameof(Player2Progress))]
     [NotifyPropertyChangedFor(nameof(Player1ProgressF))]
@@ -36,6 +37,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     Tournament _tournament;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PlayCountDown))]
     int _countDown = 3;
 
     [ObservableProperty]
@@ -120,17 +122,72 @@ public partial class MatchupPageViewModel : BaseViewModel
     public bool IsComplete => Matchup?.IsPlayed == true;
     public bool IsSinglePlayer => IsMultiplePlayers != true;
     public bool IsMultiplePlayers => Matchup?.Players.DistinctBy(p => p?.Nickname).Count() > 1;
-    public bool IsPlayer1Winner => Matchup?.IsPlayed == true && Matchup?.Winner?.Id == Matchup?.Player1?.Id && Matchup?.Player1?.Id != null;
-    public bool IsPlayer2Winner => Matchup?.IsPlayed == true && Matchup?.Winner?.Id == Matchup?.Player2?.Id && Matchup?.Player2?.Id != null;
+
+    public bool IsPlayer1Winner
+    {
+        get
+        {
+            if (Matchup?.IsPlayed != true)
+                return false;
+
+            if (Matchup?.Player1?.Id == null)
+                return false;
+
+            if (Matchup?.Player1?.GetEntry(Matchup)?.Distance < Tournament?.Game?.TargetDistance)
+                return false;
+
+            if (Matchup?.Winner?.Id == Matchup?.Player1?.Id)
+                return true;
+
+            return false;
+        }
+    }
+
+    public bool IsPlayer2Winner
+    {
+        get
+        {
+            if (Matchup?.IsPlayed != true)
+                return false;
+
+            if (Matchup?.Player2?.Id == null)
+                return false;
+
+            if (Matchup?.Player2?.GetEntry(Matchup)?.Distance < Tournament?.Game?.TargetDistance)
+                return false;
+
+            if (Matchup?.Winner?.Id == Matchup?.Player2?.Id)
+                return true;
+
+            return false;
+        }
+    }
 
     public double PercentageTimeProgress => Matchup?.GetPercentageTimeProgress() ?? 0;
     public double Player1Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(0) ?? 0;
     public double Player2Progress => Matchup?.GetPlayersProgress(false).ElementAtOrDefault(1) ?? 0;
 
+    public string PlayCountDown
+    {
+        get
+        {
+            if (CountDown > 0)
+                return CountDown.ToString();
+
+            var targetTime = Tournament?.Game?.TargetTime;
+            if (targetTime == null)
+                return "0";
+
+            var remainingTime = targetTime - (targetTime * PercentageTimeProgress / 100.0) ?? TimeSpan.Zero;
+
+            return remainingTime.ToString(@"mm\:ss");
+        }
+    }
+
     public double Player1ProgressF => Player1Progress / 100.0;
     public double Player2ProgressF => Player2Progress / 100.0;
 
-    public bool ShowHorizontalProgress => Tournament?.Game?.HorizontalProgress == true || App.Configs?.Theme == "philips";
+    public bool ShowHorizontalProgress => Tournament?.Game?.HorizontalProgress == true || Tournament?.Game?.GameType == GameType.DistanceChallenge;
 
     public double Player1ProgressFillHeight
     {
@@ -168,7 +225,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         get
         {
-            if (Matchup == null || Tournament?.Game?.GameType != GameType.Reveal)
+            if (Matchup == null || Tournament?.Game?.GameType != GameType.RevealChallenge)
                 return 0;
 
             return -(Player1Progress / 100.0 * CurtainWidth / 2 - _player1CurtainCounter);
@@ -179,7 +236,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         get
         {
-            if (Matchup == null || Tournament?.Game?.GameType != GameType.Reveal)
+            if (Matchup == null || Tournament?.Game?.GameType != GameType.RevealChallenge)
                 return 0;
 
             if (IsSinglePlayer)
@@ -235,6 +292,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         OnPropertyChanged(nameof(Player2ProgressFillHeight));
         OnPropertyChanged(nameof(PercentageTimeProgress));
 
+        OnPropertyChanged(nameof(PlayCountDown));
         OnPropertyChanged(nameof(Player1Progress));
         OnPropertyChanged(nameof(Player2Progress));
         OnPropertyChanged(nameof(Player1ProgressF));
@@ -271,7 +329,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        if (Tournament?.Game?.GameType == GameType.Reveal)
+        if (Tournament?.Game?.GameType == GameType.RevealChallenge)
         {
             // Close Curtains
             while (Player1CurtainTranslationX < 0 || Player2CurtainTranslationX > 0)
@@ -379,8 +437,8 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerStart += async (sender, player) =>
         {
-            var entry = player.GetEntry(Matchup); 
-            
+            var entry = player.GetEntry(Matchup);
+
             if (entry is not null)
                 entry.StartTime ??= DateTime.UtcNow;
 

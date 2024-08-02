@@ -55,7 +55,7 @@ public partial class GamesPageViewModel : BaseViewModel
         return [
             new GameItem {
                 Name = "Reveal",
-                GameType = GameType.Reveal,
+                GameType = GameType.RevealChallenge,
                 PlayersPerTeam = 1,
                 TeamsCount = 1,
                 Description = "Description 2",
@@ -66,7 +66,7 @@ public partial class GamesPageViewModel : BaseViewModel
             },
             new GameItem {
                 Name = "Racing",
-                GameType = GameType.Racing,
+                GameType = GameType.RacingChallenge,
                 PlayersPerTeam = 1,
                 TeamsCount = 1,
                 Description = "Description 3",
@@ -87,7 +87,7 @@ public partial class GamesPageViewModel : BaseViewModel
             },
             new GameItem {
                 Name = "Single Game",
-                GameType = GameType.SingleRace,
+                GameType = GameType.SampleChallenge,
                 PlayersPerTeam = 1,
                 TeamsCount = 1,
                 Description = "Description 1",
@@ -98,13 +98,13 @@ public partial class GamesPageViewModel : BaseViewModel
             },
             new GameItem {
                 Name = "Distance challenge",
-                GameType = GameType.SingleRace,
+                GameType = GameType.DistanceChallenge,
                 PlayersPerTeam = 1,
-                TeamsCount = 2,
+                TeamsCount = 1,
                 Description = "Description 2",
-                TargetDistance = 1000,
-                IsActive  = App.Configs?.Theme == "philips",
+                TargetDistance = 400,
                 TargetTime = TimeSpan.FromMinutes(1),
+                IsActive  = App.Configs?.Theme == "philips" || App.Configs?.Theme == "visa",
                 Image = "cycling_race.png",
             },
             new GameItem {

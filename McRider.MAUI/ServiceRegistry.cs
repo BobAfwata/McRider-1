@@ -28,8 +28,9 @@ namespace McRider.MAUI
             services.AddView<GamesPage>();
             services.AddView<RegistrationPage>();
             services.AddView<StartGamePage>();
-            services.AddView<MatchupPage>();
-            services.AddView<MatchupUnveilPage>();
+            services.AddView<MatchupSamplePage>();
+            services.AddView<MatchupDistancePage>();
+            services.AddView<MatchupRevealPage>();
             services.AddView<MatchupRacingPage>();
 
             return services;
@@ -45,7 +46,7 @@ namespace McRider.MAUI
             services.AddViewModel<StartGamePageViewModel>();
             services.AddViewModel<MatchupPageViewModel>();
             services.AddViewModel<MatchupRacingPageViewModel>();
-            services.AddViewModel<MatchupUnveilPageViewModel> ();
+            services.AddViewModel<MatchupRevealPageViewModel> ();
 
             return services;
         }

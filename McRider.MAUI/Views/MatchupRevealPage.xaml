@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:McRider.MAUI.Controls"
     xmlns:viewmodel="clr-namespace:McRider.MAUI.ViewModels"
-    x:DataType="viewmodel:MatchupUnveilPageViewModel"
-    x:Class="McRider.MAUI.Views.MatchupUnveilPage"  
+    x:DataType="viewmodel:MatchupRevealPageViewModel"
+    x:Class="McRider.MAUI.Views.MatchupRevealPage"  
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled" 
     IsBusy="{Binding IsBusy}">

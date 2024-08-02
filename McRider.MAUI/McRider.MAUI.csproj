@@ -104,4 +104,26 @@
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
 		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\Themes\visa\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\MatchupDistancePage.xaml.cs">
+	    <DependentUpon>MatchupDistancePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MatchupSamplePage.xaml.cs">
+	    <DependentUpon>MatchupSamplePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MatchupRevealPage.xaml.cs">
+	    <DependentUpon>MatchupRevealPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\MatchupDistancePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
 </Project>

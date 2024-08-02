@@ -27,7 +27,8 @@ public enum GameType
 {
     Tournament,
     Team,
-    Reveal,
-    Racing,
-    SingleRace
+    RevealChallenge,
+    RacingChallenge,
+    SampleChallenge,
+    DistanceChallenge,
 }

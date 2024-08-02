@@ -2,11 +2,11 @@ using McRider.Common.Services;
 
 namespace McRider.MAUI.Views;
 
-public partial class MatchupPage : ContentPage
+public partial class MatchupSamplePage : ContentPage
 {
-    static ILogger _logger = App.ServiceProvider.GetService<ILogger<MatchupPage>>();
+    static ILogger _logger = App.ServiceProvider.GetService<ILogger<MatchupSamplePage>>();
 
-    public MatchupPage(MatchupPageViewModel vm)
+    public MatchupSamplePage(MatchupPageViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;

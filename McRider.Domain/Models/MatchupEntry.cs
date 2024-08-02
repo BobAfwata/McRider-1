@@ -121,7 +121,7 @@ public class MatchupEntry : IComparable<MatchupEntry>
     {
         var output = $"{Player?.Nickname}";
         if (Distance > 0)
-            output = $"({Distance}m - {Time?.ToString("mm:ss")})";
+            output = $"({Distance}m - {Time?.ToString("hh\\:mm\\:ss")})";
 
         return output;
     }

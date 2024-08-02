@@ -2,11 +2,11 @@ using McRider.Common.Services;
 
 namespace McRider.MAUI.Views;
 
-public partial class MatchupUnveilPage : ContentPage
+public partial class MatchupRevealPage : ContentPage
 {
-    static ILogger logger = App.ServiceProvider.GetService<ILogger<MatchupUnveilPage>>();
+    static ILogger logger = App.ServiceProvider.GetService<ILogger<MatchupRevealPage>>();
 
-    public MatchupUnveilPage(MatchupUnveilPageViewModel vm)
+    public MatchupRevealPage(MatchupRevealPageViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;
@@ -16,7 +16,7 @@ public partial class MatchupUnveilPage : ContentPage
 
     private void OnCurtainGridSizeChanged(object? sender, EventArgs e)
     {
-        if (BindingContext is MatchupUnveilPageViewModel vm && CurtainsGrid.Width > 0)
+        if (BindingContext is MatchupRevealPageViewModel vm && CurtainsGrid.Width > 0)
         {
             CurtainsGrid.SizeChanged -= OnCurtainGridSizeChanged;
             vm.CurtainWidth = CurtainsGrid.Width;
@@ -25,7 +25,7 @@ public partial class MatchupUnveilPage : ContentPage
 
     protected override void OnAppearing()
     {
-        if (BindingContext is MatchupUnveilPageViewModel vm)
+        if (BindingContext is MatchupRevealPageViewModel vm)
             _ = vm.Initialize();
 
         base.OnAppearing();
