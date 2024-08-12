@@ -179,7 +179,7 @@
                 <Frame Grid.RowSpan="2" 
                    Margin="0,-40,0,0" 
                    HorizontalOptions="Center" VerticalOptions="Center"
-                   BackgroundColor="Red"
+                   BackgroundColor="#e54417"
                    BorderColor="White" 
                    IsVisible="{Binding ShowResults}"  
                    WidthRequest="850"
@@ -318,9 +318,9 @@
                             </Frame>
 
                             <Label Grid.Column="2" Grid.Row="1" Text="{Binding Matchup.Player2.Nickname}" 
-                           FontFamily="MontserratBold" Padding="0,10,0,0"
-                           HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{Binding Theme.PrimaryColor}"/>
+                               FontFamily="MontserratBold" Padding="0,10,0,0"
+                               HorizontalTextAlignment="Center" FontSize="30" 
+                               TextColor="{Binding Theme.PrimaryColor}"/>
 
                             <Frame Grid.Row="2" Grid.Column="2" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
                                 <Label Text="{Binding Player2Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" FontFamily="OpenSansSemibold" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
@@ -334,15 +334,15 @@
 
                             <StackLayout Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Padding="8" Spacing="15" >
                                 <Label Grid.Column="1" Grid.Row="1" Text="{Binding NextMatch.PlayerVsPlayerText, StringFormat='Up next: {0}'}" 
-                               FontFamily="MontserratBold" Padding="0,10,10,0"
-                               HorizontalTextAlignment="Center" FontSize="30" 
-                               TextColor="{Binding Theme.PrimaryColor}"/>
+                                   FontFamily="MontserratBold" Padding="0,10,10,0"
+                                   HorizontalTextAlignment="Center" FontSize="30" 
+                                   TextColor="{Binding Theme.PrimaryColor}"/>
                                 <Image Source="{Binding TournamentImageSource}" HorizontalOptions="Center" MaximumHeightRequest="650"/>
                             </StackLayout>
 
                             <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Continue" Command="{Binding NextCommand}"
-                            BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
-                            Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
+                                BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                                Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                         </Grid>
                     </StackLayout>
                 </Frame>
