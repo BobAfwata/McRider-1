@@ -175,6 +175,177 @@
                         </Image.Triggers>
                     </Image>
                 </Grid>
+
+                <Frame Grid.RowSpan="2" 
+                   Margin="0,-40,0,0" 
+                   HorizontalOptions="Center" VerticalOptions="Center"
+                   BackgroundColor="Red"
+                   BorderColor="White" 
+                   IsVisible="{Binding ShowResults}"  
+                   WidthRequest="850"
+                   HeightRequest="1580">
+
+                    <Frame.Triggers>
+                        <DataTrigger TargetType="Frame" Binding="{Binding IsPlayer1Winner}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#59ab26" />
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Frame" Binding="{Binding IsPlayer2Winner}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#59ab26" />
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </Frame.Triggers>
+
+                    <StackLayout>
+                        <Grid VerticalOptions="EndAndExpand">
+                            <Grid.Triggers>
+                                <DataTrigger TargetType="Grid" Binding="{Binding IsMultiplePlayers}" Value="False">
+                                    <Setter Property="IsVisible" Value="True" />
+                                </DataTrigger>
+                            </Grid.Triggers>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="200"/>
+                                <RowDefinition Height="100"/>
+                                <RowDefinition Height="180"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Text="Congratilations! You get a reward" WidthRequest="600"
+                               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
+                               FontFamily="MontserratBold" Padding="0,0,0,40"
+                               HorizontalTextAlignment="Center" FontSize="58" 
+                               TextColor="White" />
+
+                            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="5" Stroke="White"
+                                    StrokeThickness="2" StrokeShape="Polyline 0 0, 790 0, 360 0" />
+
+                            <StackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Padding="8" Spacing="15" >
+                                <Label Grid.Column="1" Grid.Row="1" Text="{Binding NextMatch.PlayerVsPlayerText, StringFormat='Up next: {0}'}" 
+                                   FontFamily="MontserratBold" Padding="0,10,10,0"
+                                   HorizontalTextAlignment="Center" FontSize="30" 
+                                   TextColor="{Binding Theme.PrimaryColor}"/>
+                                <Image Source="{Binding TournamentImageSource}" HorizontalOptions="Center" MaximumHeightRequest="650" MinimumHeightRequest="80"/>
+                            </StackLayout>
+
+
+                            <Label Grid.Row="2" Grid.Column="1" Text="{Binding Matchup.Player1.Nickname}" 
+                                FontFamily="MontserratBold" Padding="200,0,0,0" Margin="0,0,0,0"
+                                HorizontalTextAlignment="Start" FontSize="32" 
+                                VerticalOptions="Center" HeightRequest="80"
+                                TextColor="White"/>
+
+                            <Frame Grid.Row="3" Grid.Column="1" HeightRequest="55" Padding="10" Margin="180,10" CornerRadius="30" BackgroundColor="White" BorderColor="Gray" >
+                                <Label Text="{Binding Player1Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="Black" FontSize="24" Padding="30,0,0,0"/>
+                            </Frame>
+                            <Frame Grid.Row="4" Grid.Column="1" HeightRequest="55" Padding="10" Margin="180,10" CornerRadius="30" BackgroundColor="White" BorderColor="Gray" >
+                                <Label Text="{Binding Player1Entry.Distance, StringFormat='{0:#,##0.00} m'}" TextColor="Black" FontSize="24" Padding="30,0,0,0"/>
+                            </Frame>
+                            <Frame Grid.Row="5" Grid.Column="1" HeightRequest="55" Padding="10" Margin="180,10" CornerRadius="30" BackgroundColor="White" BorderColor="Gray"  IsVisible="False" >
+                                <Label Text="" TextColor="Black" FontSize="24" Padding="30,0,0,0"/>
+                            </Frame>
+
+                            <Button Grid.Row="6" Grid.Column="1" Text="Continue" Command="{Binding NextCommand}"
+                                BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                                Margin="100,80,100,30" Padding="80,10,80,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
+
+                            <Image Grid.Row="8" Grid.Column="1" Source="{Binding Theme.Logo2}" />
+                        </Grid>
+
+                        <Grid VerticalOptions="CenterAndExpand">
+                            <Grid.Triggers>
+                                <DataTrigger TargetType="Grid" Binding="{Binding IsMultiplePlayers}" Value="False">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Grid.Triggers>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="45"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                               HorizontalOptions="Center"
+                               Orientation="Horizontal" Spacing="0">
+                                <Label Text="{Binding WinningEntry.Player.Nickname}" 
+                                   FontFamily="MontserratBold" Padding="0,0,0,0"
+                                   HorizontalTextAlignment="Center" FontSize="30" 
+                                   TextColor="White"/>
+                                <Label Text=" Wins!!" 
+                                   FontFamily="MontserratBold" Padding="0,0,0,0"
+                                   HorizontalTextAlignment="Center" FontSize="30" 
+                                   TextColor="White"/>
+                            </StackLayout>
+
+                            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="5" 
+                                StrokeThickness="4" StrokeShape="Polyline 0 0, 630 0, 325 0, 325 200" />
+
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Matchup.Player1.Nickname}" 
+                           FontFamily="MontserratBold" Padding="0,10,0,0"
+                           HorizontalTextAlignment="Center" FontSize="30" 
+                           TextColor="{Binding Theme.PrimaryColor}"/>
+
+                            <Frame Grid.Row="2" Grid.Column="1" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
+                                <Label Text="{Binding Player1Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
+                            </Frame>
+                            <Frame Grid.Row="3" Grid.Column="1" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White" >
+                                <Label Text="{Binding Player1Entry.Distance, StringFormat='{0:#,##0.00} m'}" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
+                            </Frame>
+                            <Frame Grid.Row="4" Grid.Column="1" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White" IsVisible="False" >
+                                <Label Text="1000 km" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
+                            </Frame>
+
+                            <Label Grid.Column="2" Grid.Row="1" Text="{Binding Matchup.Player2.Nickname}" 
+                           FontFamily="MontserratBold" Padding="0,10,0,0"
+                           HorizontalTextAlignment="Center" FontSize="30" 
+                           TextColor="{Binding Theme.PrimaryColor}"/>
+
+                            <Frame Grid.Row="2" Grid.Column="2" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White">
+                                <Label Text="{Binding Player2Entry.Time, StringFormat='{0:hh\\:mm\\:ss}'}" FontFamily="OpenSansSemibold" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
+                            </Frame>
+                            <Frame Grid.Row="3" Grid.Column="2" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White" >
+                                <Label Text="{Binding Player2Entry.Distance, StringFormat='{0:#,##0.00} m'}" FontFamily="OpenSansSemibold" TextColor="Black" FontSize="23" Padding="30,0,0,0"/>
+                            </Frame>
+                            <Frame Grid.Row="4" Grid.Column="2" HeightRequest="55" Padding="10" Margin="10" CornerRadius="30" BackgroundColor="White" IsVisible="False" >
+                                <Label Text="1000 m" TextColor="Black" FontSize="23" Padding="30,0,0,0" FontFamily="OpenSansSemibold"/>
+                            </Frame>
+
+                            <StackLayout Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Padding="8" Spacing="15" >
+                                <Label Grid.Column="1" Grid.Row="1" Text="{Binding NextMatch.PlayerVsPlayerText, StringFormat='Up next: {0}'}" 
+                               FontFamily="MontserratBold" Padding="0,10,10,0"
+                               HorizontalTextAlignment="Center" FontSize="30" 
+                               TextColor="{Binding Theme.PrimaryColor}"/>
+                                <Image Source="{Binding TournamentImageSource}" HorizontalOptions="Center" MaximumHeightRequest="650"/>
+                            </StackLayout>
+
+                            <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Continue" Command="{Binding NextCommand}"
+                            BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                            Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
+                        </Grid>
+                    </StackLayout>
+                </Frame>
             </Grid>
         </ScrollView>
     </Grid>
