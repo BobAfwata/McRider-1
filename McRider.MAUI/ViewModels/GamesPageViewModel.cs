@@ -81,7 +81,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 TeamsCount = 1,
                 Description = "Description 2",
                 TargetDistance = 1000,
-                IsActive = true,
+                IsActive = App.Configs?.Theme != "visa",
                 TargetTime = TimeSpan.FromMinutes(1),
                 Image = "trophy.png",
             },
@@ -97,7 +97,7 @@ public partial class GamesPageViewModel : BaseViewModel
                 Image = "cycling_single_player.png",
             },
             new GameItem {
-                Name = "Distance challenge",
+                Name = "Distance Challenge",
                 GameType = GameType.DistanceChallenge,
                 PlayersPerTeam = 1,
                 TeamsCount = 1,

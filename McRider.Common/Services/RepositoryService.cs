@@ -17,7 +17,18 @@ public class RepositoryService<T>
 
     private static string FilePrefix => FileCacheService.FilePrefix;
 
-    public string FileName => _fileName ?? (_fileName?.EndsWith("configs.json") == true ? "" : FilePrefix ?? "") + $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
+    public string FileName
+    {
+        get
+        {
+            var fileName = _fileName ?? $"{typeof(T).Name.ToLower()}s.json".Replace("ss.json", "s.json");
+
+            if (fileName.EndsWith("configs.json"))
+                return fileName;
+
+            return FilePrefix + fileName;
+        }
+    }
 
     public async Task<List<T>> GetAllAsync()
     {
@@ -63,9 +74,11 @@ public class RepositoryService<T>
         var all = await GetAllAsync();
         var id = item?.GetFirstValue("Id", "_id");
 
+
         if (string.IsNullOrEmpty(id?.ToString()))
             throw new ArgumentException("Id is required to save an item.");
 
+        item?.SetValue("ModifiedDate", DateTime.UtcNow);
         var indexOf = all.FindIndex(x => id?.Equals(x?.GetFirstValue("Id", "_id")) == true);
         if (indexOf >= 0)
             all[indexOf] = item;
@@ -89,6 +102,7 @@ public class RepositoryService<T>
             if (string.IsNullOrEmpty(id?.ToString()))
                 throw new ArgumentException("Id is required to save an item.");
 
+            item?.SetValue("ModifiedDate", DateTime.UtcNow);
             var indexOf = all.FindIndex(x => id?.Equals(x?.GetFirstValue("Id", "_id")) == true);
             if (indexOf >= 0)
                 all[indexOf] = item;

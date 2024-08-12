@@ -2,6 +2,7 @@
 using McRider.MAUI.Services;
 using System.IO.Ports;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace McRider.MAUI.Platforms.Windows.Services;
 
@@ -21,7 +22,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
         try
         {
             if (_detectPortTask != null)
-                await _detectPortTask;
+                return await _detectPortTask;
 
             if (_serialPort?.IsOpen == true)
                 return true;
@@ -62,8 +63,19 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
             // for DEBUG
             if (_configs?.FakeRead == true && _serialPort?.IsOpen != true)
             {
+                if (_detectPortTask?.Result == true)
+                    return await _detectPortTask;
+
+                // Allow Retry with user confirmation
+                var res = await App.Current.MainPage.DisplayAlert(
+                    "FakeRead?", "Connection failed but [FakeRead] is enable would like debug",
+                    "Yes", "No"
+                );
+
+                if (res != true) return false;
+
                 _serialPort = null;
-                _detectPortTask = Task.CompletedTask;
+                _detectPortTask = Task.FromResult(true);
                 return true;
             }
 
@@ -78,7 +90,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     }
 
 
-    private Task? _detectPortTask = null;
+    private Task<bool>? _detectPortTask = null;
     private Task DetectPort()
     {
         if (_detectPortTask != null)
@@ -97,11 +109,18 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                     _serialPort.ReadTimeout = _configs.ReadTimeout + 10;
                     _serialPort.Open();
 
-                    if (await ValidateSerialPort() != true)
+                    if(await ValidateSerialPort() == true)
+                    {
+                        await ClearBuffer();
+                        _configs.PortName = port;
+                        _configs.ModifiedTime = DateTime.UtcNow;
+                        await _configs.Save();
+                        break;
+                    }
+                    else
                     {
                         _serialPort?.Close();
                         _serialPort = null;
-                        continue;
                     }
                 }
                 catch (Exception ex)
@@ -112,7 +131,17 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
                     _serialPort = null;
                 }
             }
-        }).ContinueWith(task => _detectPortTask = null);
+
+            return _serialPort?.IsOpen == true;
+        });
+
+        _detectPortTask.ContinueWith(task => {
+            if (task.Result != true)
+            {
+                _logger.LogError("No valid port found!");
+                _detectPortTask = null;
+            }
+        });
 
         return _detectPortTask;
     }
@@ -133,7 +162,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
     {
         await Initialize();
 
-        if (await ValidateSerialPort())
+        if (await ValidateSerialPort() == true)
             await base.DoReadDataAsync();
         else if (_configs?.FakeRead == true)
             await DoFakeReadData();
@@ -148,16 +177,44 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
         var timeout = TimeSpan.FromMilliseconds(_configs.ReadTimeout + 10);
         var message = await ReadDataAsync(timeout, -1);
+
+        // Wait for some data
+        while (string.IsNullOrEmpty(message) && timeout.TotalMilliseconds < _configs.ReadTimeout + 1000)
+        {
+            await Task.Delay(100);
+            message = await ReadDataAsync(timeout, -1);
+            timeout += TimeSpan.FromMilliseconds(100);
+        }
+
+        // No data received
         if (string.IsNullOrEmpty(message))
             return false;
 
+        // Check if data is valid
         var json = JObject.Parse(message);
         if (json["distance_1"] != null || json["bikeA"] != null)
             return true;
-
+        
         return false;
     }
 
+    public override async Task ClearBuffer(TimeSpan? timeout = null)
+    {
+        string previousMessage, message = null;
+        do
+        {
+            try
+            {
+                previousMessage = message;
+                message = _serialPort?.ReadLine();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error while clearing buffer!");
+                break;
+            }   
+        } while (!string.IsNullOrEmpty(message) && message != previousMessage);
+    }
     public override async Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0)
     {
         timeout ??= TimeSpan.FromSeconds(1.2);

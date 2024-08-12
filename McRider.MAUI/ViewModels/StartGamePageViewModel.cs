@@ -7,11 +7,20 @@ public partial class StartGamePageViewModel : BaseViewModel
 {
     RepositoryService<Tournament> _repository;
     ArdrinoCommunicator _communicator;
+    FileCacheService _cacheService;
+    Configs _configs;
 
-    public StartGamePageViewModel(ArdrinoCommunicator communicator, RepositoryService<Tournament> repository)
+    public StartGamePageViewModel(ArdrinoCommunicator communicator, FileCacheService cacheService, RepositoryService<Tournament> repository)
     {
         _repository = repository;
         _communicator = communicator;
+        _cacheService = cacheService;
+    }
+
+    public override async Task Initialize(params object[] args)
+    {
+        _configs = (await _cacheService.GetAsync("configs.json", () => Task.FromResult(new[] { new Configs() }))).FirstOrDefault();
+        await base.Initialize(args);
     }
 
     [ObservableProperty]
@@ -102,7 +111,11 @@ public partial class StartGamePageViewModel : BaseViewModel
                 IsBusy = false;
 
                 // Allow Retry with user confirmation
-                var res = await Application.Current.MainPage.DisplayAlert("Connection failed! Would you like to try again?", "Retry?", "Yes", "No");
+                var res = await Application.Current.MainPage.DisplayAlert(
+                    "Connection failed! Would you like to try again?", "Retry?", 
+                    "Yes", "No"
+                );
+
                 if (res != true)
                     return null;
 
@@ -113,8 +126,6 @@ public partial class StartGamePageViewModel : BaseViewModel
 
             // Start the game
             IsBusy = false;
-
-
 
             // Navigate to Game Play Page
             //var MatchupSamplePage = tournament.Game.GameType == GameType.Reveal ? nameof(MatchupRevealPage) : nameof(MatchupSamplePage);
@@ -127,6 +138,9 @@ public partial class StartGamePageViewModel : BaseViewModel
             };
 
             await Shell.Current.GoToAsync($"///{matchupSamplePage}");
+
+            // The below depends on registering the ViewModel as a singleton. 
+            // This way vm and the page will share the same instance of the ViewModel
             var vm = tournament.Game.GameType switch
             {
                 GameType.RevealChallenge => App.ServiceProvider.GetService<MatchupRevealPageViewModel>(),

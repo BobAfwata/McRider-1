@@ -34,7 +34,7 @@ namespace McRider.MAUI
         private async Task Initialize()
         {
             // Load Configs
-            Configs = await _cacheService.GetAsync("configs.json", () => Task.FromResult(new Configs()));
+            Configs = (await _cacheService.GetAsync("configs.json", () => Task.FromResult(new[] { new Configs() }))).FirstOrDefault();
 
             // Set Cache file Prefix
             FileCacheService.FilePrefix = App.Configs?.Theme + ".";

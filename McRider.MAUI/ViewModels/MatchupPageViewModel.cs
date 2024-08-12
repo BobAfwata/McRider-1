@@ -67,19 +67,6 @@ public partial class MatchupPageViewModel : BaseViewModel
         _repository = repository;
 
         return;
-
-        App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
-        {
-            if (IsComplete) return false;
-
-            if (Player1CurtainTranslationX < 0)
-                _player1CurtainCounter += 0.1;
-
-            if (Player2CurtainTranslationX > 0)
-                _player2CurtainCounter += 0.1;
-
-            return true;
-        });
     }
 
     public ImageSource? RevealImage => Matchup?.Metadata?.TryGetValue("RevealImage", out var obj) == true && obj is string ? obj?.ToString().ToImageSource() : null;
@@ -180,7 +167,14 @@ public partial class MatchupPageViewModel : BaseViewModel
 
             var remainingTime = targetTime - (targetTime * PercentageTimeProgress / 100.0) ?? TimeSpan.Zero;
 
-            return remainingTime.ToString(@"mm\:ss");
+            if (remainingTime.TotalMinutes > 60)
+                return remainingTime.ToString(@"hh\:mm\:ss");
+            
+            if (remainingTime.TotalSeconds > 60)
+                return remainingTime.ToString(@"mm\:ss");
+
+            return remainingTime.ToString(@"ss").Replace("00", "0");
+
         }
     }
 
@@ -267,7 +261,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         for (var i = countDown; i >= 0; i--)
         {
             CountDown = i;
-            if (i > 0) await Task.Delay(1200);
+            if (i >= 0) await Task.Delay(1200);
         }
 
         await StartGame();

@@ -22,11 +22,17 @@ public abstract class ArdrinoCommunicator
 
     public virtual async Task<bool> Initialize()
     {
-        _configs = await _cacheService.GetAsync("configs.json", async () => new Configs());
+        _configs = (await _cacheService.GetAsync("configs.json", () => Task.FromResult(new[] { new Configs() }))).FirstOrDefault();
         return true;
     }
 
     public abstract Task<string?> ReadDataAsync(TimeSpan? timeout = null, int retryCount = 0);
+
+    public virtual Task ClearBuffer(TimeSpan? timeout = null)
+    {
+        // Nothing to do here. Implement in derived class
+        return Task.CompletedTask;
+    }
 
     public abstract void SendData(string data);
 
