@@ -222,7 +222,7 @@
                                 <RowDefinition Height="180"/>
                             </Grid.RowDefinitions>
 
-                            <Label Text="Congratilations! You get a reward" WidthRequest="600"
+                            <Label Text="{Binding Theme.Texts.WinnerMessage}" WidthRequest="600"
                                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
                                FontFamily="MontserratBold" Padding="0,0,0,40"
                                HorizontalTextAlignment="Center" FontSize="58" 

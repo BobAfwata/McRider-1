@@ -4,5 +4,7 @@
   "TertiaryColor": "#000000",
   "GamesTitle": "Are you ready to take on the distance reward challenge ?",
   "LoadingTitle": "Can You Win Under A Minute ?",
-  "LandingTitle": "Can You Win Under A Minute ? "
+  "LandingTitle": "Can You Win Under A Minute ?",
+  "WinnerMessage": "Congratulations!! You have won a reward.",
+  "LoserMessage": "Sorry!! Better luck next time."
 }

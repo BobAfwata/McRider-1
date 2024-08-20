@@ -41,12 +41,12 @@
                     <Label Grid.Column="0" Grid.Row="2" Text="{Binding Matchup.Player1.Nickname}" 
                        FontFamily="MontserratBold"  
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
-                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="{Binding Theme.TertiaryColor}"/>
+                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="Transparent"/>
 
                     <Label Grid.Column="1" Grid.Row="2" Text="{Binding Matchup.Player2.Nickname}"
                        FontFamily="MontserratBold" IsVisible="{Binding IsMultiplePlayers}"
                        HorizontalTextAlignment="Center" Margin="20,0" FontSize="40" 
-                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="{Binding Theme.TertiaryColor}"/>
+                       TextColor="{Binding Theme.PrimaryColor}" BackgroundColor="Transparent"/>
                 </Grid>
 
                 <Button Text="Start Game" Command="{Binding StartGameCommand}"  Margin="40"
