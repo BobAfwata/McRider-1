@@ -65,8 +65,6 @@ public partial class MatchupPageViewModel : BaseViewModel
         _tournament = null;
         _communicator = communicator;
         _repository = repository;
-
-        return;
     }
 
     public ImageSource? RevealImage => Matchup?.Metadata?.TryGetValue("RevealImage", out var obj) == true && obj is string ? obj?.ToString().ToImageSource() : null;
@@ -162,10 +160,16 @@ public partial class MatchupPageViewModel : BaseViewModel
                 return CountDown.ToString();
 
             var targetTime = Tournament?.Game?.TargetTime;
-            if (targetTime == null)
-                return "0";
+            var entryTime = Matchup.Entries.FirstOrDefault()?.Time;
 
-            var remainingTime = targetTime - (targetTime * PercentageTimeProgress / 100.0) ?? TimeSpan.Zero;
+            if (targetTime == null) return "0";
+
+            TimeSpan remainingTime;
+
+            if (entryTime != null)
+                remainingTime = targetTime - entryTime ?? targetTime.Value;
+            else
+                remainingTime = targetTime.Value;
 
             if (remainingTime.TotalMinutes > 60)
                 return remainingTime.ToString(@"hh\:mm\:ss");
@@ -322,6 +326,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     private async Task StartNextGame()
     {
         IsBusy = true;
+        ShowResults = false;
 
         if (Tournament?.Game?.GameType == GameType.RevealChallenge)
         {
@@ -349,7 +354,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         _player1CurtainCounter = 0;
         _player2CurtainCounter = 0;
         _communicator?.Stop();
-        //Matchup = null;
+        Matchup = null;
 
         if (vm is not null)
         {
@@ -367,7 +372,14 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         ShowResults = false;
         // Start the game, Do not wait for it to finish
-        _ = _communicator.Start(Matchup);
+        _ = _communicator.Start(Matchup).ContinueWith(async task => {
+            while (ShowResults == false)
+            {
+                await Task.Delay(1000);
+                OnPropertyChanged(nameof(PlayCountDown));
+                OnPropertyChanged(nameof(PercentageTimeProgress));
+            }
+        });
     }
 
     [RelayCommand]
@@ -418,14 +430,12 @@ public partial class MatchupPageViewModel : BaseViewModel
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {
             IsRunning = false;
-
             // TODO: Player disconnect notification
         };
 
         _communicator.OnPlayerStopped += async (sender, player) =>
         {
             IsRunning = false;
-
             // TODO: Player stopped notification
         };
 

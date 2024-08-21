@@ -18,7 +18,7 @@
         <Image Grid.Row="0" Source="{Binding Theme.HeaderImage}" Aspect="AspectFit"/>
         <Image Grid.Row="2" Source="{Binding Theme.FooterImage}" Aspect="AspectFit"/>
 
-        <ScrollView Grid.Row="1" BackgroundColor="#533f90" Margin="25,0" >
+        <ScrollView Grid.Row="1" BackgroundColor="{Binding Theme.TertiaryColor}" Margin="25,0" >
             <Grid Padding="80,180,80,80">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -87,7 +87,7 @@
                             </Label.Triggers>
                         </Label>
                         
-                        <Grid Grid.Row="1" BackgroundColor="#533f90" IsVisible="{Binding ShowHorizontalProgress}">
+                        <Grid Grid.Row="1" BackgroundColor="{Binding Theme.TertiaryColor}" IsVisible="{Binding ShowHorizontalProgress}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -96,11 +96,11 @@
                             <Label Grid.Row="0" Text="Time" FontSize="24" Margin="20,0" />
                             <Label Grid.Row="0" Text="{Binding Player1Entry.Time, StringFormat='{0:mm\\:ss} s'}" 
                                    FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
-                                   Margin="20,0"  BackgroundColor="#533f90"  MinimumWidthRequest="130" />
+                                   Margin="20,0"  BackgroundColor="{Binding Theme.TertiaryColor}"  MinimumWidthRequest="130" />
                             <Label Grid.Row="1" Text="Distance" FontSize="24" Margin="20,0" />
                             <Label Grid.Row="1" Text="{Binding Player1Entry.Distance, StringFormat='{0:#,##0.00} m'}" 
                                    FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
-                                   Margin="20,0"  BackgroundColor="#533f90"  MinimumWidthRequest="130"/>
+                                   Margin="20,0"  BackgroundColor="{Binding Theme.TertiaryColor}"  MinimumWidthRequest="130"/>
                             <ProgressBar Grid.Row="2" Progress="{Binding Player1ProgressF}" ProgressColor="#e54417" ScaleY="5" />
                         </Grid>
                     </Grid>
@@ -130,7 +130,7 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
-                        <Grid Grid.Row="1" BackgroundColor="#533f90" IsVisible="{Binding ShowHorizontalProgress}">
+                        <Grid Grid.Row="1" BackgroundColor="{Binding Theme.TertiaryColor}" IsVisible="{Binding ShowHorizontalProgress}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -320,8 +320,8 @@
                             </StackLayout>
 
                             <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Continue" Command="{Binding NextCommand}"
-                            BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
-                            Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
+                                BackgroundColor="{Binding Theme.ButtonColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                                Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                         </Grid>
                     </StackLayout>
                 </Frame>

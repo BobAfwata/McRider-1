@@ -69,7 +69,7 @@
                 <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="40" HorizontalOptions="Center"
                      Stroke="LightGray" StrokeShape="RoundRectangle 50" IsVisible="{Binding IsComplete}">
                     <Button Text="Next" Command="{Binding NextCommand}"
-                        BackgroundColor="{Binding Theme.TertiaryColor}"  
+                        BackgroundColor="{Binding Theme.ButtonColor}"  
                         TextColor="{Binding Theme.PrimaryColor}"                        
                         Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50"/>
                 </Border>

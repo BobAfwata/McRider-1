@@ -1,7 +1,8 @@
 {
-  "TitleColor": "#ffffff",
   "PrimaryColor": "#00a4bd",
-  "TertiaryColor": "#000000",
+  "TertiaryColor": "#533f90",
+  "TitleColor": "#ffffff",
+  "ButtonColor": "#000000",
   "GamesTitle": "Are you ready to take on the distance reward challenge ?",
   "LoadingTitle": "Can You Win Under A Minute ?",
   "LandingTitle": "Can You Win Under A Minute ?",

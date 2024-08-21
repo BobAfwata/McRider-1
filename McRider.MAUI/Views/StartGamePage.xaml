@@ -50,7 +50,7 @@
                 </Grid>
 
                 <Button Text="Start Game" Command="{Binding StartGameCommand}"  Margin="40"
-                    BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                    BackgroundColor="{Binding Theme.ButtonColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
                     Padding="80,20" FontSize="40" FontFamily="MontserratBold" CornerRadius="50" />
 
             </StackLayout>

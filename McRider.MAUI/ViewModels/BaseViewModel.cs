@@ -151,6 +151,8 @@ public partial class ThemeConfig : ObservableObject
 
     public string TitleColor => GetText("TitleColor") ?? TertiaryColor;
 
+    public string ButtonColor => GetText("ButtonColor") ?? PrimaryColor;
+
     public string PrimaryColor => GetText("PrimaryColor") ?? Theme switch
     {
         "schweppes" => "#FFD700",

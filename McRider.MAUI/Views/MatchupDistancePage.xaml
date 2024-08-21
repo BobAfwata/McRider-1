@@ -18,7 +18,7 @@
         <Image Grid.Row="0" Source="{Binding Theme.HeaderImage}" Aspect="AspectFit"/>
         <Image Grid.Row="2" Source="{Binding Theme.FooterImage}" Aspect="AspectFit"/>
 
-        <ScrollView Grid.Row="1" BackgroundColor="#533f90" Margin="25,0" >
+        <ScrollView Grid.Row="1" BackgroundColor="{Binding Theme.TertiaryColor}" Margin="25,0" >
             <Grid Padding="80,80,80,80">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -87,7 +87,7 @@
                             </Label.Triggers>
                         </Label>
 
-                        <Grid Grid.Row="1" BackgroundColor="#533f90" IsVisible="True">
+                        <Grid Grid.Row="1" BackgroundColor="{Binding Theme.TertiaryColor}" IsVisible="True">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -96,11 +96,11 @@
                             <Label Grid.Row="0" Text="Time" FontSize="24" Margin="20,0" />
                             <Label Grid.Row="0" Text="{Binding Player1Entry.Time, StringFormat='{0:mm\\:ss} s'}" 
                                    FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
-                                   Margin="20,0"  BackgroundColor="#533f90"  MinimumWidthRequest="130" />
+                                   Margin="20,0"  BackgroundColor="{Binding Theme.TertiaryColor}"  MinimumWidthRequest="130" />
                             <Label Grid.Row="1" Text="Distance" FontSize="24" Margin="20,0" />
                             <Label Grid.Row="1" Text="{Binding Player1Entry.Distance, StringFormat='{0:#,##0.00} m'}" 
                                    FontSize="24" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End"
-                                   Margin="20,0"  BackgroundColor="#533f90"  MinimumWidthRequest="130"/>
+                                   Margin="20,0"  BackgroundColor="{Binding Theme.TertiaryColor}"  MinimumWidthRequest="130"/>
                             <ProgressBar Grid.Row="2" Progress="{Binding Player1ProgressF}" ProgressColor="#e54417" ScaleY="5" />
                         </Grid>
                     </Grid>
@@ -130,7 +130,7 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
-                        <Grid Grid.Row="1" BackgroundColor="#533f90" IsVisible="{Binding ShowHorizontalProgress}">
+                        <Grid Grid.Row="1" BackgroundColor="{Binding Theme.TertiaryColor}" IsVisible="{Binding ShowHorizontalProgress}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -188,11 +188,9 @@
                     <Frame.Triggers>
                         <DataTrigger TargetType="Frame" Binding="{Binding IsPlayer1Winner}" Value="True">
                             <Setter Property="BackgroundColor" Value="#59ab26" />
-                            <Setter Property="IsVisible" Value="True" />
                         </DataTrigger>
                         <DataTrigger TargetType="Frame" Binding="{Binding IsPlayer2Winner}" Value="True">
                             <Setter Property="BackgroundColor" Value="#59ab26" />
-                            <Setter Property="IsVisible" Value="True" />
                         </DataTrigger>
                     </Frame.Triggers>
 
@@ -222,11 +220,20 @@
                                 <RowDefinition Height="180"/>
                             </Grid.RowDefinitions>
 
-                            <Label Text="{Binding Theme.Texts.WinnerMessage}" WidthRequest="600"
+                            <Label Text="{Binding Theme.Texts.LoserMessage}" WidthRequest="630" TextType="Html"
                                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
                                FontFamily="MontserratBold" Padding="0,0,0,40"
                                HorizontalTextAlignment="Center" FontSize="58" 
-                               TextColor="White" />
+                               TextColor="White">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsPlayer1Winner}" Value="True">
+                                        <Setter Property="Text" Value="{Binding Theme.Texts.WinnerMessage}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsPlayer2Winner}" Value="True">
+                                        <Setter Property="Text" Value="{Binding Theme.Texts.WinnerMessage}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
 
                             <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="5" Stroke="White"
                                     StrokeThickness="2" StrokeShape="Polyline 0 0, 790 0, 360 0" />
@@ -241,8 +248,8 @@
 
 
                             <Label Grid.Row="2" Grid.Column="1" Text="{Binding Matchup.Player1.Nickname}" 
-                                FontFamily="MontserratBold" Padding="200,0,0,0" Margin="0,0,0,0"
-                                HorizontalTextAlignment="Start" FontSize="32" 
+                                FontFamily="MontserratBold" Padding="0" Margin="0"
+                                HorizontalTextAlignment="Center" FontSize="32" 
                                 VerticalOptions="Center" HeightRequest="80"
                                 TextColor="White"/>
 
@@ -257,7 +264,7 @@
                             </Frame>
 
                             <Button Grid.Row="6" Grid.Column="1" Text="Continue" Command="{Binding NextCommand}"
-                                BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                                BackgroundColor="{Binding Theme.ButtonColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
                                 Margin="100,80,100,30" Padding="80,10,80,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
 
                             <Image Grid.Row="8" Grid.Column="1" Source="{Binding Theme.Logo2}" />
@@ -341,7 +348,7 @@
                             </StackLayout>
 
                             <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Continue" Command="{Binding NextCommand}"
-                                BackgroundColor="{Binding Theme.TertiaryColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
+                                BackgroundColor="{Binding Theme.ButtonColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
                                 Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                         </Grid>
                     </StackLayout>
