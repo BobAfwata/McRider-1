@@ -65,6 +65,11 @@ public partial class MatchupPageViewModel : BaseViewModel
         _tournament = null;
         _communicator = communicator;
         _repository = repository;
+
+        App.StartTimer(TimeSpan.FromSeconds(1), () => {
+            OnPropertyChanged(nameof(CountDown));
+            return IsRunning || IsComplete != true;
+        });
     }
 
     public ImageSource? RevealImage => Matchup?.Metadata?.TryGetValue("RevealImage", out var obj) == true && obj is string ? obj?.ToString().ToImageSource() : null;
