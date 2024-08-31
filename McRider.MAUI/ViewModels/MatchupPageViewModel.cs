@@ -175,8 +175,10 @@ public partial class MatchupPageViewModel : BaseViewModel
             if (remainingTime.TotalSeconds > 60)
                 return remainingTime.ToString(@"mm\:ss");
 
-            return remainingTime.ToString(@"ss").Replace("00", "0");
+            if (remainingTime.TotalSeconds <= 0)
+                return "--";
 
+            return remainingTime.ToString(@"ss").Replace("00", "0");
         }
     }
 
@@ -349,10 +351,11 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         CountDown = Tournament?.Game?.CountDown ??  3;
         ShowCountDown = true;
+        Matchup = null;
+
         _player1CurtainCounter = 0;
         _player2CurtainCounter = 0;
         _communicator?.Stop();
-        Matchup = null;
 
         if (vm is not null)
         {
@@ -369,9 +372,10 @@ public partial class MatchupPageViewModel : BaseViewModel
     private async Task StartGame()
     {
         ShowResults = false;
-        StartTime = DateTime.UtcNow;
         // Start the game, Do not wait for it to finish
         _ = _communicator.Start(Matchup).ContinueWith(async task => {
+            StartTime = DateTime.UtcNow;
+
             while (ShowResults == false)
             {
                 await Task.Delay(1000);
