@@ -44,7 +44,7 @@ public abstract class ArdrinoCommunicator
             if (_isRunning != true)
                 return false;
 
-            if (!IsActive(_matchup.Player1) && !IsActive(_matchup.Player2))
+            if (IsActive(_matchup.Player1) == false && IsActive(_matchup.Player2) == false && _matchup.IsPlayed == true)
                 return _isRunning = false;
 
             return true;
@@ -91,7 +91,6 @@ public abstract class ArdrinoCommunicator
             }
             else if (delay > ACTIVITY_DISCONECT_TIMEOUT)
             {
-                entry.IsActive = false;
                 OnPlayerDisconnected?.Invoke(this, entry.Player);
                 return false;
             }
