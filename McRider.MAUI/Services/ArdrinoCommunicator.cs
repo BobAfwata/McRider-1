@@ -98,9 +98,10 @@ public abstract class ArdrinoCommunicator
 
         var timeMet = _matchup.TargetEndTime.HasValue && _matchup.TargetEndTime <= DateTime.UtcNow;
         var distanceMet = _matchup.Game.TargetDistance.HasValue && _matchup.Game.TargetDistance <= entry.Distance;
+        var progress = _matchup.GetPercentageProgress();
 
         // If the distance and time are not met, return true
-        if (!distanceMet && !timeMet)
+        if (!distanceMet && !timeMet && progress < 100)
             return true;
 
         // Mark the matchup as played

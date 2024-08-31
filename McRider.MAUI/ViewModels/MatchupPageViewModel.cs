@@ -264,6 +264,9 @@ public partial class MatchupPageViewModel : BaseViewModel
         if (countDown > 0)
             ShowCountDown = true;
 
+        Matchup.Reset();
+        RefreshProgressView();
+
         for (var i = countDown; i >= 0; i--)
         {
             CountDown = i;
@@ -365,6 +368,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     private async Task StartGame()
     {
         ShowResults = false;
+
         // Start the game, Do not wait for it to finish
         _ = _communicator.Start(Matchup).ContinueWith(async task =>
         {

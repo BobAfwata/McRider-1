@@ -30,7 +30,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="600"/>
                         <RowDefinition Height="Auto"/>
@@ -40,17 +40,12 @@
                     <Image Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Source="{Binding HeaderImage}"/>
                     <Image Grid.ColumnSpan="2" Grid.Row="1" Source="{Binding CityImage}" IsAnimationPlaying="{Binding IsRunning}" BackgroundColor="Transparent"/>
                     <Image Grid.ColumnSpan="2" Grid.Row="2" Source="{Binding RoadImage}" IsAnimationPlaying="{Binding IsRunning}" BackgroundColor="White"/>
-                    <Image Grid.ColumnSpan="1" Grid.Row="2" Source="{Binding BusImage}" IsAnimationPlaying="{Binding IsRunning}" BackgroundColor="Transparent"/>
-                    <Image Grid.ColumnSpan="1" Grid.Row="2" Source="{Binding BubbleImage}" VerticalOptions="Start" Margin="90,70,80,0"  BackgroundColor="Transparent" />
+                    <Image Grid.ColumnSpan="1" Grid.Row="2" Source="{Binding BusImage}" IsAnimationPlaying="{Binding IsRunning}" BackgroundColor="Transparent" WidthRequest="531" />
+                    <Image Grid.ColumnSpan="1" Grid.Row="2" Source="{Binding BubbleImage}" VerticalOptions="Start" Margin="90,90,80,0"  BackgroundColor="Transparent" WidthRequest="300"/>
                 </Grid>
 
                 <Grid Grid.Row="0"  HeightRequest="480" IsVisible="{Binding ShowCountDown}" Margin="80,180,80,80">
-                    <Image Source="{Binding Theme.Clock2Image}"/>
-                    <controls:PieChart StartAngle="90" HeightRequest="310" WidthRequest="310" Margin="0,70,0,0" Thickness="154">
-                        <controls:PieChart.Data>
-                            <controls:PieChartData Label="Progress" Value="{Binding PercentageTimeProgress}" BackgroundColor="{Binding Theme.PrimaryColor}"/>
-                        </controls:PieChart.Data>
-                    </controls:PieChart>
+                    <Image Source="{Binding Theme.Clock2Image}"/>                    
                     <Label Text="{Binding CountDown}" FontSize="100" Padding="0,70,0,0" FontFamily="MontserratBold"
                        TextColor="White" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label.Triggers>
@@ -90,13 +85,13 @@
                            HorizontalOptions="Center"
                            Orientation="Horizontal" Spacing="0">
                             <Label Text="{Binding WinningEntry.Player.Nickname}" 
-                           FontFamily="MontserratBold" Padding="0,0,0,0"
-                           HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{Binding Theme.PrimaryColor}"/>
+                               FontFamily="MontserratBold" Padding="0,0,0,0"
+                               HorizontalTextAlignment="Center" FontSize="30" 
+                               TextColor="{Binding Theme.PrimaryColor}"/>
                             <Label Text=" Wins!!" 
-                           FontFamily="MontserratBold" Padding="0,0,0,0"
-                           HorizontalTextAlignment="Center" FontSize="30" 
-                           TextColor="{Binding Theme.PrimaryColor}"/>
+                               FontFamily="MontserratBold" Padding="0,0,0,0"
+                               HorizontalTextAlignment="Center" FontSize="30" 
+                               TextColor="{Binding Theme.PrimaryColor}"/>
                         </StackLayout>
 
                         <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="5" 
@@ -144,7 +139,7 @@
                             BackgroundColor="{Binding Theme.ButtonColor}" HorizontalOptions="Center" TextColor="{Binding Theme.PrimaryColor}"
                             Margin="5" Padding="50,10" FontSize="32" FontFamily="OpenSansSemibold" CornerRadius="30" />
                     </Grid>
-                </Frame>                
+                </Frame>
             </Grid>
         </ScrollView>
     </Grid>
