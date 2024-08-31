@@ -16,6 +16,12 @@ public class Matchup
 
     public GameItem Game { get; set; }
 
+    public DateTime? StartTime { get; set; }
+
+    public DateTime? EndTime { get; set; }
+
+    public DateTime? TargetEndTime => StartTime?.Add(Game?.TargetTime ?? TimeSpan.FromMinutes(5));
+
     public Dictionary<string, object> Metadata { get; set; } = [];
 
     public ConcurrentList<MatchupEntry> Entries { get; set; } = [];
@@ -71,6 +77,7 @@ public class Matchup
     public int PlayerCount => Players?.Count() ?? 0;
 
     public Player? Player1 => GetPlayerAt(0);
+
     public Player? Player2 => GetPlayerAt(1);
 
     public bool ExpectesPlayerEntry => Entries.Any(e => e.ExpectsPlayerEntry);
@@ -150,8 +157,6 @@ public class Matchup
         foreach (var entry in Entries)
             entry?.Reset();
     }
-
-
 }
 
 

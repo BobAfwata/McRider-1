@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using McRider.Domain.Models;
 
 namespace McRider.MAUI.Services;
 
@@ -73,48 +74,64 @@ public abstract class ArdrinoCommunicator
         await DoReadDataAsync();
     }
 
-    private bool IsActive(Player player)
+    private bool CheckMatchupState(MatchupEntry entry)
     {
-        var lastActivity = player?.GetEntry(_matchup)?.LastActivity;
+        if (entry == null) return false;
+
+        var lastActivity = entry.LastActivity;
         if (lastActivity.HasValue)
         {
             var delay = (DateTime.UtcNow - lastActivity.Value).TotalMilliseconds;
 
             if (delay > ACTIVITY_ENDED_TIMEOUT)
             {
-                OnPlayerStopped?.Invoke(this, player);
+                entry.IsActive = false;
+                OnPlayerStopped?.Invoke(this, entry.Player);
                 return false;
             }
-
-            if (delay > ACTIVITY_DISCONECT_TIMEOUT)
-                OnPlayerDisconnected?.Invoke(this, player);
+            else if (delay > ACTIVITY_DISCONECT_TIMEOUT)
+            {
+                entry.IsActive = false;
+                OnPlayerDisconnected?.Invoke(this, entry.Player);
+                return false;
+            }
         }
 
-        // End the game when target Distance/Time reached by one of the players
-        var progress = _matchup.GetPercentageProgress();
-        if (progress >= 100)
-        {
-            // Mark the matchup as played
-            _matchup.IsPlayed = true;
+        var timeMet = _matchup.TargetEndTime.HasValue && _matchup.TargetEndTime <= DateTime.UtcNow;
+        var distanceMet = _matchup.Game.TargetDistance.HasValue && _matchup.Game.TargetDistance <= entry.Distance;
 
-            var winner = _matchup.Winner;
-            if (_isRunning && winner != null)
-            {
-                winner.IsActive = true;
-                OnPlayerWon?.Invoke(this, winner); // Notify the winner
-            }
-            else if (_matchup.Loser == null)
-            {
-                OnMatchupTired?.Invoke(this, _matchup.Players.ToArray());
-            }
+        // If the distance and time are not met, return true
+        if (!distanceMet && !timeMet)
+            return true;
 
-            if (_matchup.Game.AllowLosserToFinish == true)
-                return false; // Allow the loser to finish
-            else
-                return _isRunning = false; // End the game
-        }
+        // Mark the matchup as played
+        _matchup.IsPlayed = true;
 
-        return true;
+        // Mark the entry as inactive
+        entry.IsActive = false;
+
+        // Notify the winner
+        var winner = _matchup.Winner;
+        if (_isRunning && winner != null)
+            OnPlayerWon?.Invoke(this, winner); // Notify the winner
+        else if (_matchup.Loser == null)
+            OnMatchupTired?.Invoke(this, _matchup.Players.ToArray());
+
+        if (_matchup.Game?.AllowLosserToFinish == true)
+            return false; // Return false but allow the loser to finish
+        else
+            return _isRunning = false; // Return and End the game
+    }
+
+    private bool IsActive(Player player)
+    {
+        var entry = player?.GetEntry(_matchup);
+        if (entry == null) return false;
+
+        // Check for inactivity.
+        CheckMatchupState(entry);
+
+        return entry.IsActive;
     }
 
     private void UpdatePlayerDistance(MatchupEntry entry, double distance)
@@ -124,15 +141,20 @@ public abstract class ArdrinoCommunicator
         if (entry?.Player == null)
             return;
 
-        if (entry.Distance <= 0 && delta > 0)
+        entry.Distance = distance;
+
+        if (delta > 0)
         {
-            entry.StartTime ??= DateTime.UtcNow;
-            if (entry?.Player != null)
-                OnPlayerStart?.Invoke(this, entry?.Player);
+            entry.IsActive = true;
+            if (entry.Distance <= 0)
+            {
+                entry.StartTime ??= DateTime.UtcNow;
+                if (entry?.Player != null)
+                    OnPlayerStart?.Invoke(this, entry?.Player);
+            }
         }
 
-        if (entry is not null)
-            entry.Distance = distance;
+        CheckMatchupState(entry);
     }
 
     protected async Task DoFakeReadData()
@@ -144,28 +166,40 @@ public abstract class ArdrinoCommunicator
 
         App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
-            var seconds = Math.Ceiling((DateTime.UtcNow - startTime).TotalSeconds);
-            if (stopTimeout > 0 && seconds % stopTimeout == 0)
-                pauseActivity = true;
-            else if (stopTimeout > 0 && seconds % Math.Ceiling(stopTimeout * 1.5) == 0)
-                pauseActivity = false;
+            var progressChanged = false;
+            try
+            {
+                var seconds = Math.Ceiling((DateTime.UtcNow - startTime).TotalSeconds);
+                if (stopTimeout > 0 && seconds % stopTimeout == 0)
+                    pauseActivity = true;
+                else if (stopTimeout > 0 && seconds % Math.Ceiling(stopTimeout * 1.5) == 0)
+                    pauseActivity = false;
 
-            if (pauseActivity != true)
                 foreach (var entry in _matchup.Entries)
                 {
-                    var delta = Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
+                    // Set delta to 0 if the activity is paused
+                    var delta = pauseActivity ? 0 : Random.Shared.NextDouble() * (maxValue - minValue) + minValue;
 
-                    // Randomly slow down the player
+                    // Randomly slow down one player
                     if (Random.Shared.NextDouble() < 0.1)
                         delta = 0;
 
+                    progressChanged = delta > 0;
                     UpdatePlayerDistance(entry, entry.Distance + delta);
                 }
-            
-            OnMatchupProgressChanged?.Invoke(this, _matchup);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error reading data from the ardrino");
+            }
+            finally
+            {
+                if (progressChanged)
+                    OnMatchupProgressChanged?.Invoke(this, _matchup);
 
-            if (!IsRunning)
-                OnMatchupFinished?.Invoke(this, _matchup);
+                if (!IsRunning)
+                    OnMatchupFinished?.Invoke(this, _matchup);
+            }
 
             return IsRunning;
         });
@@ -178,6 +212,7 @@ public abstract class ArdrinoCommunicator
 
         App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
+            var progressChanged = false;
             try
             {
                 var message = ReadDataAsync().Result;
@@ -208,7 +243,7 @@ public abstract class ArdrinoCommunicator
                         distance2 = (counter_b - start_counter_b);
                     }
                 }
-                else
+                else if (json["bikeA"] != null)
                 {
                     int bike_a = Convert.ToInt32(json["bikeA"]);
                     int bike_b = Convert.ToInt32(json["bikeB"]);
@@ -226,10 +261,16 @@ public abstract class ArdrinoCommunicator
                 }
 
                 if (_matchup.Entries.Count > 0)
+                {
+                    progressChanged = progressChanged || _matchup.Entries[0].Distance < distance1;
                     UpdatePlayerDistance(_matchup.Entries[0], distance1);
+                }
 
                 if (_matchup.Entries.Count > 1)
+                {
+                    progressChanged = progressChanged || _matchup.Entries[1].Distance < distance2;
                     UpdatePlayerDistance(_matchup.Entries[1], distance2);
+                }
             }
             catch (Exception e)
             {
@@ -237,7 +278,9 @@ public abstract class ArdrinoCommunicator
             }
             finally
             {
-                OnMatchupProgressChanged?.Invoke(this, _matchup);
+                if (progressChanged)
+                    OnMatchupProgressChanged?.Invoke(this, _matchup);
+
                 if (!IsRunning)
                     OnMatchupFinished?.Invoke(this, _matchup);
             }

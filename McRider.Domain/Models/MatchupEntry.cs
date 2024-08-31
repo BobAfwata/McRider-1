@@ -65,7 +65,7 @@ public class MatchupEntry : IComparable<MatchupEntry>
         get
         {
             if (StartTime.HasValue == false) return null;
-            return LastActivity - StartTime;
+            return (IsActive ? DateTime.UtcNow: LastActivity) - StartTime;
         }
     }
 
@@ -80,8 +80,9 @@ public class MatchupEntry : IComparable<MatchupEntry>
             // If the matchup is not complete, then we need to update the last activity time
             if (CurrentMatchup?.IsPlayed != true || StartTime.HasValue == false)
             {
+                IsActive = true;
                 LastActivity = DateTime.UtcNow;
-               // If the start time is not set, then set it to the current time
+                // If the start time is not set, then set it to the current time
                 if (StartTime.HasValue == false)
                     StartTime = LastActivity;
             }
@@ -115,13 +116,17 @@ public class MatchupEntry : IComparable<MatchupEntry>
         }
     }
 
+    [JsonIgnore]
+    public bool IsActive { get; set; } = false;
+
     public bool IsDroppedBrackets() => ParentMatchup != null && ParentMatchup?.Bracket != CurrentMatchup?.Bracket;
 
     public override string ToString()
     {
         var output = $"{Player?.Nickname}";
+
         if (Distance > 0)
-            output = $"({Distance}m - {Time?.ToString("hh\\:mm\\:ss")})";
+            output += $"({Distance}m - {Time?.ToString("hh\\:mm\\:ss")})";
 
         return output;
     }
@@ -131,6 +136,7 @@ public class MatchupEntry : IComparable<MatchupEntry>
         _distance = 0;
         StartTime = null;
         LastActivity = null;
+        IsActive = false;
     }
 
     public int CompareTo(MatchupEntry? other)

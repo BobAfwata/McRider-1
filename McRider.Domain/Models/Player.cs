@@ -10,10 +10,6 @@ public class Player
     public string Nickname { get; set; }
     public string Team { get; set; }
     public string Gender { get; set; }
-
-    [JsonIgnore]
-    public bool IsActive { get; set; } = true;
-
     public override string ToString() => Nickname;
 
 }

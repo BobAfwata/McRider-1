@@ -168,6 +168,8 @@ public partial class MatchupPageViewModel : BaseViewModel
             if (targetEndTime == null) return "0";
 
             var remainingTime = targetEndTime.Value - DateTime.UtcNow;
+            if (IsComplete)
+                remainingTime = Matchup?.Entries.Select(e => e.Time).Max() ?? TimeSpan.Zero;
 
             if (remainingTime.TotalMinutes > 60)
                 return remainingTime.ToString(@"hh\:mm\:ss");
@@ -175,7 +177,7 @@ public partial class MatchupPageViewModel : BaseViewModel
             if (remainingTime.TotalSeconds > 60)
                 return remainingTime.ToString(@"mm\:ss");
 
-            if (remainingTime.TotalSeconds <= 0)
+            if (remainingTime.TotalSeconds < 1)
                 return "Time up!";
 
             return remainingTime.ToString(@"ss").Replace("00", "0");
@@ -290,11 +292,14 @@ public partial class MatchupPageViewModel : BaseViewModel
         OnPropertyChanged(nameof(Player2ProgressFillHeight));
         OnPropertyChanged(nameof(PercentageTimeProgress));
 
-        OnPropertyChanged(nameof(PlayCountDown));
-        OnPropertyChanged(nameof(Player1Progress));
-        OnPropertyChanged(nameof(Player2Progress));
-        OnPropertyChanged(nameof(Player1ProgressF));
-        OnPropertyChanged(nameof(Player2ProgressF));
+        if (IsComplete == false)
+        {
+            OnPropertyChanged(nameof(PlayCountDown));
+            OnPropertyChanged(nameof(Player1Progress));
+            OnPropertyChanged(nameof(Player2Progress));
+            OnPropertyChanged(nameof(Player1ProgressF));
+            OnPropertyChanged(nameof(Player2ProgressF));
+        }
 
         OnPropertyChanged(nameof(Player1Entry));
         OnPropertyChanged(nameof(Player2Entry));
@@ -376,7 +381,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         _ = _communicator.Start(Matchup).ContinueWith(async task => {
             StartTime = DateTime.UtcNow;
 
-            while (ShowResults == false)
+            while (IsComplete == false && ShowResults == false)
             {
                 await Task.Delay(1000);
                 OnPropertyChanged(nameof(PlayCountDown));

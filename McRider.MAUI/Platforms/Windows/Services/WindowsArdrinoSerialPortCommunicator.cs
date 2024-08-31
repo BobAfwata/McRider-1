@@ -89,8 +89,8 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
         return false;
     }
 
-
     private Task<bool>? _detectPortTask = null;
+
     private Task DetectPort()
     {
         if (_detectPortTask != null)
