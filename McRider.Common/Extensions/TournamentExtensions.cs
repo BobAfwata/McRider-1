@@ -99,7 +99,7 @@ public static class TournamentExtensions
             // Can't be same player playing themselves
             m => m.Player1?.Nickname == null || m.Player1?.Nickname != m.Player2?.Nickname,
             // Ignore if the match is already complete
-            m => m.IsPlayed != true ,
+            m => m.IsPlayed != true,
             // Select matchs where players are assigned
             m => allowSinglePlayer || m.HasPlayers == true,
             // Ignore Byes
@@ -108,7 +108,7 @@ public static class TournamentExtensions
             m => m.IsFinalsSet2() == false || tournament.RequiresSet2Finals(),
         };
 
-        // Filter conditions to exclude certain matches
+        // Optional filters. If any filters out all matches, then its ignored
         var optionalFilters = new Func<Matchup, bool>[]
         {
             // Ignore the current matchup
@@ -117,10 +117,8 @@ public static class TournamentExtensions
             m => currentMatchup == null || m.Players.All(p1 => currentMatchup.Players.All(p2 => p1?.Id != p2?.Id)),
         };
 
-        // Flatten all matches in all rounds of the tournament
-        var readyMatches = tournament.Matchups
-            .OrderBy(m => m.Round * (int)m.Bracket)
-            .ToArray();
+        // Get all matchups in order of round and bracket
+        var readyMatches = tournament.Matchups.OrderBy(m => m.Round * (int)m.Bracket).ToArray();
 
         // Apply Manatory filters
         foreach (var filter in manatoryFilters)

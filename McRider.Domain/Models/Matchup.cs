@@ -1,6 +1,4 @@
-﻿
-namespace McRider.Domain.Models;
-
+﻿namespace McRider.Domain.Models;
 
 public class Matchup
 {
@@ -68,6 +66,7 @@ public class Matchup
             var ordered = Entries.Where(e => e.Player is not null).OrderBy(e => e);
             var first = ordered.FirstOrDefault();
             var firstTired = ordered.Where(e => e.CompareTo(first) == 0);
+
             return firstTired.Count() == 1;
         }
     }
@@ -158,7 +157,6 @@ public class Matchup
             entry?.Reset();
     }
 }
-
 
 public enum Bracket
 {

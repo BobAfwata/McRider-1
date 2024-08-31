@@ -173,7 +173,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
             if (remainingTime.TotalMinutes > 60)
                 return remainingTime.ToString(@"hh\:mm\:ss");
-            
+
             if (remainingTime.TotalSeconds > 60)
                 return remainingTime.ToString(@"mm\:ss");
 
@@ -278,12 +278,6 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         _logger.LogInformation("Matchup progress changed. Progress {Progress:0.00}%", Matchup?.GetPercentageProgress());
 
-        if (IsRunning == false)
-        {
-            IsRunning = true;
-            Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
-        }
-
         //Update the game play progress
         OnPropertyChanged(nameof(IsComplete));
         OnPropertyChanged(nameof(Player1CurtainTranslationX));
@@ -292,20 +286,14 @@ public partial class MatchupPageViewModel : BaseViewModel
         OnPropertyChanged(nameof(Player2ProgressFillHeight));
         OnPropertyChanged(nameof(PercentageTimeProgress));
 
-        if (IsComplete == false)
-        {
-            OnPropertyChanged(nameof(PlayCountDown));
-            OnPropertyChanged(nameof(Player1Progress));
-            OnPropertyChanged(nameof(Player2Progress));
-            OnPropertyChanged(nameof(Player1ProgressF));
-            OnPropertyChanged(nameof(Player2ProgressF));
-        }
+        OnPropertyChanged(nameof(PlayCountDown));
+        OnPropertyChanged(nameof(Player1Progress));
+        OnPropertyChanged(nameof(Player2Progress));
+        OnPropertyChanged(nameof(Player1ProgressF));
+        OnPropertyChanged(nameof(Player2ProgressF));
 
         OnPropertyChanged(nameof(Player1Entry));
         OnPropertyChanged(nameof(Player2Entry));
-
-        // Broudcast the game play progress
-        WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, Matchup, Matchup?.GetPercentageProgress() ?? 0));
 
         // Return true to continue the timer, false to stop it
         return Matchup?.IsPlayed != true;
@@ -354,7 +342,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
         var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
 
-        CountDown = Tournament?.Game?.CountDown ??  3;
+        CountDown = Tournament?.Game?.CountDown ?? 3;
         ShowCountDown = true;
         Matchup = null;
 
@@ -378,14 +366,14 @@ public partial class MatchupPageViewModel : BaseViewModel
     {
         ShowResults = false;
         // Start the game, Do not wait for it to finish
-        _ = _communicator.Start(Matchup).ContinueWith(async task => {
+        _ = _communicator.Start(Matchup).ContinueWith(async task =>
+        {
             StartTime = DateTime.UtcNow;
 
             while (IsComplete == false && ShowResults == false)
             {
                 await Task.Delay(1000);
-                OnPropertyChanged(nameof(PlayCountDown));
-                OnPropertyChanged(nameof(PercentageTimeProgress));
+                RefreshProgressView();
             }
 
             await Task.Delay(3000);
@@ -422,6 +410,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         await Task.Delay(1000);
 
         Tournament ??= (await _repository.Find(t => t.Rounds.Any(r => r.Any(m => m.Id == matchup.Id)))).FirstOrDefault();
+
         Matchup = Tournament?.FixParentMatchupRef()?.Matchups.FirstOrDefault(m => m?.Id == matchup?.Id) ?? matchup;
 
         _tcs = new TaskCompletionSource<Matchup>();
@@ -435,18 +424,28 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         IsBusy = false;
 
-        // Refresh the bottle progress view when the matchup progress changes
-        _communicator.OnMatchupProgressChanged += (sender, matchup) => RefreshProgressView();
+        _communicator.OnMatchupProgressChanged += (sender, matchup) => {
+            if (IsRunning == false)
+            {
+                IsRunning = true;
+                Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
+            }
+
+            RefreshProgressView();
+
+            // Broudcast the game play progress
+            WeakReferenceMessenger.Default.Send(new TournamentProgress(Tournament, Matchup, Matchup?.GetPercentageProgress() ?? 0));
+        };
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {
-            IsRunning = false;
+            // IsRunning = false;
             // TODO: Player disconnect notification
         };
 
         _communicator.OnPlayerStopped += async (sender, player) =>
         {
-            IsRunning = false;
+            // IsRunning = false;
             // TODO: Player stopped notification
         };
 

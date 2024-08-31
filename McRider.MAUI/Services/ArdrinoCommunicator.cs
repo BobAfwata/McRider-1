@@ -166,6 +166,7 @@ public abstract class ArdrinoCommunicator
         App.StartTimer(TimeSpan.FromMilliseconds(100), () =>
         {
             var progressChanged = false;
+
             try
             {
                 var seconds = Math.Ceiling((DateTime.UtcNow - startTime).TotalSeconds);
