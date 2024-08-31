@@ -68,7 +68,7 @@ public class WindowsArdrinoSerialPortCommunicator : ArdrinoCommunicator
 
                 // Allow Retry with user confirmation
                 var res = await App.Current.MainPage.DisplayAlert(
-                    "FakeRead?", "Connection failed but [FakeRead] is enable would like debug",
+                    "Would like debug?", "Connection failed but [FakeRead] is enable. Would like debug?",
                     "Yes", "No"
                 );
 
