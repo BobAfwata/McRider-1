@@ -167,7 +167,7 @@ public partial class MatchupPageViewModel : BaseViewModel
 
             if (targetEndTime == null) return "0";
 
-            var remainingTime = DateTime.UtcNow - targetEndTime.Value;
+            var remainingTime = targetEndTime.Value - DateTime.UtcNow;
 
             if (remainingTime.TotalMinutes > 60)
                 return remainingTime.ToString(@"hh\:mm\:ss");
@@ -176,7 +176,7 @@ public partial class MatchupPageViewModel : BaseViewModel
                 return remainingTime.ToString(@"mm\:ss");
 
             if (remainingTime.TotalSeconds <= 0)
-                return "--";
+                return "Time up!";
 
             return remainingTime.ToString(@"ss").Replace("00", "0");
         }
