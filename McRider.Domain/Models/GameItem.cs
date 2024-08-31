@@ -21,6 +21,7 @@ public class GameItem
     public bool IsActive { get; set; } = false;
     public List<string> RevealImages { get; set; } = [];
     public bool? HorizontalProgress { get; set; }
+    public int CountDown { get; set; } = 3;
 }
 
 public enum GameType

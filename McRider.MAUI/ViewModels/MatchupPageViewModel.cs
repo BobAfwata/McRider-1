@@ -55,6 +55,9 @@ public partial class MatchupPageViewModel : BaseViewModel
     [ObservableProperty]
     bool _isRunning = false;
 
+    [ObservableProperty]
+    DateTime? _startTime;
+
     double _player1CurtainCounter = 0;
     double _player2CurtainCounter = 0;
 
@@ -65,11 +68,6 @@ public partial class MatchupPageViewModel : BaseViewModel
         _tournament = null;
         _communicator = communicator;
         _repository = repository;
-
-        App.StartTimer(TimeSpan.FromSeconds(1), () => {
-            OnPropertyChanged(nameof(CountDown));
-            return IsRunning || IsComplete != true;
-        });
     }
 
     public ImageSource? RevealImage => Matchup?.Metadata?.TryGetValue("RevealImage", out var obj) == true && obj is string ? obj?.ToString().ToImageSource() : null;
@@ -165,16 +163,11 @@ public partial class MatchupPageViewModel : BaseViewModel
                 return CountDown.ToString();
 
             var targetTime = Tournament?.Game?.TargetTime;
-            var entryTime = Matchup.Entries.FirstOrDefault()?.Time;
+            var targetEndTime = StartTime?.Add(targetTime ?? TimeSpan.Zero);
 
-            if (targetTime == null) return "0";
+            if (targetEndTime == null) return "0";
 
-            TimeSpan remainingTime;
-
-            if (entryTime != null)
-                remainingTime = targetTime - entryTime ?? targetTime.Value;
-            else
-                remainingTime = targetTime.Value;
+            var remainingTime = DateTime.UtcNow - targetEndTime.Value;
 
             if (remainingTime.TotalMinutes > 60)
                 return remainingTime.ToString(@"hh\:mm\:ss");
@@ -354,7 +347,7 @@ public partial class MatchupPageViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"///{nameof(StartGamePage)}");
         var vm = App.ServiceProvider.GetService<StartGamePageViewModel>();
 
-        CountDown = 3;
+        CountDown = Tournament?.Game?.CountDown ??  3;
         ShowCountDown = true;
         _player1CurtainCounter = 0;
         _player2CurtainCounter = 0;
@@ -376,6 +369,7 @@ public partial class MatchupPageViewModel : BaseViewModel
     private async Task StartGame()
     {
         ShowResults = false;
+        StartTime = DateTime.UtcNow;
         // Start the game, Do not wait for it to finish
         _ = _communicator.Start(Matchup).ContinueWith(async task => {
             while (ShowResults == false)
@@ -384,6 +378,9 @@ public partial class MatchupPageViewModel : BaseViewModel
                 OnPropertyChanged(nameof(PlayCountDown));
                 OnPropertyChanged(nameof(PercentageTimeProgress));
             }
+
+            await Task.Delay(3000);
+            StartTime = null;
         });
     }
 
