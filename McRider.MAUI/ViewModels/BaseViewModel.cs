@@ -101,8 +101,8 @@ public class ThemeTexts
     public string GamesTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer";    
     public string LoadingTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer";
     public string LandingTitle { get; set; } = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam";
-    public string WinnerMessage { get; set; } = "Congratulations!! You have won a reward";
-    public string LoserMessage { get; set; } = "Sorry!! Better luck next time";
+    public string WinnerMessage { get; set; } = "Congratulations!!\r\nYou have won a reward";
+    public string LoserMessage { get; set; } = "Sorry!!\r\nBetter luck next time";
 }
 
 public partial class ThemeConfig : ObservableObject
