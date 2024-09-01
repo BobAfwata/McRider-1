@@ -82,9 +82,14 @@ public class MatchupEntry : IComparable<MatchupEntry>
             {
                 IsActive = true;
                 LastActivity = DateTime.UtcNow;
+
                 // If the start time is not set, then set it to the current time
                 if (StartTime.HasValue == false)
+                {
                     StartTime = LastActivity;
+                    _distance = 0;
+                    return;
+                }
             }
 
             _distance = value;

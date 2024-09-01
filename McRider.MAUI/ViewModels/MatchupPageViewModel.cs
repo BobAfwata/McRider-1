@@ -428,11 +428,13 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         IsBusy = false;
 
-        _communicator.OnMatchupProgressChanged += (sender, matchup) => {
+        _communicator.OnMatchupProgressChanged += (sender, matchup) =>
+        {
             if (IsRunning == false)
             {
                 IsRunning = true;
-                Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
+                if (ShowCountDown == true)
+                    Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
             }
 
             RefreshProgressView();
@@ -443,13 +445,13 @@ public partial class MatchupPageViewModel : BaseViewModel
 
         _communicator.OnPlayerDisconnected += async (sender, player) =>
         {
-            // IsRunning = false;
+            IsRunning = false;
             // TODO: Player disconnect notification
         };
 
         _communicator.OnPlayerStopped += async (sender, player) =>
         {
-            // IsRunning = false;
+            IsRunning = false;
             // TODO: Player stopped notification
         };
 
