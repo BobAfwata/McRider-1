@@ -270,12 +270,12 @@ public partial class MatchupPageViewModel : BaseViewModel
         for (var i = countDown; i >= 0; i--)
         {
             CountDown = i;
-            if (i >= 0) await Task.Delay(1200);
+            if (i > 0) 
+                await Task.Delay(1200);
         }
 
         await StartGame();
     }
-
 
     private bool RefreshProgressView()
     {
@@ -465,7 +465,8 @@ public partial class MatchupPageViewModel : BaseViewModel
             if (IsRunning == false)
             {
                 IsRunning = true;
-                _ = Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
+                if (ShowCountDown == true)
+                    _ = Task.Delay(3000).ContinueWith(t => ShowCountDown = false);
             }
         };
 

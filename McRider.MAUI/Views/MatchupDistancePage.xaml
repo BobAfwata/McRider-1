@@ -263,8 +263,9 @@
                                 <Label Text="" TextColor="Black" FontSize="24" Padding="30,0,0,0"/>
                             </Frame>
 
-                            <Image Source="confetti.gif" IsAnimationPlaying="True" HeightRequest="920" BackgroundColor="Transparent"
-                                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="8" >
+                            <Image Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="8"
+                                   Source="confetti.gif" HeightRequest="920" BackgroundColor="Transparent" 
+                                   IsAnimationPlaying="True"  IsVisible="False">
                                 <Image.Triggers>
                                     <DataTrigger TargetType="Image" Binding="{Binding IsPlayer1Winner}" Value="True">
                                         <Setter Property="IsVisible" Value="True" />

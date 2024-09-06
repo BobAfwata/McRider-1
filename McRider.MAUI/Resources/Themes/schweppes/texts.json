@@ -1,7 +1,8 @@
 {
-  "TitleColor": "#ffffff",
   "PrimaryColor": "#FFD700",
   "TertiaryColor": "#000000",
+  "TitleColor": "#ffffff",
+  "ButtonColor": "Gray",
   "GamesTitle": "Lorem ipsum dolor sit amet, consectetuer",
   "LoadingTitle": "Lorem ipsum dolor sit amet, consectetuer",
   "LandingTitle": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam"
