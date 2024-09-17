@@ -2,8 +2,11 @@
   "PrimaryColor": "#FFD700",
   "TertiaryColor": "#000000",
   "TitleColor": "#ffffff",
-  "ButtonColor": "Gray",
-  "GamesTitle": "Lorem ipsum dolor sit amet, consectetuer",
-  "LoadingTitle": "Lorem ipsum dolor sit amet, consectetuer",
-  "LandingTitle": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam"
+  "ButtonColor": "#000000",
+  "GamesTitle": "Can You Fill the Bottle Under A Minute?",
+  "LoadingTitle":"Can You Fill the Bottle Under a Minute ?",
+  "LandingTitle": "Fill the Bottle  Under A Minute  To Win",
+  "WinnerMessage": "Congratulations!!\r\nYou have won a reward.",
+  "LoserMessage": "Sorry!!\r\nBetter luck next time."
+
 }

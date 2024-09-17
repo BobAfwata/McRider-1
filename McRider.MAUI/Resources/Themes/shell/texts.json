@@ -1,8 +1,8 @@
 {
-  "PrimaryColor": "#000000",
-  "TertiaryColor": "#5393FE",
+  "PrimaryColor": "#fdc501",
+  "TertiaryColor": "#231f20",
   "TitleColor": "#ffffff",
-  "ButtonColor": "#fdc500",
+  "ButtonColor": "#000000",
   "GamesTitle": "Race na Shell?",
   "LoadingTitle": "Loading Race na Shell.",
   "LandingTitle": "Are you ready to Race na Shell?"
